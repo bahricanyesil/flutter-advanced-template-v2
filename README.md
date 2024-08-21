@@ -118,7 +118,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Configure analytics providers in `lib/analytics_manager/config.dart`.
+- Configure analytics providers in `packages/analytics_manager/config.dart`.
 
 ### 🌐 Connectivity Manager - Details
 
@@ -131,7 +131,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Implement in `lib/connectivity_manager/connectivity_manager.dart`.
+- Implement in `packages/connectivity_manager/connectivity_manager.dart`.
 
 ### 📱 Device Manager - Details
 
@@ -143,7 +143,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Use `lib/device_manager/device_manager.dart` for device details.
+- Use `packages/device_manager/device_manager.dart` for device details.
 
 ### 📝 Exception Report Manager - Details
 
@@ -155,7 +155,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Configure in `lib/exception_report_manager/exception_report_manager.dart`.
+- Configure in `packages/exception_report_manager/exception_report_manager.dart`.
 
 ### 📁 File Picker - Details
 
@@ -167,7 +167,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Use `lib/file_picker/file_picker.dart` for file picking functionality.
+- Use `packages/file_picker/file_picker.dart` for file picking functionality.
 
 ### 🖼️ Image Picker - Details
 
@@ -179,7 +179,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Integrate with `lib/image_picker/image_picker.dart`.
+- Integrate with `packages/image_picker/image_picker.dart`.
 
 ### 📦 Package Info Manager - Details
 
@@ -191,7 +191,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Access package information via `lib/package_info_manager/package_info_manager.dart`.
+- Access package information via `packages/package_info_manager/package_info_manager.dart`.
 
 ### 🔥 Firebase Manager - Details
 
@@ -200,17 +200,17 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 **Firebase Auth Manager**:
 
 - **Features**: Handle authentication flows.
-- **Usage**: Implement in `lib/firebase_manager/firebase_auth_manager.dart`.
+- **Usage**: Implement in `packages/firebase_manager/firebase_auth_manager.dart`.
 
 **Firebase Storage Manager**:
 
 - **Features**: Manage file uploads and downloads.
-- **Usage**: Configure in `lib/firebase_manager/firebase_storage_manager.dart`.
+- **Usage**: Configure in `packages/firebase_manager/firebase_storage_manager.dart`.
 
 **Firestore Manager**:
 
 - **Features**: Interact with Cloud Firestore.
-- **Usage**: Use `lib/firebase_manager/firestore_manager.dart`.
+- **Usage**: Use `packages/firebase_manager/firestore_manager.dart`.
 
 ### ⭐ In-App Review Manager - Details
 
@@ -222,7 +222,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Implement in `lib/in_app_review_manager/in_app_review_manager.dart`.
+- Implement in `packages/in_app_review_manager/in_app_review_manager.dart`.
 
 ### 🌍 Language Manager - Details
 
@@ -235,7 +235,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Configure in `lib/language_manager/language_manager.dart`.
+- Configure in `packages/language_manager/language_manager.dart`.
 
 ### 📝 Logger Manager - Details
 
@@ -247,7 +247,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Set up in `lib/logger_manager/logger_manager.dart`.
+- Set up in `packages/logger_manager/logger_manager.dart`.
 
 ### 🎨 Theme Manager - Details
 
@@ -259,7 +259,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Customize themes in `lib/theme_manager/theme_manager.dart`.
+- Customize themes in `packages/theme_manager/theme_manager.dart`.
 
 ### 🧩 Navigation Manager - Details
 
@@ -271,7 +271,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Implement navigation in `lib/navigation_manager/navigation_manager.dart`.
+- Implement navigation in `packages/navigation_manager/navigation_manager.dart`.
 
 ### 🌐 Network Manager - Details
 
@@ -283,7 +283,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Configure in `lib/network_manager/network_manager.dart`.
+- Configure in `packages/network_manager/network_manager.dart`.
 
 ### 🔔 In-App Local Notification Manager - Details
 
@@ -295,7 +295,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Integrate with `lib/in_app_local_notification_manager/in_app_local_notification_manager.dart`.
+- Integrate with `packages/in_app_local_notification_manager/in_app_local_notification_manager.dart`.
 
 ### 📢 Push Notification Manager - Details
 
@@ -307,7 +307,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Set up in `lib/push_notification_manager/push_notification_manager.dart`.
+- Set up in `packages/push_notification_manager/push_notification_manager.dart`.
 
 ### 🔐 Permission Manager - Details
 
@@ -319,7 +319,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Use `lib/permission_manager/permission_manager.dart`.
+- Use `packages/permission_manager/permission_manager.dart`.
 
 ### 🔑 Basic Key-Value Storage Manager - Details
 
@@ -331,7 +331,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Access through `lib/basic_key_value_storage_manager/basic_key_value_storage_manager.dart`.
+- Access through `packages/basic_key_value_storage_manager/basic_key_value_storage_manager.dart`.
 
 ### 🗃️ Cache Storage Manager - Details
 
@@ -343,7 +343,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Set up in `lib/cache_storage_manager/cache_storage_manager.dart`.
+- Set up in `packages/cache_storage_manager/cache_storage_manager.dart`.
 
 ### 🗄️ DB Manager (SQL) - Details
 
@@ -355,7 +355,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Integrate with `lib/db_manager/db_manager.dart`.
+- Integrate with `packages/db_manager/db_manager.dart`.
 
 ### 🔒 Secure Storage Manager - Details
 
@@ -367,7 +367,7 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 **Usage**:
 
-- Configure in `lib/secure_storage_manager/secure_storage_manager.dart`.
+- Configure in `packages/secure_storage_manager/secure_storage_manager.dart`.
 
 ### 📜 Lint Rules - Details
 
@@ -404,12 +404,12 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 4. **Customize and Extend**:
 
-- Modify lib/config for module-specific settings.
+- Modify packages/config for module-specific settings.
 - Use the provided modules as per your project requirements.
 
 ## 📖 Documentation
 
-For detailed documentation on each module, please refer to the respective files and folders within the lib directory.
+For detailed documentation on each module, please refer to the respective files and folders within the packages directory.
 
 ## 🛠️ Contribution
 

@@ -30,20 +30,33 @@ If you encounter any bugs or have suggestions for improvements, please [open an 
 
 4. **Make Your Changes**: Implement your changes in the new branch.
 
-5. **Commit Your Changes**: Commit your changes with a clear and descriptive message.
+5. **Run Tests and Linting**: Before committing, ensure that all tests pass and linting rules are followed. You can use Melos for managing and running tests across all packages.
+
+    ```bash
+    melos run test
+    melos format
+    ```
+
+    Optionally, you can also run the analyzer to catch potential issues:
+
+    ```bash
+    melos analyze
+    ```
+
+6. **Commit Your Changes**: Commit your changes with a clear and descriptive message.
 
     ```bash
     git add .
     git commit -m "Add detailed description of changes"
     ```
 
-6. **Push Your Changes**: Push your changes to your fork.
+7. **Push Your Changes**: Push your changes to your fork.
 
     ```bash
     git push origin feature/your-feature
     ```
 
-7. **Open a Pull Request**: Go to the original repository and click on "New Pull Request." Select your branch and describe the changes you've made.
+8. **Open a Pull Request**: Go to the original repository and click on "New Pull Request." Select your branch and describe the changes you've made.
 
 ### Coding Standards
 
@@ -57,6 +70,6 @@ Please be respectful and considerate in all interactions. Follow our [Code of Co
 
 ## Thank You
 
-We appreciate your contributions and effort to improve Flutter Advanced Template v2. If you have any questions or need assistance, feel free to reach out on our [Discussion Forum](https://github.com/bahricanyesil/flutter-advanced-template-v2/discussions) or via email at [bahricanyesildev@gmail.com](mailto:bahricanyesildev@gmail.com).
+We appreciate your contributions and effort to improve [Your Project Name]. If you have any questions or need assistance, feel free to reach out on our [Discussion Forum](https://github.com/bahricanyesil/flutter-advanced-template-v2/discussions) or via email at [bahricanyesildev@gmail.com](mailto:bahricanyesildev@gmail.com).
 
 Happy coding!

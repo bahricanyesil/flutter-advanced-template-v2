@@ -1,39 +1,31 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# lint_rules
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+A custom set of linting rules and guidelines for maintaining code quality and consistency across projects.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Overview
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+The `lint_rules` package provides a centralized configuration for linting in your Flutter and Dart projects. This package enforces best practices, ensuring that your codebase remains clean, consistent, and easy to maintain.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+- Predefined lint rules tailored for your project.
+- Enforces code formatting, naming conventions, and common best practices.
+- Helps identify potential issues early in the development process.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+1. Add the `lint_rules` package to your project's `pubspec.yaml`:
 
-```dart
-const like = 'sample';
-```
+   ```yaml
+   dev_dependencies:
+     lint_rules:
+       path: ../path_to_lint_rules
 
-## Additional information
+  or
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+  ```yaml
+  dev_dependencies:
+  lint_rules:
+    git:
+      url: https://github.com/bahricanyesil/flutter-advanced-template-v2.git
+      path: packages/lint_rules

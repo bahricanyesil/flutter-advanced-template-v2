@@ -7,5 +7,11 @@ version: 1.0.0+1
 environment:
   sdk: ^3.5.0
 
+dependencies:
+  get_it: ^7.7.0
+  injectable: ^2.4.4
+
 dev_dependencies:
   melos: ^6.1.0
+  build_runner: ^2.4.12
+  injectable_generator: ^2.6.2

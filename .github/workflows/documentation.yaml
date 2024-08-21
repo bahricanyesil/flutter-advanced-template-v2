@@ -1,0 +1,37 @@
+name: Documentation
+
+on:
+  workflow_call:
+    inputs:
+      flutter_version:
+        required: false
+        type: string
+        default: "latest"
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ inputs.flutter_version }}
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Generate Dart Documentation
+        run: |
+          set -e
+          echo "Generating Dart documentation..."
+          dart doc
+
+      - name: Upload Documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: dart-docs
+          path: doc/api

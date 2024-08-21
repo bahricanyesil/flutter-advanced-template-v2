@@ -1,0 +1,71 @@
+# Name of the workflow
+name: Spell Check Workflow
+
+# Event that triggers the workflow
+on:
+  workflow_call:
+    inputs:
+      config:
+        required: false
+        type: string
+        default: ".github/.cspell/cspell.json"
+      includes:
+        required: false
+        type: string
+        default: ""
+      runs_on:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+      verbose:
+        required: false
+        type: boolean
+        default: false
+      modified_files_only:
+        required: false
+        type: boolean
+        default: true
+      working_directory:
+        required: false
+        type: string
+        default: "."
+
+# Job definition
+jobs:
+  spell-check:
+    # Set default values for all run steps
+    defaults:
+      run:
+        working-directory: ${{inputs.working_directory}}
+
+    # Specify the operating system for the job
+    runs-on: ${{inputs.runs_on}}
+
+    # Steps to be executed in the job
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v4
+
+      # Optional caching for spell-check dependencies
+      - name: Cache cspell Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cspell
+          key: ${{ runner.os }}-cspell-${{ hashFiles('**/cspell.json') }}
+          restore-keys: |
+            ${{ runner.os }}-cspell-
+
+      # Step to perform spell check
+      - name: 🪄 Spell Check
+        uses: streetsidesoftware/cspell-action@v5
+        with:
+          # Configuration file for cspell
+          config: ${{inputs.config}}
+          # Include specific files or patterns for spell check
+          files: ${{inputs.includes}}
+          # Only check files that have been modified
+          incremental_files_only: ${{inputs.modified_files_only}}
+          # Specify the root directory for spell check
+          root: ${{inputs.working_directory}}
+          # Enable verbose mode if specified
+          verbose: ${{inputs.verbose}}

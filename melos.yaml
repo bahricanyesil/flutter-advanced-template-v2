@@ -1,0 +1,23 @@
+name: flutter_advanced_template_v2
+packages:
+  - packages/analytics_manager
+  - packages/connectivity_manager
+  - packages/device_info_manager
+  - packages/exception_report_manager
+  - packages/file_picker
+  - packages/image_picker
+  - packages/package_info_manager
+  - packages/firebase_manager
+  - packages/in_app_review_manager
+  - packages/localization_manager
+  - packages/logger_manager
+  - packages/theme_manager
+  - packages/navigation_manager
+  - packages/network_manager
+  - packages/local_notifications_manager
+  - packages/push_notifications_manager
+  - packages/permission_manager
+  - packages/basic_storage_manager
+  - packages/cache_storage_manager
+  - packages/db_manager
+  - packages/secure_storage_manager

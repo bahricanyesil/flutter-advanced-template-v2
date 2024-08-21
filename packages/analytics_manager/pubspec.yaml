@@ -1,0 +1,17 @@
+name: analytics_manager
+description: A package to handle analytics using Firebase.
+version: 0.0.1
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_analytics: ^11.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint_rules: ^0.0.1

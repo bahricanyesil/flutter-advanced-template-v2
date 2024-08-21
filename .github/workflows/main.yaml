@@ -65,3 +65,17 @@ jobs:
       - decode-github-secrets
       - license-check
       - cache
+
+  # Job for uploading build artifacts
+  artifact-uploading:
+    needs:
+      - test-and-analysis
+    uses: ./.github/workflows/upload_artifact.yaml
+    with:
+      flutter_version: 'latest'
+
+  # Job for generating and uploading documentation
+  documentation:
+    uses: ./.github/workflows/documentation.yaml
+    needs:
+      - artifact-uploading

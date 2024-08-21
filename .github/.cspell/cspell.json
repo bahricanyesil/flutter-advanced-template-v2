@@ -1,0 +1,81 @@
+{
+  "version": "0.2",
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "language": "en",
+  "dictionaryDefinitions": [
+    {
+      "name": "programmingTerms",
+      "path": "./.cspell/terms.txt"
+    }
+  ],
+  "useGitignore": true,
+  "patterns": [
+    {
+      "name": "Email",
+      "pattern": "/<?\\b[\\w.\\-+]{1,64}@\\w{1,63}(\\.\\w{1,63}){1,3}\\b>?/gi"
+    }
+  ],
+  "words": [
+    "Flutter",
+    "Dart",
+    "Pub",
+    "Melos",
+    "Widget",
+    "Context",
+    "State",
+    "Provider",
+    "Async",
+    "Future",
+    "Stream",
+    "BuildContext",
+    "Scaffold",
+    "AppBar",
+    "Navigator",
+    "Material",
+    "Cupertino",
+    "CodeOfConduct",
+    "Changelog",
+    "GitHub",
+    "Repository",
+    "PullRequest",
+    "Issue",
+    "Contributing",
+    "Template",
+    "Configuration",
+    "CI",
+    "CD",
+    "API",
+    "Endpoint",
+    "Database",
+    "UnitTest",
+    "IntegrationTest",
+    "Mock",
+    "Exception",
+    "Error",
+    "Handler",
+    "Manager",
+    "Service"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "build",
+    "dist",
+    ".git",
+    ".github",
+    ".vscode",
+    "*.log",
+    "*.tmp"
+  ],
+  "caseSensitive": false,
+  "allowCompoundWords": true,
+  "maxNumberOfProblems": 100,
+  "minWordLength": 2,
+  "ignoreRegExpList": [
+    "/\\b(?:fix|fixes|fixing|revert)\\b/i",
+    "/^\\d+\\.\\d+\\.\\d+$/",
+    "/^[a-zA-Z0-9_]+$/",
+    "(http|https)://[\\S]+",
+    "[\\w\\.]+@[\\w\\.]+",
+    "(/[^\\s/]+)+"
+  ]
+}

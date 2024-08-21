@@ -16,16 +16,18 @@ The `lint_rules` package provides a centralized configuration for linting in you
 
 1. Add the `lint_rules` package to your project's `pubspec.yaml`:
 
-   ```yaml
-   dev_dependencies:
-     lint_rules:
-       path: ../path_to_lint_rules
-
-  or
-
   ```yaml
   dev_dependencies:
   lint_rules:
     git:
       url: https://github.com/bahricanyesil/flutter-advanced-template-v2.git
       path: packages/lint_rules
+  ```
+
+  or as a path dependency
+
+  ```yaml
+  dev_dependencies:
+    lint_rules:
+      path: ../path_to_lint_rules
+  ```

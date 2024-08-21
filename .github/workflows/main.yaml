@@ -1,0 +1,62 @@
+name: CI Workflow
+
+# Concurrency settings to control workflow runs
+concurrency:
+  group: ${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+# Define the triggering events for the workflow
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+# Define jobs for the workflow
+jobs:
+  # Job for caching dependencies and build artifacts
+  cache:
+    needs:
+      - semantic-pull-request-check
+      - spell-check
+      - decode-github-secrets
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    uses: ./.github/workflows/cache.yaml
+    with:
+      cache_key: ${{ matrix.os }}-flutter
+      cache_path: ~/.pub-cache
+
+  # Job for semantic pull request checks
+  semantic-pull-request-check:
+    uses: ./.github/workflows/semantic_pull_request.yaml
+
+  # Job for spell-checking Markdown files
+  spell-check:
+    uses: ./.github/workflows/spell_check.yaml
+    with:
+      includes: |
+        **/*.md
+      modified_files_only: false
+
+  # Job for decoding GitHub secrets
+  decode-github-secrets:
+    secrets: inherit
+    uses: ./.github/workflows/decode_github_secrets.yaml
+
+  # Job for building, formatting, and analyzing
+  test-and-analysis:
+    uses: ./.github/workflows/test_and_analysis.yaml
+    with:
+      flutter_channel: stable # Specify the Flutter channel for the build
+    secrets: inherit
+    needs:
+      - semantic-pull-request-check
+      - spell-check
+      - decode-github-secrets
+      - cache

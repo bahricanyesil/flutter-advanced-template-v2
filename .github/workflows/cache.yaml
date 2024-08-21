@@ -1,0 +1,37 @@
+# .github/workflows/cache.yml
+name: Cache Workflow
+
+on:
+  workflow_call:
+    inputs:
+      cache_key:
+        required: true
+        type: string
+      cache_path:
+        required: true
+        type: string
+
+jobs:
+  cache:
+    runs-on: ubuntu-latest
+    steps:
+      # Cache Dart dependencies
+      - name: Cache Dart Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ inputs.cache_path }}
+          key: ${{ inputs.cache_key }}-pub-cache-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ inputs.cache_key }}-pub-cache-
+
+      # Cache Flutter build artifacts
+      - name: Cache Flutter Build Artifacts
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ inputs.cache_path }}
+            .dart_tool
+            build
+          key: ${{ inputs.cache_key }}-flutter-build-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ inputs.cache_key }}-flutter-build-

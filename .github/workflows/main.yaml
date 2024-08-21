@@ -44,6 +44,10 @@ jobs:
         **/*.md
       modified_files_only: false
 
+  # Job for license check
+  license-check:
+    uses: ./.github/workflows/license_check.yaml
+
   # Job for decoding GitHub secrets
   decode-github-secrets:
     secrets: inherit
@@ -59,4 +63,5 @@ jobs:
       - semantic-pull-request-check
       - spell-check
       - decode-github-secrets
+      - license-check
       - cache

@@ -1,0 +1,56 @@
+# Name of the workflow
+name: Semantic Check Pull Request Workflow
+
+# Event that triggers the workflow
+on:
+  workflow_call:
+    inputs:
+      types:
+        required: false
+        type: string
+        default: |
+          fix
+          feat
+      scopes:
+        required: false
+        type: string
+        default: |
+          core
+          ui
+      runs_on:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+      verbose:
+        required: false
+        type: boolean
+        default: false
+      ignore_labels:
+        required: false
+        type: string
+        default: |
+          bot
+          ignore-semantic-pull-request
+
+permissions:
+  pull-requests: read
+
+jobs:
+  semantic-check:
+    runs-on: ${{ inputs.runs_on }}
+
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v4
+
+      - name: 🤖 Ensure Commit is Semantic
+        if: github.event_name == 'pull_request'
+        uses: amannn/action-semantic-pull-request@v5.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: ${{ inputs.types }}
+          scopes: ${{ inputs.scopes }}
+          validateSingleCommit: false
+          ignoreLabels: ${{ inputs.ignore_labels }}
+          wip: false

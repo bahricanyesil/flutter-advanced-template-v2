@@ -1,0 +1,100 @@
+# Name of the workflow
+name: License Check Workflow
+
+# Event that triggers the workflow
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        required: false
+        type: string
+        default: "."
+      runs_on:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+      dart_sdk:
+        required: false
+        type: string
+        default: "stable"
+      flutter_channel:
+        required: false
+        type: string
+        default: "stable"
+      flutter_version:
+        required: false
+        type: string
+        default: ""
+      allowed:
+        required: false
+        type: string
+        default: "MIT,BSD-3-Clause,BSD-2-Clause,Apache-2.0,Zlib"
+      forbidden:
+        required: false
+        type: string
+        default: ""
+      skip_packages:
+        required: false
+        type: string
+        default: ""
+      dependency_type:
+        required: false
+        type: string
+        default: "direct-main,transitive"
+      ignore_retrieval_failures:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      ssh_key:
+        required: false
+
+jobs:
+  license-check:
+    defaults:
+      run:
+        working-directory: ${{inputs.working_directory}}
+
+    runs-on: ${{inputs.runs_on}}
+
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v4
+
+      # Step to set up Flutter
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{inputs.flutter_version}}
+          channel: ${{inputs.flutter_channel}}
+          cache: true
+          cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}
+
+      # Step to set up Dart SDK
+      - name: 🎯 Setup Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{inputs.dart_sdk}}
+
+      - name: 🤫 Set SSH Key
+        env:
+          ssh_key: ${{secrets.ssh_key}}
+        if: env.ssh_key != null
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{secrets.ssh_key}}
+
+      # Step to install dependencies
+      - name: 📦 Install Dependencies
+        run: flutter pub get --no-example
+
+      # Step to check licenses
+      - name: 👨‍⚖️ Check Licenses
+        run: |
+          dart pub global activate very_good_cli
+          dart pub global run very_good_cli:very_good packages check licenses \
+            --skip-packages=${{inputs.skip_packages}} \
+            --dependency-type=${{inputs.dependency_type}} \
+            ${{ (inputs.ignore_retrieval_failures && '--ignore-retrieval-failures') || '' }} \
+            --allowed=${{inputs.allowed}} \
+            --forbidden=${{inputs.forbidden}}

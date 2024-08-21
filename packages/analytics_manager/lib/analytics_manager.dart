@@ -1,3 +1,4 @@
+/// Analytics Manager Library
 library analytics_manager;
 
 /// A Calculator.

@@ -1,4 +1,4 @@
-name: advanced_template_lint_rules
+name: lint_rules
 description: Common lint rules for the advanced template.
 version: 0.0.1
 

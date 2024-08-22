@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import '../models/base_log_message_model.dart';
 
 /// Extension method to convert a [LogEvent] into a [BaseLogMessage].
-extension LogEventExtensions on LogEvent {
+extension AdvancedTemplateLogEventExtensions on LogEvent {
   /// Converts the [LogEvent] into a [BaseLogMessage].
   ///
   /// The [LogLevel] is extracted from the [level] property of the [LogEvent].

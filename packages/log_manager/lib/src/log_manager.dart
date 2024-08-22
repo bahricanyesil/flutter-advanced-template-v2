@@ -28,7 +28,7 @@ abstract base class LogManager {
   void lDebug(Object message);
 
   /// Logs an informational message.
-  void lInfo(Object message, {bool analytics = false, String? type});
+  void lInfo(Object message, {String? type});
 
   /// Logs a warning message.
   void lWarning(Object message);

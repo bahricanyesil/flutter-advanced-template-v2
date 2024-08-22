@@ -1,14 +1,20 @@
 import 'package:flutter/foundation.dart';
 
-import '../logger/base_log_manager.dart';
+import '../logger/log_manager.dart';
 
 /// Base class for analytics report manager
-abstract class IAnalyticsManager {
+abstract class AnalyticsManager {
   /// Create an instance of the analytics manager
-  const IAnalyticsManager(this._logManager);
+  const AnalyticsManager(this._logManager);
 
   /// Logger manager instance
-  final ILogManager _logManager;
+  final LogManager _logManager;
+
+  /// Background event name
+  static const String backgroundEventKey = 'background_event';
+
+  /// Resumed app event name
+  static const String resumedAppEventKey = 'resumed_app_event';
 
   /// Initialize the analytics manager
   Future<void> init();

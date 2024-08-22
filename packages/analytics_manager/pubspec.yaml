@@ -9,13 +9,27 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_analytics: ^11.0.0
+
+  # Analytics
+  firebase_analytics: ^11.2.1
+
+  # Dependency Injection
+  get_it: ^7.7.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  # Linting
   lint_rules:
     path: ../lint_rules
-  log_manager:
-    path: ../log_manager
+
+  # # Logging
+  # log_manager:
+  #   path: ../log_manager
+
+  # Testing
+  flutter_test:
+    sdk: flutter
   mockito: ^5.4.4
+
+  # Dependency Injection
+  build_runner: ^2.4.12
+  injectable_generator: ^2.6.2

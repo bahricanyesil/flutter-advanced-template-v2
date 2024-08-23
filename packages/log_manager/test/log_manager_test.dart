@@ -1,22 +1,17 @@
-// ignore_for_file: cascade_invocations
-
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 
-// Mock class for LogManager
-final class MockLogManager extends LogManager with Mock {
-  // Create a StreamController to manage the stream
+class MockLogManager extends LogManager with Mock {
   final StreamController<BaseLogMessage> _streamController =
       StreamController<BaseLogMessage>();
 
   @override
   Stream<BaseLogMessage> get logStream => _streamController.stream;
 
-  // Method to add a message to the stream (for testing purposes)
   void addLogMessage(BaseLogMessage message) {
     _streamController.add(message);
   }
@@ -28,7 +23,7 @@ final class MockLogManager extends LogManager with Mock {
 
   @override
   Future<void> logFlutterError(FlutterErrorDetails details) async {
-    // Return a completed future to simulate the async behavior
+    // Override only if needed for specific behavior
     return super.logFlutterError(details);
   }
 }
@@ -44,28 +39,22 @@ void main() {
         ..lError('Error message')
         ..lFatal('Fatal error message');
 
-      verify(logManager.lTrace('Trace message')).called(1);
-      verify(logManager.lDebug('Debug message')).called(1);
-      verify(logManager.lInfo('Info message')).called(1);
-      verify(logManager.lWarning('Warning message')).called(1);
-      verify(logManager.lError('Error message')).called(1);
-      verify(logManager.lFatal('Fatal error message')).called(1);
+      verify(() => logManager.lTrace('Trace message')).called(1);
+      verify(() => logManager.lDebug('Debug message')).called(1);
+      verify(() => logManager.lInfo('Info message')).called(1);
+      verify(() => logManager.lWarning('Warning message')).called(1);
+      verify(() => logManager.lError('Error message')).called(1);
+      verify(() => logManager.lFatal('Fatal error message')).called(1);
     });
 
     test('logs errors and fatal errors', () {
-      // Create a mock instance of LogManager
-      final MockLogManager logManager = MockLogManager();
+      final MockLogManager logManager = MockLogManager()
+        ..lError('Error message', error: Exception('Test error'))
+        ..lFatal('Fatal error message');
 
-      // Perform actions that are expected to trigger method calls
-      logManager.lError('Error message', error: Exception('Test error'));
-      logManager.lFatal('Fatal error message');
-
-      // Verify that lError was called with the correct parameters
-      verify(logManager.lError('Error message', error: isA<Exception>()))
+      verify(() => logManager.lError('Error message', error: isA<Exception>()))
           .called(1);
-
-      // Verify that lFatal was called with the correct parameters
-      verify(logManager.lFatal('Fatal error message')).called(1);
+      verify(() => logManager.lFatal('Fatal error message')).called(1);
     });
 
     test('handles logging state', () {
@@ -75,46 +64,34 @@ void main() {
         ..disableLogging()
         ..lInfo('Info message');
 
-      // Assuming the mock implementation logs messages even when disabled
-      verify(logManager.lInfo('Info message')).called(2);
+      verify(() => logManager.lInfo('Info message')).called(2);
     });
 
     test('emits messages to stream', () async {
-      // Create a mock instance of LogManager
       final MockLogManager logManager = MockLogManager();
-
       final List<BaseLogMessage> logMessages = <BaseLogMessage>[];
 
-      // Listen to the logStream and add received messages
-      //to the logMessages list
       logManager.logStream.listen(logMessages.add);
 
-      // Create and add a message to the stream
       const BaseLogMessage logMessage =
           BaseLogMessage(message: 'Info message', logLevel: LogLevel.info);
       logManager.addLogMessage(logMessage);
 
-      // Trigger the log method to simulate the behavior of logging
-      logManager.lInfo('Info message');
-
-      // Allow some time for the stream to process the message
       await Future<void>.delayed(const Duration(milliseconds: 100));
 
-      // Verify that the logMessages list contains the correct message
       expect(logMessages, isNotEmpty);
       expect(logMessages.first.message, 'Info message');
     });
 
     test('logs Flutter and platform dispatcher errors', () {
       final MockLogManager logManager = MockLogManager();
-
       final FlutterErrorDetails flutterError =
           FlutterErrorDetails(exception: Exception('Test error'));
+
       logManager.logFlutterError(flutterError);
 
-      // Verify that the correct methods were called with expected arguments
       verify(
-        logManager.lError(
+        () => logManager.lError(
           'Flutter Error: ${flutterError.exceptionAsString()}',
           stackTrace: flutterError.stack,
           fatal: true,
@@ -122,14 +99,16 @@ void main() {
         ),
       ).called(1);
 
-      final StackTrace dispatcherStackTrace = StackTrace.current;
       final Exception dispatcherException = Exception('Test error');
+      final StackTrace dispatcherStackTrace = StackTrace.current;
+
       logManager.logPlatformDispatcherError(
         dispatcherException,
         dispatcherStackTrace,
       );
+
       verify(
-        logManager.lError(
+        () => logManager.lError(
           'Platform Dispatcher Error: $dispatcherException',
           error: dispatcherException,
           stackTrace: dispatcherStackTrace,
@@ -148,25 +127,18 @@ void main() {
       logManager.enableLogging();
       expect(logManager.loggingEnabled, isTrue);
     });
+
     test('verify no unexpected method calls', () {
-      final MockLogManager logManager = MockLogManager();
+      final MockLogManager logManager = MockLogManager()..lInfo('Info message');
 
-      // Perform actions that are expected to trigger method calls
-      logManager.lInfo('Info message');
-
-      // Verify that unexpected methods are not called
-      verifyNever(logManager.lDebug('any'));
-      verifyNever(logManager.lTrace('any'));
+      verifyNever(() => logManager.lDebug('any'));
+      verifyNever(() => logManager.lTrace('any'));
     });
 
     test('handles empty log message', () {
-      final MockLogManager logManager = MockLogManager();
+      final MockLogManager logManager = MockLogManager()..lInfo('');
 
-      // Test with empty log message
-      logManager.lInfo('');
-
-      // Verify behavior with empty message
-      verify(logManager.lInfo('')).called(1);
+      verify(() => logManager.lInfo('')).called(1);
     });
   });
 }

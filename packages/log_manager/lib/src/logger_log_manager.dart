@@ -17,14 +17,17 @@ import 'package:logger/logger.dart';
 @visibleForTesting
 final class LoggerLogManager extends LogManager {
   /// Constructor for the [LogManager] class.
-  LoggerLogManager({required Logger logger}) {
+  LoggerLogManager({required Logger logger, CustomStreamOutput? streamOutput}) {
     _logger = logger;
-    _streamOutput = CustomStreamOutput();
+    _streamOutput = streamOutput ?? CustomStreamOutput();
     enableLogging();
   }
 
   late final Logger _logger;
   late final CustomStreamOutput _streamOutput;
+
+  /// [CustomStreamOutput] is used to manage the stream of log messages.
+  CustomStreamOutput get streamOutput => _streamOutput;
 
   static final List<String> _ignoredFlutterErrors = <String>[
     '''A KeyDownEvent is dispatched, but the state shows that the physical key is already pressed.''',

@@ -8,7 +8,7 @@ import 'base_log_output.dart';
 /// This class provides a stream-based output for logging events. It allows
 /// listeners to receive a stream of lists of strings representing log lines.
 /// The output can be controlled by pausing and resuming the stream.
-final class CustomStreamOutput implements ILogOutput {
+interface class CustomStreamOutput implements ILogOutput {
   /// Constructor for the [CustomStreamOutput] class.
   CustomStreamOutput() {
     _controller = StreamController<BaseLogMessage>.broadcast(

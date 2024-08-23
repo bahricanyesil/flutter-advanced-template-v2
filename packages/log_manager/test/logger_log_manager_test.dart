@@ -32,16 +32,20 @@ class MockStreamOutput extends Mock implements CustomStreamOutput {
 // Mock class for LoggerWrapper
 class MockLoggerWrapper extends Mock implements LoggerWrapper {}
 
+class MockBuildMode extends Mock implements BuildMode {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('LoggerLogManager', () {
+    late MockBuildMode mockBuildMode;
     late MockLoggerWrapper mockLoggerWrapper;
     late MockLogger mockLogger;
     late MockStreamOutput mockStreamOutput;
     late LoggerLogManager logManager;
 
     setUp(() {
+      mockBuildMode = MockBuildMode();
       mockLoggerWrapper = MockLoggerWrapper();
       mockLogger = MockLogger();
       mockStreamOutput = MockStreamOutput();
@@ -49,6 +53,7 @@ void main() {
         logger: mockLogger,
         streamOutput: mockStreamOutput,
         loggerWrapper: mockLoggerWrapper,
+        buildMode: mockBuildMode,
       );
     });
 
@@ -111,15 +116,19 @@ void main() {
     });
 
     test('setUp method initializes LogManager correctly', () {
+      when(() => mockBuildMode.isReleaseMode).thenReturn(false);
       const BaseLogOptions options = BaseLogOptions(showTime: false);
 
-      logManager.setUp<LoggerLogManager>(
+      final LoggerLogManager newLogManager = logManager.setUp<LoggerLogManager>(
         (LogManager logManager) => LoggerLogManager(logger: mockLogger),
         options,
       );
 
       verifyNever(() => mockLogger.t(any));
-      expect(logManager.loggingEnabled, isTrue);
+      expect(newLogManager.loggingEnabled, isTrue);
+
+      newLogManager.disableLogging();
+      expect(newLogManager.loggingEnabled, isFalse);
     });
 
     test('close method cleans up resources', () async {
@@ -145,6 +154,30 @@ void main() {
 
       // Verify that logging methods are not called
       verifyNever(() => mockLogger.i('This message should not be logged.'));
+    });
+
+    test('''
+setUp disables logging in release mode
+        if options.logInRelease is false''', () {
+      when(() => mockBuildMode.isReleaseMode).thenReturn(true);
+
+      final LoggerLogManager newLogManager =
+          logManager.setUp<LoggerLogManager>((_) => logManager);
+
+      // Verify disableLogging was called
+      expect(newLogManager.loggingEnabled, false);
+    });
+
+    test(
+        'setUp enables logging if not in release mode or options.logInRelease is true',
+        () {
+      when(() => mockBuildMode.isReleaseMode).thenReturn(false);
+
+      final LoggerLogManager newLogManager =
+          logManager.setUp<LoggerLogManager>((_) => logManager);
+
+      // Verify disableLogging was called
+      expect(newLogManager.loggingEnabled, true);
     });
   });
 }

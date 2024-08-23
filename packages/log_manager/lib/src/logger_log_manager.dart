@@ -45,9 +45,11 @@ final class LoggerLogManager extends LogManager {
     required Logger logger,
     CustomStreamOutput? streamOutput,
     LoggerWrapper? loggerWrapper,
+    BuildMode? buildMode,
   }) {
     _loggerWrapper = loggerWrapper ?? LoggerWrapperImpl();
     _logger = logger;
+    _buildMode = buildMode ?? BuildModeImpl();
     _streamOutput = streamOutput ?? CustomStreamOutput();
     enableLogging();
   }
@@ -55,6 +57,7 @@ final class LoggerLogManager extends LogManager {
   late final Logger _logger;
   late final LoggerWrapper _loggerWrapper;
   late final CustomStreamOutput _streamOutput;
+  late final BuildMode _buildMode;
 
   /// [CustomStreamOutput] is used to manage the stream of log messages.
   CustomStreamOutput get streamOutput => _streamOutput;
@@ -125,7 +128,7 @@ final class LoggerLogManager extends LogManager {
     LoggerSetupCallback<L> fn, [
     BaseLogOptions options = const BaseLogOptions(),
   ]) {
-    if (kReleaseMode && !options.logInRelease) {
+    if (_buildMode.isReleaseMode && !options.logInRelease) {
       disableLogging();
       return fn(this);
     }
@@ -178,4 +181,17 @@ final class LoggerLogManager extends LogManager {
   void _outputListener(OutputEvent e) {
     _streamOutput.output(e.origin.logMessage);
   }
+}
+
+/// The [BuildMode] class is used to determine the build mode.
+/// It is used to determine whether the app is running in release mode.
+abstract class BuildMode {
+  /// Returns true if the app is running in release mode.
+  bool get isReleaseMode;
+}
+
+/// The [BuildModeImpl] class is used to implement the [BuildMode] class.
+class BuildModeImpl implements BuildMode {
+  @override
+  bool get isReleaseMode => kReleaseMode;
 }

@@ -116,7 +116,8 @@ class CustomPrettyPrinter extends LogPrinter {
     if (stackTraceMethodCount > 0) {
       stackTraceStr = _formatStackTrace(stackTrace, stackTraceMethodCount);
     }
-    final String? errorStr = event.error?.toString();
+    final String? errorStr =
+        event.error != null ? _stringifyError(event.error) : null;
     final String? timeStr = printTime && _startTime != null
         ? event.time.sinceDate(_startTime!)
         : null;
@@ -148,24 +149,25 @@ class CustomPrettyPrinter extends LogPrinter {
       !_discardDeviceStacktraceLine(line) &&
       !_discardWebStacktraceLine(line) &&
       !_discardBrowserStacktraceLine(line) &&
+      !_isInExcludePaths(line) &&
       line.isNotEmpty;
 
   bool _isInExcludePaths(String segment) =>
-      excludePaths.any((String element) => segment.startsWith(element));
+      excludePaths.any((String element) => segment.contains(element));
 
   bool _discardDeviceStacktraceLine(String line) {
     final Match? match = _deviceStackTraceRegex.matchAsPrefix(line);
     if (match == null) return false;
     final String segment = match.group(2)!;
-    return segment.startsWith('package:logger') || _isInExcludePaths(segment);
+    return segment.contains('package:logger') || _isInExcludePaths(segment);
   }
 
   bool _discardWebStacktraceLine(String line) {
     final Match? match = _webStackTraceRegex.matchAsPrefix(line);
     if (match == null) return false;
     final String segment = match.group(1)!;
-    return segment.startsWith('packages/logger') ||
-        segment.startsWith('dart-sdk/lib') ||
+    return segment.contains('packages/logger') ||
+        segment.contains('dart-sdk/lib') ||
         _isInExcludePaths(segment);
   }
 
@@ -173,8 +175,8 @@ class CustomPrettyPrinter extends LogPrinter {
     final Match? match = _browserStackTraceRegex.matchAsPrefix(line);
     if (match == null) return false;
     final String segment = match.group(1)!;
-    return segment.startsWith('package:logger') ||
-        segment.startsWith('dart:') ||
+    return segment.contains('package:logger') ||
+        segment.contains('dart:') ||
         _isInExcludePaths(segment);
   }
 
@@ -187,6 +189,16 @@ class CustomPrettyPrinter extends LogPrinter {
       return encoder.convert(message);
     } else {
       return message.toString();
+    }
+  }
+
+  String _stringifyError(dynamic error) {
+    if (error is Map || error is Iterable) {
+      final JsonEncoder encoder =
+          JsonEncoder.withIndent('  ', _toEncodableFallback);
+      return encoder.convert(error);
+    } else {
+      return error.toString();
     }
   }
 
@@ -221,7 +233,7 @@ class CustomPrettyPrinter extends LogPrinter {
 
     addLines(error);
     addLines(stacktrace);
-    addLines(time);
+    if (printTime) addLines(time);
 
     final String emoji = _getEmoji(level);
     final List<String> messageList =

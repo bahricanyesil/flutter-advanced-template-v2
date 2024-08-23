@@ -6,7 +6,7 @@ void main() {
   group('LogEvent Extensions', () {
     test('should convert LogEvent to BaseLogMessage', () {
       final LogEvent logEvent = LogEvent(
-        Level.debug,
+        Level.off,
         'Test message',
         error: 'Test error',
         stackTrace: StackTrace.current,
@@ -15,7 +15,7 @@ void main() {
 
       final BaseLogMessage logMessage = logEvent.logMessage;
 
-      expect(logMessage.logLevel, LogLevel.debug);
+      expect(logMessage.logLevel, LogLevel.off);
       expect(logMessage.message, 'Test message');
       expect(logMessage.error, 'Test error');
       expect(logMessage.stackTrace, logEvent.stackTrace);

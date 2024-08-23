@@ -19,6 +19,7 @@ interface class CustomStreamOutput implements ILogOutput {
 
   late StreamController<BaseLogMessage> _controller;
   bool _shouldForward = false;
+  bool _isClosed = false;
 
   /// The stream of log lines.
   Stream<BaseLogMessage> get stream => _controller.stream;
@@ -29,6 +30,9 @@ interface class CustomStreamOutput implements ILogOutput {
   /// added to the stream.
   @override
   void output(BaseLogMessage logMessage) {
+    if (_isClosed) {
+      throw StateError('Stream output is closed');
+    }
     if (!_shouldForward) return;
     _controller.add(logMessage);
   }
@@ -38,5 +42,8 @@ interface class CustomStreamOutput implements ILogOutput {
   /// Closes the stream controller and releases
   /// any resources associated with it.
   @override
-  Future<void> destroy() async => _controller.close();
+  Future<void> destroy() async {
+    _isClosed = true;
+    await _controller.close();
+  }
 }

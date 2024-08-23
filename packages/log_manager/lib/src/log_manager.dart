@@ -17,7 +17,7 @@ typedef LoggerSetupCallback<L> = L Function(LogManager logManager);
 ///
 /// Implementations of this class should provide the necessary logic
 /// for handling and storing log messages.
-abstract base class LogManager {
+abstract class LogManager {
   /// Creates an instance of [LogManager].
   LogManager();
 
@@ -96,6 +96,7 @@ abstract base class LogManager {
   /// ```dart
   /// logFlutterError(FlutterErrorDetails details);
   /// ```
+  @mustCallSuper
   Future<void> logFlutterError(FlutterErrorDetails details) async {
     if (details.silent) return;
     final String description = details.exceptionAsString();
@@ -112,6 +113,7 @@ abstract base class LogManager {
   ///
   /// This method logs the given [error] along with the provided [stackTrace].
   /// It returns `true` to indicate that the error has been logged.
+  @mustCallSuper
   bool logPlatformDispatcherError(Object error, StackTrace stackTrace) {
     final String message = 'Platform Dispatcher Error: $error';
     lError(message, error: error, stackTrace: stackTrace);

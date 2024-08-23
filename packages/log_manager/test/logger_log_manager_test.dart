@@ -179,5 +179,74 @@ setUp disables logging in release mode
       // Verify disableLogging was called
       expect(newLogManager.loggingEnabled, true);
     });
+
+    test('Stream output listener listens messages successfully', () async {
+      final Set<VoidCallback> callers = <VoidCallback>{};
+      const BaseLogMessage baseMessage =
+          BaseLogMessage(message: 'Test message', logLevel: LogLevel.info);
+      when(() => mockLoggerWrapper.addOutputListener(any()))
+          .thenAnswer((Invocation invocation) {
+        // Capture the argument passed to addOutputListener
+        final OutputCallback listener =
+            invocation.positionalArguments[0] as OutputCallback;
+
+        // Add it to the callers list
+        final LogEvent logEvent = LogEvent(Level.info, baseMessage.message);
+        final List<String> output = CustomPrettyPrinter().log(logEvent);
+        final OutputEvent outputEvent = OutputEvent(logEvent, output);
+        callers.add(() => listener(outputEvent));
+      });
+
+      when(() => logManager.lInfo(any())).thenAnswer((_) {
+        for (final VoidCallback caller in callers) {
+          caller();
+        }
+      });
+
+      // Set up
+      final List<BaseLogMessage> logMessages = <BaseLogMessage>[];
+      logManager.logStream.listen(logMessages.add);
+
+      // Enable logging
+      logManager
+        ..enableLogging()
+
+        // Trigger a log message
+        ..lInfo('Test message');
+
+      // Wait for the log message to be processed
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      // Verify the message was processed
+      expect(logMessages, isNotEmpty);
+      expect(logMessages.first.message, 'Test message');
+
+      // Disable logging
+      logManager.disableLogging();
+
+      // Clear the log messages list
+      logMessages.clear();
+
+      // Trigger another log message
+      logManager.lInfo('Another test message');
+
+      // Wait for the log message to be processed
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      // Verify the message was not processed
+      expect(logMessages, isEmpty);
+    });
+  });
+
+  group('BuildModeImpl', () {
+    late BuildModeImpl buildModeImpl;
+
+    setUp(() {
+      buildModeImpl = BuildModeImpl();
+    });
+
+    test('should return kReleaseMode for isReleaseMode', () {
+      expect(buildModeImpl.isReleaseMode, equals(kReleaseMode));
+    });
   });
 }

@@ -7,6 +7,30 @@ import 'package:log_manager/log_manager.dart';
 import 'package:log_manager/src/utils/string_extensions.dart';
 import 'package:logger/logger.dart';
 
+/// The [LoggerWrapper] class is used to wrap the [Logger] class.
+/// It is used to add and remove output listeners.
+abstract class LoggerWrapper {
+  /// Adds an output listener to the logger.
+  void addOutputListener(OutputCallback callback);
+
+  /// Removes an output listener from the logger.
+  void removeOutputListener(OutputCallback callback);
+}
+
+/// The [LoggerWrapperImpl] class is used to implement
+/// the [LoggerWrapper] class.
+class LoggerWrapperImpl implements LoggerWrapper {
+  @override
+  void addOutputListener(OutputCallback callback) {
+    Logger.addOutputListener(callback);
+  }
+
+  @override
+  void removeOutputListener(OutputCallback callback) {
+    Logger.removeOutputListener(callback);
+  }
+}
+
 /// The [LogManager] class is used to manage logger.
 ///
 /// This class is used to manage logger. It is a wrapper around the
@@ -17,13 +41,19 @@ import 'package:logger/logger.dart';
 @visibleForTesting
 final class LoggerLogManager extends LogManager {
   /// Constructor for the [LogManager] class.
-  LoggerLogManager({required Logger logger, CustomStreamOutput? streamOutput}) {
+  LoggerLogManager({
+    required Logger logger,
+    CustomStreamOutput? streamOutput,
+    LoggerWrapper? loggerWrapper,
+  }) {
+    _loggerWrapper = loggerWrapper ?? LoggerWrapperImpl();
     _logger = logger;
     _streamOutput = streamOutput ?? CustomStreamOutput();
     enableLogging();
   }
 
   late final Logger _logger;
+  late final LoggerWrapper _loggerWrapper;
   late final CustomStreamOutput _streamOutput;
 
   /// [CustomStreamOutput] is used to manage the stream of log messages.
@@ -136,15 +166,16 @@ final class LoggerLogManager extends LogManager {
   @override
   void enableLogging() {
     super.enableLogging();
-    Logger.addOutputListener(_outputListener);
+    _loggerWrapper.addOutputListener(_outputListener);
   }
 
   @override
   void disableLogging() {
-    Logger.removeOutputListener(_outputListener);
+    _loggerWrapper.removeOutputListener(_outputListener);
     super.disableLogging();
   }
 
-  void _outputListener(OutputEvent e) =>
-      _streamOutput.output(e.origin.logMessage);
+  void _outputListener(OutputEvent e) {
+    _streamOutput.output(e.origin.logMessage);
+  }
 }

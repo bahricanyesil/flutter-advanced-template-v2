@@ -29,19 +29,27 @@ class MockStreamOutput extends Mock implements CustomStreamOutput {
       super.noSuchMethod(Invocation.method(#destroy, <Object?>[]));
 }
 
+// Mock class for LoggerWrapper
+class MockLoggerWrapper extends Mock implements LoggerWrapper {}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('LoggerLogManager', () {
+    late MockLoggerWrapper mockLoggerWrapper;
     late MockLogger mockLogger;
     late MockStreamOutput mockStreamOutput;
     late LoggerLogManager logManager;
 
     setUp(() {
+      mockLoggerWrapper = MockLoggerWrapper();
       mockLogger = MockLogger();
       mockStreamOutput = MockStreamOutput();
-      logManager =
-          LoggerLogManager(logger: mockLogger, streamOutput: mockStreamOutput);
+      logManager = LoggerLogManager(
+        logger: mockLogger,
+        streamOutput: mockStreamOutput,
+        loggerWrapper: mockLoggerWrapper,
+      );
     });
 
     test('initializes LoggerLogManager correctly', () {
@@ -119,6 +127,24 @@ void main() {
 
       verify(() => mockStreamOutput.destroy()).called(1);
       verify(() => mockLogger.close()).called(1);
+    });
+
+    test('disableLogging method disables logging', () {
+      // Set up
+      logManager
+        ..enableLogging()
+
+        // Act
+        ..disableLogging();
+
+      // Verify logging is disabled
+      expect(logManager.loggingEnabled, isFalse);
+
+      // Act
+      logManager.lInfo('This message should not be logged.');
+
+      // Verify that logging methods are not called
+      verifyNever(() => mockLogger.i('This message should not be logged.'));
     });
   });
 }

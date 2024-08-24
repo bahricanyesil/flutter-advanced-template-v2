@@ -121,7 +121,7 @@ abstract class LogManager {
   }
 
   /// Sets flutter and platform dispatcher error handlers.
-  void setFlutterErrorHandlers();
+  void setFlutterErrorHandlers({required PlatformDispatcher dispatcher});
 
   /// Controls whether logging is enabled or disabled.
   bool loggingEnabled = true;

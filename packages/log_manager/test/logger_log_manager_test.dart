@@ -3,9 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
+import 'package:log_manager/src/logger_build_mode.dart';
 import 'package:log_manager/src/logger_log_manager.dart';
+import 'package:log_manager/src/logger_output_wrapper.dart';
 import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
+
+import 'custom_test_platform_dispatcher.dart';
 
 // Mock classes
 class MockLogger extends Mock implements Logger {
@@ -30,9 +34,9 @@ class MockStreamOutput extends Mock implements CustomStreamOutput {
 }
 
 // Mock class for LoggerWrapper
-class MockLoggerWrapper extends Mock implements LoggerWrapper {}
+class MockLoggerWrapper extends Mock implements LoggerOutputWrapper {}
 
-class MockBuildMode extends Mock implements BuildMode {}
+class MockBuildMode extends Mock implements LoggerBuildMode {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +56,7 @@ void main() {
       logManager = LoggerLogManager(
         logger: mockLogger,
         streamOutput: mockStreamOutput,
-        loggerWrapper: mockLoggerWrapper,
+        outputWrapper: mockLoggerWrapper,
         buildMode: mockBuildMode,
       );
     });
@@ -93,13 +97,22 @@ void main() {
       expect(logMessages.first.message, 'Info message');
     });
 
-    test('handles Flutter errors', () async {
+    test('handles Flutter errors and platform dispatch errors', () async {
       final FlutterErrorDetails flutterErrorDetails = FlutterErrorDetails(
         exception: Exception('Test error'),
         stack: StackTrace.current,
       );
+      final CustomTestPlatformDispatcher customPlatformDispatcher =
+          CustomTestPlatformDispatcher(
+        platformDispatcher: PlatformDispatcher.instance,
+      );
+      // ignore: cascade_invocations
+      customPlatformDispatcher.onError = (Object error, StackTrace stack) {
+        /// Original dispatcher on error callback.
+        return true;
+      };
 
-      logManager.setFlutterErrorHandlers();
+      logManager.setFlutterErrorHandlers(dispatcher: customPlatformDispatcher);
 
       final FlutterExceptionHandler? originalOnError = FlutterError.onError;
       FlutterError.onError!(flutterErrorDetails);
@@ -110,6 +123,15 @@ void main() {
           error: flutterErrorDetails.exception,
           stackTrace: flutterErrorDetails.stack,
         ),
+      ).called(1);
+
+      final StackTrace s = StackTrace.fromString('stackTraceString');
+      const String errorMessage = 'Test error';
+
+      customPlatformDispatcher.onError?.call(errorMessage, s);
+
+      verify(
+        () => customPlatformDispatcher.onError?.call(errorMessage, s),
       ).called(1);
 
       FlutterError.onError = originalOnError;
@@ -134,8 +156,8 @@ void main() {
     test('close method cleans up resources', () async {
       await logManager.close();
 
-      verify(() => mockStreamOutput.destroy()).called(1);
-      verify(() => mockLogger.close()).called(1);
+      verify(mockStreamOutput.destroy).called(1);
+      verify(mockLogger.close).called(1);
     });
 
     test('disableLogging method disables logging', () {
@@ -168,9 +190,9 @@ setUp disables logging in release mode
       expect(newLogManager.loggingEnabled, false);
     });
 
-    test(
-        'setUp enables logging if not in release mode or options.logInRelease is true',
-        () {
+    test('''
+setUp enables logging if not in
+        release mode or options.logInRelease is true''', () {
       when(() => mockBuildMode.isReleaseMode).thenReturn(false);
 
       final LoggerLogManager newLogManager =
@@ -238,11 +260,11 @@ setUp disables logging in release mode
     });
   });
 
-  group('BuildModeImpl', () {
-    late BuildModeImpl buildModeImpl;
+  group('LoggerBuildMode', () {
+    late LoggerBuildMode buildModeImpl;
 
     setUp(() {
-      buildModeImpl = BuildModeImpl();
+      buildModeImpl = LoggerBuildModeImpl();
     });
 
     test('should return kReleaseMode for isReleaseMode', () {

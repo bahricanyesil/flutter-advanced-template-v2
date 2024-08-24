@@ -2,34 +2,11 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:log_manager/log_manager.dart';
+import 'package:log_manager/src/logger_build_mode.dart';
+import 'package:log_manager/src/logger_output_wrapper.dart';
 import 'package:log_manager/src/utils/string_extensions.dart';
 import 'package:logger/logger.dart';
-
-/// The [LoggerWrapper] class is used to wrap the [Logger] class.
-/// It is used to add and remove output listeners.
-abstract class LoggerWrapper {
-  /// Adds an output listener to the logger.
-  void addOutputListener(OutputCallback callback);
-
-  /// Removes an output listener from the logger.
-  void removeOutputListener(OutputCallback callback);
-}
-
-/// The [LoggerWrapperImpl] class is used to implement
-/// the [LoggerWrapper] class.
-class LoggerWrapperImpl implements LoggerWrapper {
-  @override
-  void addOutputListener(OutputCallback callback) {
-    Logger.addOutputListener(callback);
-  }
-
-  @override
-  void removeOutputListener(OutputCallback callback) {
-    Logger.removeOutputListener(callback);
-  }
-}
 
 /// The [LogManager] class is used to manage logger.
 ///
@@ -44,20 +21,20 @@ final class LoggerLogManager extends LogManager {
   LoggerLogManager({
     required Logger logger,
     CustomStreamOutput? streamOutput,
-    LoggerWrapper? loggerWrapper,
-    BuildMode? buildMode,
+    LoggerOutputWrapper? outputWrapper,
+    LoggerBuildMode? buildMode,
   }) {
-    _loggerWrapper = loggerWrapper ?? LoggerWrapperImpl();
+    _loggerOutputWrapper = outputWrapper ?? LoggerOutputWrapperImpl();
     _logger = logger;
-    _buildMode = buildMode ?? BuildModeImpl();
+    _buildMode = buildMode ?? LoggerBuildModeImpl();
     _streamOutput = streamOutput ?? CustomStreamOutput();
     enableLogging();
   }
 
   late final Logger _logger;
-  late final LoggerWrapper _loggerWrapper;
+  late final LoggerOutputWrapper _loggerOutputWrapper;
   late final CustomStreamOutput _streamOutput;
-  late final BuildMode _buildMode;
+  late final LoggerBuildMode _buildMode;
 
   /// [CustomStreamOutput] is used to manage the stream of log messages.
   CustomStreamOutput get streamOutput => _streamOutput;
@@ -145,7 +122,7 @@ final class LoggerLogManager extends LogManager {
   /// Sets up the logger manager by assigning error handlers
   /// for Flutter errors and platform dispatcher errors.
   @override
-  void setFlutterErrorHandlers() {
+  void setFlutterErrorHandlers({required PlatformDispatcher dispatcher}) {
     final FlutterExceptionHandler? originalOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails errorDetails) async {
       final String exceptionText = errorDetails.exceptionAsString();
@@ -153,10 +130,8 @@ final class LoggerLogManager extends LogManager {
       await logFlutterError(errorDetails);
       originalOnError?.call(errorDetails);
     };
-    final ErrorCallback? originalOnErrorWithDetails =
-        WidgetsBinding.instance.platformDispatcher.onError;
-    WidgetsBinding.instance.platformDispatcher.onError =
-        (Object error, StackTrace stackTrace) {
+    final ErrorCallback? originalOnErrorWithDetails = dispatcher.onError;
+    dispatcher.onError = (Object error, StackTrace stackTrace) {
       if (_ignoredFlutterErrors.any(error.toString().containsIgnoreCase)) {
         return true;
       }
@@ -169,29 +144,16 @@ final class LoggerLogManager extends LogManager {
   @override
   void enableLogging() {
     super.enableLogging();
-    _loggerWrapper.addOutputListener(_outputListener);
+    _loggerOutputWrapper.addOutputListener(_outputListener);
   }
 
   @override
   void disableLogging() {
-    _loggerWrapper.removeOutputListener(_outputListener);
+    _loggerOutputWrapper.removeOutputListener(_outputListener);
     super.disableLogging();
   }
 
   void _outputListener(OutputEvent e) {
     _streamOutput.output(e.origin.logMessage);
   }
-}
-
-/// The [BuildMode] class is used to determine the build mode.
-/// It is used to determine whether the app is running in release mode.
-abstract class BuildMode {
-  /// Returns true if the app is running in release mode.
-  bool get isReleaseMode;
-}
-
-/// The [BuildModeImpl] class is used to implement the [BuildMode] class.
-class BuildModeImpl implements BuildMode {
-  @override
-  bool get isReleaseMode => kReleaseMode;
 }

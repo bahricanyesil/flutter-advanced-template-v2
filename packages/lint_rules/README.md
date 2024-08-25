@@ -18,10 +18,10 @@ The `lint_rules` package provides a centralized configuration for linting in you
 
   ```yaml
   dev_dependencies:
-  lint_rules:
-    git:
-      url: https://github.com/bahricanyesil/flutter-advanced-template-v2.git
-      path: packages/lint_rules
+    lint_rules:
+      git:
+        url: https://github.com/bahricanyesil/flutter-advanced-template-v2.git
+        path: packages/lint_rules
   ```
 
   or as a path dependency
@@ -29,5 +29,5 @@ The `lint_rules` package provides a centralized configuration for linting in you
   ```yaml
   dev_dependencies:
     lint_rules:
-      path: ../path_to_lint_rules
+      path: packages/lint_rules
   ```

@@ -1,9 +1,8 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:log_manager/log_manager.dart';
 
 import '../analytics_manager.dart';
-import '../logger/log_manager.dart';
 
 /// A manager class that handles analytics using Firebase Analytics.
 /// This class implements the [AnalyticsManager] interface and
@@ -13,7 +12,10 @@ import '../logger/log_manager.dart';
 @immutable
 class FirebaseAnalyticsManager extends AnalyticsManager
     with WidgetsBindingObserver {
-  FirebaseAnalyticsManager._(this._analytics, super._logManager);
+  /// Creates an instance of [FirebaseAnalyticsManager].
+  /// [logManager] is optional and can be null if logging is not used.
+  const FirebaseAnalyticsManager._(this._analytics, LogManager? logManager)
+      : super(logManager: logManager);
 
   /// Firebase analytics instance
   final FirebaseAnalytics _analytics;
@@ -23,9 +25,8 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   /// a future of [FirebaseAnalyticsManager].
   static Future<FirebaseAnalyticsManager> create(
     FirebaseAnalytics analyticsParam,
+    LogManager? logManager,
   ) async {
-    final GetIt getIt = GetIt.instance;
-    final LogManager logManager = getIt<LogManager>();
     final FirebaseAnalyticsManager instance =
         FirebaseAnalyticsManager._(analyticsParam, logManager);
     await instance.init();
@@ -43,20 +44,31 @@ class FirebaseAnalyticsManager extends AnalyticsManager
 
   /// Disposes the observer from [WidgetsBinding].
   @override
-  void dispose() => WidgetsBinding.instance.removeObserver(this);
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+  }
 
+  /// Handles changes in the app lifecycle state.
+  /// Logs events when the app is resumed or paused.
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      await logEvent(AnalyticsManager.resumedAppEventKey);
-    } else if (state == AppLifecycleState.paused) {
-      await logEvent(AnalyticsManager.backgroundEventKey);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        await logEvent(AnalyticsManager.resumedAppEventKey);
+      case AppLifecycleState.paused:
+        await logEvent(AnalyticsManager.backgroundEventKey);
+      default:
+        break;
     }
   }
 
   @override
   Future<void> logAppOpen() async {
-    await _analytics.logAppOpen();
+    try {
+      await _analytics.logAppOpen();
+    } catch (e) {
+      logManager?.lError('Failed to log app open event: $e');
+    }
     await super.logAppOpen();
   }
 
@@ -65,7 +77,12 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     String name, {
     Map<String, Object>? parameters,
   }) async {
-    await _analytics.logEvent(name: name, parameters: parameters);
+    try {
+      await _analytics.logEvent(name: name, parameters: parameters);
+    } catch (e) {
+      logManager
+          ?.lError('Failed to log event: $name, parameters: $parameters: $e');
+    }
     await super.logEvent(name, parameters: parameters);
   }
 
@@ -74,7 +91,13 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     String name, {
     Map<String, dynamic>? parameters,
   }) async {
-    await _analytics.logScreenView(screenName: name);
+    try {
+      await _analytics.logScreenView(screenName: name);
+    } catch (e) {
+      logManager?.lError(
+        'Failed to log screen view: $name, parameters: $parameters: $e',
+      );
+    }
     await super.logScreenView(name, parameters: parameters);
   }
 
@@ -83,7 +106,16 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     String loginMethod = 'email',
     Map<String, Object>? parameters,
   }) async {
-    await _analytics.logLogin(loginMethod: loginMethod, parameters: parameters);
+    try {
+      await _analytics.logLogin(
+        loginMethod: loginMethod,
+        parameters: parameters,
+      );
+    } catch (e) {
+      logManager?.lError(
+        'Failed to log login event: $loginMethod, parameters: $parameters: $e',
+      );
+    }
     await super.onLogIn(loginMethod: loginMethod, parameters: parameters);
   }
 
@@ -92,10 +124,16 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     String signUpMethod = 'email',
     Map<String, Object>? parameters,
   }) async {
-    await _analytics.logSignUp(
-      signUpMethod: signUpMethod,
-      parameters: parameters,
-    );
+    try {
+      await _analytics.logSignUp(
+        signUpMethod: signUpMethod,
+        parameters: parameters,
+      );
+    } catch (e) {
+      logManager?.lError(
+        '''Failed to log sign-up event: $signUpMethod, parameters: $parameters: $e''',
+      );
+    }
     await super.onSignUp(signUpMethod: signUpMethod, parameters: parameters);
   }
 
@@ -106,12 +144,18 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     required String method,
     Map<String, Object>? parameters,
   }) async {
-    await _analytics.logShare(
-      contentType: contentType,
-      itemId: itemId,
-      method: method,
-      parameters: parameters,
-    );
+    try {
+      await _analytics.logShare(
+        contentType: contentType,
+        itemId: itemId,
+        method: method,
+        parameters: parameters,
+      );
+    } catch (e) {
+      logManager?.lError(
+        '''Failed to log share event: contentType: $contentType, itemId: $itemId, method: $method, parameters: $parameters: $e''',
+      );
+    }
     await super.onShare(
       contentType: contentType,
       itemId: itemId,
@@ -131,16 +175,22 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     String? affiliation,
     Map<String, Object>? parameters,
   }) async {
-    await _analytics.logPurchase(
-      currency: currency,
-      value: value,
-      coupon: coupon,
-      tax: tax,
-      shipping: shipping,
-      transactionId: transactionId,
-      affiliation: affiliation,
-      parameters: parameters,
-    );
+    try {
+      await _analytics.logPurchase(
+        currency: currency,
+        value: value,
+        coupon: coupon,
+        tax: tax,
+        shipping: shipping,
+        transactionId: transactionId,
+        affiliation: affiliation,
+        parameters: parameters,
+      );
+    } catch (e) {
+      logManager?.lError(
+        '''Failed to log purchase event: currency: $currency, value: $value, coupon: $coupon, tax: $tax, shipping: $shipping, transactionId: $transactionId, affiliation: $affiliation, parameters: $parameters: $e''',
+      );
+    }
     await super.logPurchase(
       currency: currency,
       coupon: coupon,
@@ -155,7 +205,11 @@ class FirebaseAnalyticsManager extends AnalyticsManager
 
   @override
   Future<void> setUserId(String userId) async {
-    await _analytics.setUserId(id: userId);
+    try {
+      await _analytics.setUserId(id: userId);
+    } catch (e) {
+      logManager?.lError('Failed to set user ID: $userId: $e');
+    }
     await super.setUserId(userId);
   }
 
@@ -164,18 +218,38 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     required String name,
     String? value,
   }) async {
-    await _analytics.setUserProperty(name: name, value: value);
+    try {
+      await _analytics.setUserProperty(name: name, value: value);
+    } catch (e) {
+      logManager?.lError('Failed to set user property: $name: $value: $e');
+    }
     await super.setUserProperty(name: name, value: value);
   }
 
   @override
-  Future<void> resetAnalyticsData() async => _analytics.resetAnalyticsData();
+  Future<void> resetAnalyticsData() async {
+    try {
+      await _analytics.resetAnalyticsData();
+    } catch (e) {
+      logManager?.lError('Failed to reset analytics data: $e');
+    }
+  }
 
   @override
-  Future<void> enableAnalytics() async =>
-      _analytics.setAnalyticsCollectionEnabled(true);
+  Future<void> enableAnalytics() async {
+    try {
+      await _analytics.setAnalyticsCollectionEnabled(true);
+    } catch (e) {
+      logManager?.lError('Failed to enable analytics: $e');
+    }
+  }
 
   @override
-  Future<void> disableAnalytics() async =>
-      _analytics.setAnalyticsCollectionEnabled(false);
+  Future<void> disableAnalytics() async {
+    try {
+      await _analytics.setAnalyticsCollectionEnabled(false);
+    } catch (e) {
+      logManager?.lError('Failed to disable analytics: $e');
+    }
+  }
 }

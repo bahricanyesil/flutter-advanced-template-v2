@@ -44,5 +44,6 @@ scripts:
         fi
       fi
     done
+
   test-open-coverage: |
     melos run test && melos run open-coverage

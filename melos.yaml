@@ -1,29 +1,35 @@
 name: flutter_advanced_template_v2
+repository: https://github.com/bahricanyesil/flutter-advanced-template-v2
+
 packages:
-  - packages/analytics_manager
-  - packages/connectivity_manager
-  - packages/device_info_manager
-  - packages/exception_report_manager
-  - packages/file_picker
-  - packages/image_picker
-  - packages/package_info_manager
-  - packages/firebase_manager
-  - packages/in_app_review_manager
-  - packages/localization_manager
-  - packages/logger_manager
-  - packages/theme_manager
-  - packages/navigation_manager
-  - packages/network_manager
-  - packages/local_notifications_manager
-  - packages/push_notifications_manager
-  - packages/permission_manager
-  - packages/basic_storage_manager
-  - packages/cache_storage_manager
-  - packages/db_manager
-  - packages/secure_storage_manager
+  - packages/*
+  - packages/*/*
+  - packages/*/*/*
+
+command:
+  version:
+    linkToCommits: true
+    workspaceChangelog: false
+
 scripts:
+  format: |
+    dart format --set-exit-if-changed --line-length 80 packages/
+
+  analyze: |
+    # Ensure Dart SDK and packages are up-to-date
+    echo "Updating Dart SDK and packages..."
+    flutter pub get
+
+    # Run Dart analysis with detailed output
+    echo "Analyzing Dart files in the packages directory:"
+    dart analyze --fatal-infos --fatal-warnings packages/
+
+  format-analyze: |
+    melos run format && melos run analyze
+
   test: |
     very_good test -r --test-randomize-ordering-seed random --coverage
+
   open-coverage: |
     for dir in packages/*/; do
       if [ -f "$dir/coverage/index.html" ]; then
@@ -38,5 +44,5 @@ scripts:
         fi
       fi
     done
-  test-and-coverage: |
+  test-open-coverage: |
     melos run test && melos run open-coverage

@@ -1,6 +1,6 @@
-import 'package:get_it/get_it.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../analytics_manager.dart';
 import '../logger/log_manager.dart';

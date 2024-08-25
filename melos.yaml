@@ -21,3 +21,22 @@ packages:
   - packages/cache_storage_manager
   - packages/db_manager
   - packages/secure_storage_manager
+scripts:
+  test: |
+    very_good test -r --test-randomize-ordering-seed random --coverage
+  open-coverage: |
+    for dir in packages/*/; do
+      if [ -f "$dir/coverage/index.html" ]; then
+        if command -v xdg-open &> /dev/null; then
+          xdg-open "$dir/coverage/index.html"
+        elif command -v open &> /dev/null; then
+          open "$dir/coverage/index.html"
+        elif command -v start &> /dev/null; then
+          start "$dir/coverage/index.html"
+        else
+          echo "No suitable command found to open coverage reports"
+        fi
+      fi
+    done
+  test-and-coverage: |
+    melos run test && melos run open-coverage

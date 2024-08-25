@@ -30,7 +30,8 @@ scripts:
   test: |
     very_good test -r --test-randomize-ordering-seed random --coverage
 
-  open-coverage: |
+  test-coverage: |
+    melos run test &&
     original_dir=$(pwd)
     for dir in packages/*/coverage; do \
       if [ -f "$dir/lcov.info" ]; then \
@@ -44,6 +45,3 @@ scripts:
         echo "No lcov.info found in $dir"; \
       fi; \
     done
-
-  test-open-coverage: |
-    melos run test && melos run open-coverage

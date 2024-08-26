@@ -10,12 +10,13 @@ assignees: bahricanyesil
 ## 🚀 Feature Request
 
 ### Template Name
-**Feature Request**
 
 ### About
+
 This template helps you propose new features or enhancements for the Flutter Advanced Template v2. Please provide detailed information to help us understand and evaluate your request.
 
 ### Issue Default Title
+
 **Feature Request: [Brief Description of the Feature]**
 
 ---
@@ -39,12 +40,14 @@ If applicable, provide examples or mockups of how the feature might look or work
 Add any other context or related information that might be useful. This could include links to relevant issues, documentation, or research.
 
 **Priority:**
+
 - [ ] Critical: Essential for core functionality.
 - [ ] High: Important but not critical.
 - [ ] Medium: Useful enhancement.
 - [ ] Low: Minor improvement or nice-to-have.
 
 **Impact:**
+
 - [ ] High Impact: Affects a large number of users or core functionality.
 - [ ] Medium Impact: Affects some users or a specific feature.
 - [ ] Low Impact: Minimal impact on functionality or users.

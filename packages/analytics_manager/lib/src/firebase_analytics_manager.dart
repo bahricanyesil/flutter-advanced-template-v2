@@ -39,12 +39,22 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   Future<void> init() async {
     await enableAnalytics();
     await logAppOpen();
-    WidgetsBinding.instance.addObserver(this);
+    _bindLifecycleListener();
+    logManager?.lInfo('Firebase Analytics Manager initialized');
   }
 
   /// Disposes the observer from [WidgetsBinding].
   @override
   void dispose() {
+    _unbindLifecycleListener();
+    logManager?.lInfo('Firebase Analytics Manager disposed');
+  }
+
+  void _bindLifecycleListener() {
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _unbindLifecycleListener() {
     WidgetsBinding.instance.removeObserver(this);
   }
 

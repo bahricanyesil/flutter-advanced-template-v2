@@ -51,6 +51,10 @@ abstract base class ExceptionReportManager {
     bool fatal = false,
     Map<String, dynamic>? additionalContext,
   }) async {
+    if (_isRateLimited()) {
+      logManager.lWarning('Rate limit exceeded. Skipping report.');
+      return;
+    }
     logManager.lInfo(
       '''Reporting log to the exception manager: ${log.error}''',
     );

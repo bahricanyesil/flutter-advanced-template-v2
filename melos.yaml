@@ -5,11 +5,16 @@ packages:
   - packages/*
   - packages/*/*
   - packages/*/*/*
+  - packages/*/packages/*
+  - packages/**/example
 
 command:
   version:
     linkToCommits: true
     workspaceChangelog: false
+  bootstrap:
+    hooks:
+      post: melos run format
 
 scripts:
   format: |
@@ -21,8 +26,15 @@ scripts:
   format-analyze: |
     melos run format && melos run analyze
 
-  test: |
-    very_good test -r --test-randomize-ordering-seed random --coverage
+  test: >
+    melos run test:dart &&
+    melos run test:flutter
+  test:dart: >
+    melos exec --no-flutter --concurrency=1 --fail-fast --dir-exists=test -- "
+      dart test --coverage=coverage &&
+      dart pub global run coverage:format_coverage --packages=.dart_tool/package_config.json --report-on=lib --lcov -o ./coverage/lcov.info -i ./coverage
+    "
+  test:flutter: melos exec --flutter --concurrency=1 --fail-fast --dir-exists=test -- flutter test --coverage
 
   open-coverage: |
     original_dir=$(pwd)

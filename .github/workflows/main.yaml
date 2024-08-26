@@ -46,8 +46,6 @@ jobs:
   # Job for caching dependencies and build artifacts
   cache:
     needs:
-      - semantic-pull-request-check
-      - spell-check
       - decode-github-secrets
     strategy:
       matrix:
@@ -64,9 +62,9 @@ jobs:
     needs:
       - semantic-pull-request-check
       - spell-check
-      - decode-github-secrets
       - license-check
       - cache
+      - conventional-commits
 
   # Job for uploading build artifacts
   artifact-uploading:

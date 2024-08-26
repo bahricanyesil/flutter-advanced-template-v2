@@ -57,7 +57,7 @@ jobs:
 
       # Step to perform spell check
       - name: 🪄 Spell Check
-        uses: streetsidesoftware/cspell-action@v5
+        uses: streetsidesoftware/cspell-action@v6
         with:
           # Configuration file for cspell
           config: ${{inputs.config}}

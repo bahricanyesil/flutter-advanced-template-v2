@@ -47,11 +47,8 @@ jobs:
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
         with:
-          # Use the specified Flutter version or fallback to the default
           flutter-version: ${{inputs.flutter_version}}
-          # Use the specified Flutter channel or fallback to the default (stable)
           channel: ${{inputs.flutter_channel}}
-          # Enable caching and generate a unique cache key based on pubspec.lock
           cache: true
           cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}
 

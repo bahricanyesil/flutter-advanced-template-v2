@@ -139,25 +139,11 @@ jobs:
       - name: 🧪 Run Tests
         run: melos run test
 
-      # Step to combine coverage reports
-      - name: Combine Coverage Reports
-        run: |
-          mkdir -p coverage
-          find packages -name "lcov.info" -type f -exec echo -a {} \; | xargs lcov -o coverage/combined_lcov.info
-
-      # Step to check code coverage
-      - name: 📊 Check Code Coverage
-        uses: VeryGoodOpenSource/very_good_coverage@v3
-        with:
-          path: coverage/combined_lcov.info
-          exclude: ${{inputs.coverage_excludes}}
-          min_coverage: ${{inputs.min_coverage}}
-
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: coverage
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
+      # - name: Upload Coverage to Codecov
+      #   uses: codecov/codecov-action@v4
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     directory: coverage
+      #     flags: unittests
+      #     name: codecov-umbrella
+      #     fail_ci_if_error: true

@@ -17,7 +17,7 @@ jobs:
     steps:
       # Cache Dart dependencies
       - name: Cache Dart Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ inputs.cache_path }}
           key: ${{ inputs.cache_key }}-pub-cache-${{ hashFiles('**/pubspec.yaml') }}
@@ -26,7 +26,7 @@ jobs:
 
       # Cache Flutter build artifacts
       - name: Cache Flutter Build Artifacts
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ${{ inputs.cache_path }}

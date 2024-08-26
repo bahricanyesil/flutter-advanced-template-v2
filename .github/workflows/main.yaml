@@ -16,22 +16,12 @@ on:
       - main
       - dev
 
+# Add permissions for pull requests
+permissions:
+  pull-requests: read
+
 # Define jobs for the workflow
 jobs:
-  # Job for caching dependencies and build artifacts
-  cache:
-    needs:
-      - semantic-pull-request-check
-      - spell-check
-      - decode-github-secrets
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    uses: ./.github/workflows/cache.yaml
-    with:
-      cache_key: ${{ matrix.os }}-flutter
-      cache_path: ~/.pub-cache
-
   # Job for semantic pull request checks
   semantic-pull-request-check:
     uses: ./.github/workflows/semantic_pull_request.yaml
@@ -53,11 +43,23 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/decode_github_secrets.yaml
 
+  # Job for caching dependencies and build artifacts
+  cache:
+    needs:
+      - semantic-pull-request-check
+      - spell-check
+      - decode-github-secrets
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    uses: ./.github/workflows/cache.yaml
+    with:
+      cache_key: ${{ matrix.os }}-flutter
+      cache_path: ~/.pub-cache
+
   # Job for building, formatting, and analyzing
   test-and-analysis:
     uses: ./.github/workflows/test_and_analysis.yaml
-    with:
-      flutter_channel: stable # Specify the Flutter channel for the build
     secrets: inherit
     needs:
       - semantic-pull-request-check
@@ -68,11 +70,9 @@ jobs:
 
   # Job for uploading build artifacts
   artifact-uploading:
+    uses: ./.github/workflows/upload_artifact.yaml
     needs:
       - test-and-analysis
-    uses: ./.github/workflows/upload_artifact.yaml
-    with:
-      flutter_version: 'latest'
 
   # Job for generating and uploading documentation
   documentation:

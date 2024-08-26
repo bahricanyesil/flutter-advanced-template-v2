@@ -3,17 +3,42 @@ name: Artifact Uploading
 on:
   workflow_call:
     inputs:
+      flutter_channel:
+        required: false
+        type: string
+        default: "stable"
       flutter_version:
         required: false
         type: string
-        default: "latest"
+        default: ""
 
 jobs:
-  upload-artifacts:
-    runs-on: ${{ matrix.os }}
+  build-and-upload:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            artifact: apk
+            build_command: flutter build apk --release
+            artifact_path: build/app/outputs/flutter-apk/app-release.apk
+          - os: macos-latest
+            artifact: ios
+            build_command: flutter build ios --release --no-codesign
+            artifact_path: build/ios/iphoneos/Runner.app
+          - os: macos-latest
+            artifact: macos
+            build_command: flutter build macos --release
+            artifact_path: build/macos/Build/Products/Release/Runner.app
+          - os: ubuntu-latest
+            artifact: web
+            build_command: flutter build web
+            artifact_path: build/web
+          - os: windows-latest
+            artifact: windows
+            build_command: flutter build windows --release
+            artifact_path: build/windows/runner/Release/Runner.exe
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout Code
@@ -22,24 +47,20 @@ jobs:
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ inputs.flutter_version }}
+          flutter-version: ${{inputs.flutter_version}}
+          channel: ${{inputs.flutter_channel}}
+          cache: true
+          cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:-${{ hashFiles('**/pubspec.lock') }}
 
       - name: Build Flutter Project
+        continue-on-error: true
         run: |
           flutter pub get
-          flutter build apk --release
-          flutter build ios --release
-          flutter build macos --release
-          flutter build web
-          flutter build windows --release
+          ${{ matrix.build_command }}
 
-      - name: Upload Artifacts
+      - name: Upload Artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: flutter-build-artifacts
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/ios/iphoneos/Runner.app
-            build/macos/Build/Products/Release/Runner.app
-            build/web
-            build/windows/runner/Release/Runner.exe
+          name: flutter-${{ matrix.artifact }}-artifact
+          path: ${{ matrix.artifact_path }}

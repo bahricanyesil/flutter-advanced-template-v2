@@ -14,6 +14,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce:**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '...'
 3. Scroll down to '...'
@@ -29,6 +30,7 @@ If applicable, add screenshots to help explain your problem.
 Include any relevant logs or error messages.
 
 **Environment:**
+
 - **OS:** [e.g., macOS, Windows, Linux]
 - **Version:** [e.g., 1.0.0]
 - **Device:** [e.g., iPhone 12, Samsung Galaxy S21]
@@ -40,12 +42,14 @@ Add any other context about the problem here, such as potential related issues o
 If you have an idea for how to solve the issue, please describe it here.
 
 **Priority:**
+
 - [ ] Critical: Prevents using the app.
 - [ ] High: Major functionality affected.
 - [ ] Medium: Minor issue.
 - [ ] Low: Cosmetic issue or enhancement.
 
 **Steps Taken:**
+
 - [ ] Reproduced issue in a clean environment.
 - [ ] Checked for similar issues in existing tickets.
 - [ ] Updated dependencies to the latest version.

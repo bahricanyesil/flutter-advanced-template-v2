@@ -1,11 +1,9 @@
 name: CI Workflow
 
-# Concurrency settings to control workflow runs
 concurrency:
-  group: ${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
-# Define the triggering events for the workflow
 on:
   push:
     branches:
@@ -16,71 +14,18 @@ on:
       - main
       - dev
 
-# Add permissions for pull requests
 permissions:
   pull-requests: read
 
-# Define jobs for the workflow
 jobs:
-  # Job for semantic pull request checks
-  semantic-pull-request-check:
-    uses: ./.github/workflows/semantic_pull_request.yaml
+  pr-checks:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/pr_checks.yaml
 
-  # Job for spell-checking Markdown files
-  spell-check:
-    uses: ./.github/workflows/spell_check.yaml
-    with:
-      includes: |
-        **/*.md
-      modified_files_only: false
+  push-checks:
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/push_checks.yaml
 
-  # Job for license check
-  license-check:
-    uses: ./.github/workflows/license_check.yaml
-
-  # Job for decoding GitHub secrets
-  decode-github-secrets:
+  common-checks:
+    uses: ./.github/workflows/common_checks.yaml
     secrets: inherit
-    uses: ./.github/workflows/decode_github_secrets.yaml
-
-  # Job for caching dependencies and build artifacts
-  cache:
-    needs:
-      - decode-github-secrets
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    uses: ./.github/workflows/cache.yaml
-    with:
-      cache_key: ${{ matrix.os }}-flutter
-      cache_path: ~/.pub-cache
-
-  # Job for building, formatting, and analyzing
-  test-and-analysis:
-    uses: ./.github/workflows/test_and_analysis.yaml
-    secrets: inherit
-    needs:
-      - semantic-pull-request-check
-      - spell-check
-      - license-check
-      - cache
-      - conventional-commits
-
-  # Job for uploading build artifacts
-  artifact-uploading:
-    uses: ./.github/workflows/upload_artifact.yaml
-    needs:
-      - test-and-analysis
-
-  # Job for generating and uploading documentation
-  documentation:
-    uses: ./.github/workflows/documentation.yaml
-    needs:
-      - artifact-uploading
-
-  # Add conventional commits job
-  conventional-commits:
-    uses: ./.github/workflows/conventional_commits.yaml
-    with:
-      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
-      base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}

@@ -1,0 +1,13 @@
+name: Push Checks
+
+on:
+  workflow_call:
+
+jobs:
+  documentation:
+    uses: ./.github/workflows/documentation.yaml
+
+  artifact-uploading:
+    uses: ./.github/workflows/upload_artifact.yaml
+    needs:
+      - documentation

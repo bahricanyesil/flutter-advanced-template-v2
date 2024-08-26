@@ -1,0 +1,21 @@
+name: PR Checks
+
+on:
+  workflow_call:
+
+jobs:
+  semantic-pull-request-check:
+    uses: ./.github/workflows/semantic_pull_request.yaml
+
+  spell-check:
+    uses: ./.github/workflows/spell_check.yaml
+    with:
+      includes: |
+        **/*.md
+      modified_files_only: true
+
+  conventional-commits:
+    uses: ./.github/workflows/conventional_commits.yaml
+    with:
+      head_sha: ${{ github.event.pull_request.head.sha }}
+      base_sha: ${{ github.event.pull_request.base.sha }}

@@ -79,3 +79,10 @@ jobs:
     uses: ./.github/workflows/documentation.yaml
     needs:
       - artifact-uploading
+
+  # Add conventional commits job
+  conventional-commits:
+    uses: ./.github/workflows/conventional_commits.yaml
+    with:
+      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}

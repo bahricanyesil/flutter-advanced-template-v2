@@ -9,8 +9,6 @@ on:
       head_sha:
         required: true
         type: string
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   check-commit-messages:

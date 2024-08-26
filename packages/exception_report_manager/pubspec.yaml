@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Firebase Crashlytics for exception reporting
+  firebase_crashlytics: ^4.0.4
+
   # Logging
   log_manager:
     path: ../log_manager

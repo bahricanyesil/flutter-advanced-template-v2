@@ -13,16 +13,10 @@ command:
 
 scripts:
   format: |
-    dart format --set-exit-if-changed --line-length 80 packages/
+    dart format --set-exit-if-changed --line-length 80 .
 
   analyze: |
-    # Ensure Dart SDK and packages are up-to-date
-    echo "Updating Dart SDK and packages..."
-    flutter pub get
-
-    # Run Dart analysis with detailed output
-    echo "Analyzing Dart files in the packages directory:"
-    dart analyze --fatal-infos --fatal-warnings packages/
+    dart analyze --fatal-infos --fatal-warnings
 
   format-analyze: |
     melos run format && melos run analyze
@@ -49,3 +43,14 @@ scripts:
     melos run test
     echo "Tests completed. Opening coverage reports..."
     melos run open-coverage
+
+  generate: |
+    echo "Checking for build_runner availability..."
+    dart pub global list
+    if dart pub global list | grep -q "build_runner"; then
+      echo "build_runner is available. Running code generation..."
+      dart run build_runner build --delete-conflicting-outputs
+    else
+      echo "Error: build_runner is not available. Please ensure it's installed in your project."
+      exit 1
+    fi

@@ -80,6 +80,17 @@ jobs:
     steps:
       - name: 📚 Git Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npx jest --coverage
 
       # Step to set up Flutter
       - name: 🐦 Setup Flutter
@@ -107,7 +118,8 @@ jobs:
       - name: 📦 Install Dependencies
         run: |
           flutter pub global activate very_good_cli
-          very_good packages get --recursive --ignore=${{inputs.package_get_excludes}}
+          flutter pub global activate melos
+          melos bootstrap --ignore="${{inputs.package_get_excludes}}"
 
       # Step to run setup commands if provided
       - name: ⚙️ Run Setup
@@ -125,20 +137,16 @@ jobs:
           name: generated-secret-files
 
       - name: 🏃‍♀️ Generate Build Runner Files
-        run: |
-          if grep -q "build_runner:" pubspec.yaml; then
-            dart run build_runner build --delete-conflicting-outputs
-          else
-            echo "build_runner not found in dependencies, skipping code generation."
-          fi
+        continue-on-error: true
+        run: melos run generate
 
       # Step to analyze code
       - name: 🕵️ Analyze
-        run: flutter analyze ${{inputs.analyze_directories}}
+        run: melos run analyze
 
       # Step to run tests
       - name: 🧪 Run Tests
-        run: very_good test -j ${{inputs.concurrency_count}} ${{(inputs.test_recursion && '--recursive') || ''}} ${{(inputs.test_optimization && '--optimization') || '--no-optimization'}} --coverage --test-randomize-ordering-seed random
+        run: melos run test
 
       # Step to check code coverage
       - name: 📊 Check Code Coverage

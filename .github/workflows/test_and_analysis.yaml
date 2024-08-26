@@ -126,7 +126,11 @@ jobs:
 
       - name: 🏃‍♀️ Generate Build Runner Files
         run: |
-          dart run build_runner build --delete-conflicting-outputs
+          if grep -q "build_runner:" pubspec.yaml; then
+            dart run build_runner build --delete-conflicting-outputs
+          else
+            echo "build_runner not found in dependencies, skipping code generation."
+          fi
 
       # Step to analyze code
       - name: 🕵️ Analyze

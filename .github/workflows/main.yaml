@@ -60,8 +60,6 @@ jobs:
   # Job for building, formatting, and analyzing
   test-and-analysis:
     uses: ./.github/workflows/test_and_analysis.yaml
-    with:
-      flutter_channel: stable # Specify the Flutter channel for the build
     secrets: inherit
     needs:
       - semantic-pull-request-check
@@ -72,11 +70,9 @@ jobs:
 
   # Job for uploading build artifacts
   artifact-uploading:
+    uses: ./.github/workflows/upload_artifact.yaml
     needs:
       - test-and-analysis
-    uses: ./.github/workflows/upload_artifact.yaml
-    with:
-      flutter_version: 'latest'
 
   # Job for generating and uploading documentation
   documentation:

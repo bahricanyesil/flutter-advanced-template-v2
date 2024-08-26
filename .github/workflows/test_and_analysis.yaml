@@ -83,15 +83,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npx jest --coverage
-
       # Step to set up Flutter
       - name: 🐦 Setup Flutter
         uses: subosito/flutter-action@v2
@@ -152,7 +143,7 @@ jobs:
       - name: 📊 Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
-          path: ${{inputs.working_directory}}/coverage/lcov.info
+          path: ${{inputs.working_directory}}/packages/*/coverage/lcov.info
           exclude: ${{inputs.coverage_excludes}}
           min_coverage: ${{inputs.min_coverage}}
 
@@ -160,3 +151,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ${{inputs.working_directory}}/packages/*/coverage
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: true

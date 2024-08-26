@@ -182,3 +182,4 @@ app.*.map.json
 !.vscode/settings.json
 
 debug_info/
+.workflow_inputs.json

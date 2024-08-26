@@ -141,4 +141,37 @@ void main() {
       verify(() => logManager.lInfo('')).called(1);
     });
   });
+
+  group('BaseLogMessageX', () {
+    test('isWarningOrError returns true for warning and error levels', () {
+      expect(
+        const BaseLogMessage(message: 'Warning', logLevel: LogLevel.warning)
+            .isWarningOrError,
+        isTrue,
+      );
+      expect(
+        const BaseLogMessage(message: 'Error', logLevel: LogLevel.error)
+            .isWarningOrError,
+        isTrue,
+      );
+      expect(
+        const BaseLogMessage(message: 'Fatal', logLevel: LogLevel.fatal)
+            .isWarningOrError,
+        isTrue,
+      );
+    });
+
+    test('isWarningOrError returns false for info and debug levels', () {
+      expect(
+        const BaseLogMessage(message: 'Info', logLevel: LogLevel.info)
+            .isWarningOrError,
+        isFalse,
+      );
+      expect(
+        const BaseLogMessage(message: 'Debug', logLevel: LogLevel.debug)
+            .isWarningOrError,
+        isFalse,
+      );
+    });
+  });
 }

@@ -144,7 +144,7 @@ app.*.map.json
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-!/dev/ci/**/Gemfile.lock
+!/dev/**/Gemfile.lock
 !.vscode/extensions.json
 !.vscode/launch.json
 !.idea/codeStyles/
@@ -178,7 +178,7 @@ app.*.map.json
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-!/dev/ci/**/Gemfile.lock
+!/dev/**/Gemfile.lock
 !.vscode/settings.json
 
 debug_info/

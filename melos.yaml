@@ -46,7 +46,6 @@ scripts:
 
   generate: |
     echo "Checking for build_runner availability..."
-    dart pub global list
     if dart pub global list | grep -q "build_runner"; then
       echo "build_runner is available. Running code generation..."
       dart run build_runner build --delete-conflicting-outputs

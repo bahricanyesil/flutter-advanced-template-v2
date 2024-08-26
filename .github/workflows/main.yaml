@@ -16,6 +16,10 @@ on:
       - main
       - dev
 
+# Add permissions for pull requests
+permissions:
+  pull-requests: read
+
 # Define jobs for the workflow
 jobs:
   # Job for caching dependencies and build artifacts

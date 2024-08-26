@@ -48,7 +48,7 @@ jobs:
 
       # Optional caching for spell-check dependencies
       - name: Cache cspell Dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cspell
           key: ${{ runner.os }}-cspell-${{ hashFiles('**/cspell.json') }}
@@ -57,7 +57,7 @@ jobs:
 
       # Step to perform spell check
       - name: 🪄 Spell Check
-        uses: streetsidesoftware/cspell-action@v5
+        uses: streetsidesoftware/cspell-action@v6
         with:
           # Configuration file for cspell
           config: ${{inputs.config}}

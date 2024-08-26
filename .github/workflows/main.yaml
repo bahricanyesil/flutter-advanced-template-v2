@@ -46,8 +46,6 @@ jobs:
   # Job for caching dependencies and build artifacts
   cache:
     needs:
-      - semantic-pull-request-check
-      - spell-check
       - decode-github-secrets
     strategy:
       matrix:
@@ -64,9 +62,9 @@ jobs:
     needs:
       - semantic-pull-request-check
       - spell-check
-      - decode-github-secrets
       - license-check
       - cache
+      - conventional-commits
 
   # Job for uploading build artifacts
   artifact-uploading:
@@ -79,3 +77,10 @@ jobs:
     uses: ./.github/workflows/documentation.yaml
     needs:
       - artifact-uploading
+
+  # Add conventional commits job
+  conventional-commits:
+    uses: ./.github/workflows/conventional_commits.yaml
+    with:
+      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      base_sha: ${{ github.event.pull_request.base.sha || github.event.before }}

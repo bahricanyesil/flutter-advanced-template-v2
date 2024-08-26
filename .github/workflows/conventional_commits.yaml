@@ -1,0 +1,49 @@
+name: Conventional Commits
+
+on:
+  workflow_call:
+    inputs:
+      base_sha:
+        required: true
+        type: string
+      head_sha:
+        required: true
+        type: string
+
+jobs:
+  check-commit-messages:
+    name: Check Commit Messages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install commitlint_cli
+        run: dart pub global activate commitlint_cli
+
+      - name: Check Commit Messages
+        env:
+          BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
+        run: |
+          dart pub global run commitlint_cli --from=$BASE_SHA --to=$HEAD_SHA
+
+      - name: Fallback to Shell Script (if Dart fails)
+        if: failure()
+        run: |
+          commits=$(git log --format=%B $BASE_SHA..$HEAD_SHA)
+          echo "$commits" | while read commit; do
+            if ! echo "$commit" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+?\))?: .{1,}$'; then
+              echo "Error: Commit message does not follow the Conventional Commits specification:"
+              echo "$commit"
+              echo "Please see https://www.conventionalcommits.org/ for more details."
+              exit 1
+            fi
+          done

@@ -16,11 +16,6 @@ final class TestExceptionReportManager extends ExceptionReportManager {
         .thenAnswer((_) => const Stream<BaseLogMessage>.empty());
     await super.enableReporting();
   }
-
-  // Expose a public method that indirectly tests the private method
-  bool testIsWarningOrError(BaseLogMessage log) {
-    return log.logLevel == LogLevel.error || log.logLevel == LogLevel.warning;
-  }
 }
 
 void main() {
@@ -137,33 +132,6 @@ void main() {
 
       verify(() => mockLogManager.lInfo(any()))
           .called(4); // 2 for each successful report
-    });
-
-    test('_isWarningOrError filters logs correctly', () async {
-      final TestExceptionReportManager testManager =
-          TestExceptionReportManager(mockLogManager);
-
-      // Explicitly enable reporting and wait for it to complete
-      await testManager.enableReporting();
-
-      expect(
-        testManager.testIsWarningOrError(
-          const BaseLogMessage(logLevel: LogLevel.error, message: 'Error'),
-        ),
-        isTrue,
-      );
-      expect(
-        testManager.testIsWarningOrError(
-          const BaseLogMessage(logLevel: LogLevel.warning, message: 'Warning'),
-        ),
-        isTrue,
-      );
-      expect(
-        testManager.testIsWarningOrError(
-          const BaseLogMessage(logLevel: LogLevel.info, message: 'Info'),
-        ),
-        isFalse,
-      );
     });
   });
 }

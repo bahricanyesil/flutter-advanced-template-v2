@@ -33,3 +33,13 @@ final class BaseLogMessage {
   /// The log level of the message.
   final LogLevel logLevel;
 }
+
+/// Extension methods for [BaseLogMessage]
+///
+/// This extension provides methods for filtering log messages.
+///
+/// It provides a method to check if the log message is a warning or error.
+extension BaseLogMessageX on BaseLogMessage {
+  /// Returns whether the log message is a warning or error.
+  bool get isWarningOrError => logLevel.compareTo(LogLevel.warning) <= 0;
+}

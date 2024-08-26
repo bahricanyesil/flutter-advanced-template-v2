@@ -28,7 +28,7 @@ abstract base class ExceptionReportManager {
   Future<void> enableReporting() async {
     await disableReporting();
     _subscription ??= logManager.logStream
-        .where(_isWarningOrError)
+        .where((BaseLogMessage log) => log.isWarningOrError)
         .listen((BaseLogMessage log) async {
       if (shouldReport(log.error) && !_isRateLimited()) {
         await report(log);
@@ -96,9 +96,6 @@ abstract base class ExceptionReportManager {
       },
     );
   }
-
-  bool _isWarningOrError(BaseLogMessage log) =>
-      log.logLevel.compareTo(LogLevel.warning) <= 0;
 
   /// Returns whether the error should be reported.
   bool shouldReport(Object? error) =>

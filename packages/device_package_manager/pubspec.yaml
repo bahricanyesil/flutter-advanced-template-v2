@@ -1,0 +1,21 @@
+name: device_package_manager
+description: A module to manage device and package information for Flutter apps.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  device_info_plus: ^9.1.2
+  package_info_plus: ^5.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint_rules:
+    path: ../lint_rules
+  mocktail: ^1.0.4

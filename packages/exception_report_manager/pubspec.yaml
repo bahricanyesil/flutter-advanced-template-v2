@@ -1,0 +1,26 @@
+name: exception_report_manager
+description: A module to manage exception reporting for Flutter apps.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase Crashlytics for exception reporting
+  firebase_crashlytics: ^4.0.4
+
+  # Logging
+  log_manager:
+    path: ../log_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint_rules:
+    path: ../lint_rules
+  mocktail: ^1.0.4

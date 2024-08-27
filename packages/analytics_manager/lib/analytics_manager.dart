@@ -9,5 +9,5 @@
 /// This implementation is available in the FirebaseAnalyticsManager class.
 library analytics_manager;
 
-export 'package:analytics_manager/src/analytics_manager.dart';
-export 'package:analytics_manager/src/firebase_analytics_manager.dart';
+export 'src/analytics_manager.dart';
+export 'src/firebase_analytics_manager.dart';

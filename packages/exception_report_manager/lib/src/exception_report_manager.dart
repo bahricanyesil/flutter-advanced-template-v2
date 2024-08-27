@@ -9,7 +9,7 @@ abstract class ExceptionReportManager {
   ExceptionReportManager(this.logManager);
 
   /// The logger manager instance.
-  final LogManager logManager;
+  final LogManager? logManager;
 
   StreamSubscription<BaseLogMessage>? _subscription;
 
@@ -26,7 +26,7 @@ abstract class ExceptionReportManager {
   /// warning or error logs that meet the criteria specified in [shouldReport].
   @mustCallSuper
   Future<void> enableReporting() async {
-    _subscription ??= logManager.logStream
+    _subscription ??= logManager?.logStream
         .where((BaseLogMessage log) => log.isWarningOrError)
         .listen(_listenLogMessage);
   }
@@ -79,18 +79,18 @@ abstract class ExceptionReportManager {
     bool isFatal = false,
   }) async {
     if (_isRateLimited()) {
-      logManager.lWarning('Rate limit exceeded. Skipping report.');
+      logManager?.lWarning('Rate limit exceeded. Skipping report.');
       return false;
     }
 
     final String reportType = isFatal ? 'fatal error' : 'log';
     logManager
-        .lInfo('Reporting $reportType to the exception manager: ${log.error}');
+        ?.lInfo('Reporting $reportType to the exception manager: ${log.error}');
 
     final Map<String, dynamic> reportData =
         _prepareReportData(log, additionalContext, isFatal);
 
-    logManager.lInfo('Exception report: $reportData');
+    logManager?.lInfo('Exception report: $reportData');
 
     _updateReportCount();
     return true;

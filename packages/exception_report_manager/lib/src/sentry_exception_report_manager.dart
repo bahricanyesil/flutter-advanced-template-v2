@@ -15,10 +15,10 @@ import 'exception_report_manager.dart';
 base class SentryExceptionReportManager extends ExceptionReportManager {
   /// Creates a new [SentryExceptionReportManager].
   SentryExceptionReportManager({
-    required LogManager logManager,
     required this.sentryDSN,
     required this.sentryEnvironment,
     this.sampleRate = 0.2,
+    LogManager? logManager,
   }) : super(logManager);
 
   /// The Sentry DSN.
@@ -44,7 +44,7 @@ base class SentryExceptionReportManager extends ExceptionReportManager {
         });
       }
       await super.enableReporting();
-      logManager.lInfo('Sentry reporting enabled with DSN: $sentryDSN');
+      logManager?.lInfo('Sentry reporting enabled with DSN: $sentryDSN');
       return true;
     } catch (e) {
       return false;
@@ -57,7 +57,7 @@ base class SentryExceptionReportManager extends ExceptionReportManager {
     try {
       await Sentry.close();
       await super.disableReporting();
-      logManager.lInfo('Sentry reporting disabled');
+      logManager?.lInfo('Sentry reporting disabled');
       return true;
     } catch (e) {
       return false;

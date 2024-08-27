@@ -18,8 +18,8 @@ base class FirebaseCrashlyticsReportManager extends ExceptionReportManager {
   /// The [crashlytics] parameter is optional and defaults to the global
   /// Firebase Crashlytics instance.
   FirebaseCrashlyticsReportManager({
-    required LogManager logManager,
     required FirebaseCrashlytics crashlytics,
+    LogManager? logManager,
   })  : _crashlytics = crashlytics,
         super(logManager);
 

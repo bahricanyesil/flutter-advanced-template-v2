@@ -8,7 +8,7 @@ import '../constants/log_levels.dart';
 /// It contains properties for the log message, log level, error,
 /// stack trace, and time.
 @immutable
-final class BaseLogMessage {
+class BaseLogMessage {
   /// Constructor for the [BaseLogMessage] class.
   const BaseLogMessage({
     required this.message,

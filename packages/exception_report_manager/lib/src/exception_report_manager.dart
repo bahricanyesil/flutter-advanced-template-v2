@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 
 /// Represents an interface for managing exception reports.
-abstract base class ExceptionReportManager {
+abstract class ExceptionReportManager {
   /// Creates an instance of [ExceptionReportManager].
   ExceptionReportManager(this.logManager);
 
@@ -29,11 +29,13 @@ abstract base class ExceptionReportManager {
     await disableReporting();
     _subscription ??= logManager.logStream
         .where((BaseLogMessage log) => log.isWarningOrError)
-        .listen((BaseLogMessage log) async {
-      if (shouldReport(log.error) && !_isRateLimited()) {
-        await report(log);
-      }
-    });
+        .listen(_listenLogMessage);
+  }
+
+  Future<void> _listenLogMessage(BaseLogMessage log) async {
+    if (shouldReport(log.error)) {
+      await report(log);
+    }
   }
 
   /// Disables reporting of exception logs.
@@ -46,14 +48,14 @@ abstract base class ExceptionReportManager {
 
   /// Reports the given [log] as an exception.
   @mustCallSuper
-  Future<void> report(
+  Future<bool> report(
     BaseLogMessage log, {
     bool fatal = false,
     Map<String, dynamic>? additionalContext,
   }) async {
     if (_isRateLimited()) {
       logManager.lWarning('Rate limit exceeded. Skipping report.');
-      return;
+      return false;
     }
     logManager.lInfo(
       '''Reporting log to the exception manager: ${log.error}''',
@@ -75,6 +77,7 @@ abstract base class ExceptionReportManager {
     logManager.lInfo('Exception report: $reportData');
 
     _updateReportCount();
+    return true;
   }
 
   /// Reports the given [errorDetails] as a fatal exception.

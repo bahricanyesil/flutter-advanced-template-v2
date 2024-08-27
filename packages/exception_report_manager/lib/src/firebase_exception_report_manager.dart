@@ -38,7 +38,7 @@ base class FirebaseCrashlyticsReportManager extends ExceptionReportManager {
   }
 
   @override
-  Future<void> report(
+  Future<bool> report(
     BaseLogMessage log, {
     bool fatal = false,
     Map<String, dynamic>? additionalContext,
@@ -55,9 +55,10 @@ base class FirebaseCrashlyticsReportManager extends ExceptionReportManager {
               .map((MapEntry<String, dynamic> e) => '${e.key}: ${e.value}'),
         ],
       );
-      await super
+      return super
           .report(log, fatal: fatal, additionalContext: additionalContext);
     }
+    return false;
   }
 
   @override

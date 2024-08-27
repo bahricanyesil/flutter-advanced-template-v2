@@ -51,11 +51,6 @@ scripts:
       fi; \
     done
 
-  test-coverage: |
-    melos run test
-    echo "Tests completed. Opening coverage reports..."
-    melos run open-coverage
-
   generate: |
     echo "Checking for build_runner availability..."
     if dart pub global list | grep -q "build_runner"; then

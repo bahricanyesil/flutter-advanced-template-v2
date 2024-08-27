@@ -4,3 +4,4 @@
 library exception_report_manager;
 
 export 'src/exception_report_manager.dart';
+export 'src/firebase_exception_report_manager.dart';

@@ -6,7 +6,6 @@ import 'package:log_manager/log_manager.dart';
 import 'package:log_manager/src/logger_build_mode.dart';
 import 'package:log_manager/src/logger_output_wrapper.dart';
 import 'package:log_manager/src/utils/string_extensions.dart';
-import 'package:logger/logger.dart';
 
 /// The [LogManager] class is used to manage logger.
 ///

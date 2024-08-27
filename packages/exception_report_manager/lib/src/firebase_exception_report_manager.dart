@@ -18,8 +18,8 @@ base class FirebaseCrashlyticsReportManager extends ExceptionReportManager {
   /// The [crashlytics] parameter is optional and defaults to the global
   /// Firebase Crashlytics instance.
   FirebaseCrashlyticsReportManager({
-    required LogManager logManager,
     required FirebaseCrashlytics crashlytics,
+    LogManager? logManager,
   })  : _crashlytics = crashlytics,
         super(logManager);
 
@@ -55,18 +55,22 @@ base class FirebaseCrashlyticsReportManager extends ExceptionReportManager {
               .map((MapEntry<String, dynamic> e) => '${e.key}: ${e.value}'),
         ],
       );
-      return super
-          .report(log, fatal: fatal, additionalContext: additionalContext);
+      return super.report(log, additionalContext: additionalContext);
     }
     return false;
   }
 
   @override
-  Future<void> reportFatal(FlutterErrorDetails errorDetails) async {
+  Future<bool> reportFatal(
+    FlutterErrorDetails errorDetails, {
+    Map<String, dynamic>? additionalContext,
+  }) async {
     if (enabledReporting) {
       await _crashlytics.recordFlutterFatalError(errorDetails);
-      await super.reportFatal(errorDetails);
+      return super
+          .reportFatal(errorDetails, additionalContext: additionalContext);
     }
+    return false;
   }
 
   @override

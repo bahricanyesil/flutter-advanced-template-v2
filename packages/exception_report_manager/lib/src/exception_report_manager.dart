@@ -9,7 +9,7 @@ abstract class ExceptionReportManager {
   ExceptionReportManager(this.logManager);
 
   /// The logger manager instance.
-  final LogManager logManager;
+  final LogManager? logManager;
 
   StreamSubscription<BaseLogMessage>? _subscription;
 
@@ -26,8 +26,7 @@ abstract class ExceptionReportManager {
   /// warning or error logs that meet the criteria specified in [shouldReport].
   @mustCallSuper
   Future<void> enableReporting() async {
-    await disableReporting();
-    _subscription ??= logManager.logStream
+    _subscription ??= logManager?.logStream
         .where((BaseLogMessage log) => log.isWarningOrError)
         .listen(_listenLogMessage);
   }
@@ -50,54 +49,66 @@ abstract class ExceptionReportManager {
   @mustCallSuper
   Future<bool> report(
     BaseLogMessage log, {
-    bool fatal = false,
     Map<String, dynamic>? additionalContext,
   }) async {
-    if (_isRateLimited()) {
-      logManager.lWarning('Rate limit exceeded. Skipping report.');
-      return false;
-    }
-    logManager.lInfo(
-      '''Reporting log to the exception manager: ${log.error}''',
-    );
-
-    // Prepare report data
-    final Map<String, dynamic> reportData = <String, dynamic>{
-      'error': log.error.toString(),
-      'stackTrace': log.stackTrace?.toString(),
-      'logLevel': log.logLevel.toString(),
-      'message': log.message,
-      'fatal': fatal,
-      ...?additionalContext,
-    };
-
-    // Implement actual reporting logic here
-    // This could involve sending the data to a remote server or storing it
-    // locally. For demonstration, we'll just log it
-    logManager.lInfo('Exception report: $reportData');
-
-    _updateReportCount();
-    return true;
+    return _processReport(log, additionalContext: additionalContext);
   }
 
   /// Reports the given [errorDetails] as a fatal exception.
   @mustCallSuper
-  Future<void> reportFatal(FlutterErrorDetails errorDetails) async {
+  Future<bool> reportFatal(
+    FlutterErrorDetails errorDetails, {
+    Map<String, dynamic>? additionalContext,
+  }) async {
     final BaseLogMessage log = BaseLogMessage(
       logLevel: LogLevel.error,
       message: errorDetails.exceptionAsString(),
       error: errorDetails.exception,
       stackTrace: errorDetails.stack,
     );
-
-    await report(
+    return _processReport(
       log,
-      fatal: true,
-      additionalContext: <String, dynamic>{
-        'context': errorDetails.context?.toString(),
-        'library': errorDetails.library,
-      },
+      additionalContext: additionalContext,
+      isFatal: true,
     );
+  }
+
+  Future<bool> _processReport(
+    BaseLogMessage log, {
+    Map<String, dynamic>? additionalContext,
+    bool isFatal = false,
+  }) async {
+    if (_isRateLimited()) {
+      logManager?.lWarning('Rate limit exceeded. Skipping report.');
+      return false;
+    }
+
+    final String reportType = isFatal ? 'fatal error' : 'log';
+    logManager
+        ?.lInfo('Reporting $reportType to the exception manager: ${log.error}');
+
+    final Map<String, dynamic> reportData =
+        _prepareReportData(log, additionalContext, isFatal);
+
+    logManager?.lInfo('Exception report: $reportData');
+
+    _updateReportCount();
+    return true;
+  }
+
+  Map<String, dynamic> _prepareReportData(
+    BaseLogMessage log,
+    Map<String, dynamic>? additionalContext,
+    bool isFatal,
+  ) {
+    return <String, dynamic>{
+      'error': log.error.toString(),
+      'stackTrace': log.stackTrace?.toString(),
+      'logLevel': log.logLevel.toString(),
+      'message': log.message,
+      if (isFatal) 'isFatal': true,
+      ...?additionalContext,
+    };
   }
 
   /// Returns whether the error should be reported.

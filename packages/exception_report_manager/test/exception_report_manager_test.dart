@@ -23,6 +23,7 @@ class MockLogManager extends Mock implements LogManager {}
 class TestExceptionReportManager extends ExceptionReportManager {
   TestExceptionReportManager(super.logManager);
   final List<BaseLogMessage> reportCalls = <BaseLogMessage>[];
+  final List<BaseLogMessage> reportFatalCalls = <BaseLogMessage>[];
   bool reportCalled = false;
   bool reportFatalCalled = false;
 
@@ -32,10 +33,27 @@ class TestExceptionReportManager extends ExceptionReportManager {
     bool fatal = false,
     Map<String, dynamic>? additionalContext,
   }) async {
-    reportCalled = await super
-        .report(log, fatal: fatal, additionalContext: additionalContext);
+    reportCalled =
+        await super.report(log, additionalContext: additionalContext);
     if (reportCalled) reportCalls.add(log);
     return reportCalled;
+  }
+
+  @override
+  Future<bool> reportFatal(
+    FlutterErrorDetails errorDetails, {
+    Map<String, dynamic>? additionalContext,
+  }) async {
+    final BaseLogMessage log = BaseLogMessage(
+      logLevel: LogLevel.error,
+      message: errorDetails.exceptionAsString(),
+      error: errorDetails.exception,
+      stackTrace: errorDetails.stack,
+    );
+    reportFatalCalled = await super
+        .reportFatal(errorDetails, additionalContext: additionalContext);
+    if (reportFatalCalled) reportFatalCalls.add(log);
+    return reportFatalCalled;
   }
 }
 
@@ -112,7 +130,7 @@ void main() {
       );
 
       when(() => mockExceptionReportManager.reportFatal(any()))
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async => true);
 
       await mockExceptionReportManager.reportFatal(errorDetails);
 
@@ -125,7 +143,6 @@ void main() {
         exception: Exception('Fatal error'),
         stack: StackTrace.current,
         library: 'test_library',
-        context: ErrorDescription('Test context'),
       );
 
       final List<String> capturedLogs = <String>[];
@@ -134,29 +151,31 @@ void main() {
         capturedLogs.add(invocation.positionalArguments[0] as String);
       });
 
-      await testManager.reportFatal(errorDetails);
+      final Map<String, dynamic> additionalContext = <String, dynamic>{
+        'context': 'Test context',
+      };
+      await testManager.reportFatal(
+        errorDetails,
+        additionalContext: additionalContext,
+      );
 
-      expect(testManager.reportCalls.length, 1);
-      final BaseLogMessage reportedLog = testManager.reportCalls.first;
+      expect(testManager.reportFatalCalls.length, 1);
+      final BaseLogMessage reportedLog = testManager.reportFatalCalls.first;
 
       // Verify that lInfo was called twice
       verify(() => mockLogManager.lInfo(any())).called(2);
 
       // Check if any of the logs contain the expected strings
-      final bool containsContext = capturedLogs
-          .any((String log) => log.contains('context: Test context'));
-      final bool containsLibrary = capturedLogs
-          .any((String log) => log.contains('library: test_library'));
+      final bool containsContext = capturedLogs.any(
+        (String log) => log.contains(
+          '${additionalContext.keys.first}: ${additionalContext.values.first}',
+        ),
+      );
 
       expect(
         containsContext,
         isTrue,
         reason: 'Log should contain "Test context"',
-      );
-      expect(
-        containsLibrary,
-        isTrue,
-        reason: 'Log should contain "test_library"',
       );
 
       expect(reportedLog.error, errorDetails.exception);

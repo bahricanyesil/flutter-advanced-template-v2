@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:log_manager/src/utils/date_time_extensions.dart';
-import 'package:logger/logger.dart';
 
 void main() {
   group('CustomPrettyPrinter', () {

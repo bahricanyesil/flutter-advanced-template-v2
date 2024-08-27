@@ -4,9 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:log_manager/src/logger_build_mode.dart';
-import 'package:log_manager/src/logger_log_manager.dart';
 import 'package:log_manager/src/logger_output_wrapper.dart';
-import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'custom_test_platform_dispatcher.dart';

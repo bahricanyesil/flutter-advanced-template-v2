@@ -5,8 +5,11 @@
 /// informational messages, debug messages, and trace messages.
 library log_manager;
 
+export 'package:logger/logger.dart';
+
 export 'src/constants/log_levels.dart';
 export 'src/log_manager.dart';
+export 'src/logger_log_manager.dart';
 export 'src/models/base_log_message_model.dart';
 export 'src/models/base_log_options_model.dart';
 export 'src/output-events/base_log_output.dart';

@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 /// and operating system without directly accessing platform-specific APIs.
 /// It uses Flutter's [defaultTargetPlatform] and [kIsWeb]
 /// constant for safe checks.
-abstract final class SafePlatformChecker {
+abstract interface class SafePlatformChecker {
   /// Returns true if the app is running on the web.
   static bool get isWeb => kIsWeb;
 
@@ -37,22 +37,22 @@ abstract final class SafePlatformChecker {
   /// Returns a string representation of the current operating system.
   ///
   /// Possible return values are:
-  /// - 'Web'
-  /// - 'Android'
-  /// - 'iOS'
-  /// - 'Windows'
-  /// - 'macOS'
-  /// - 'Linux'
-  /// - 'Fuchsia'
-  /// - 'Unknown' (if the platform cannot be determined)
+  /// - 'web'
+  /// - 'android'
+  /// - 'ios'
+  /// - 'windows'
+  /// - 'macos'
+  /// - 'linux'
+  /// - 'fuchsia'
+  /// - 'unknown'
   static String get operatingSystem {
-    if (isWeb) return 'Web';  
-    if (isAndroid) return 'Android';
-    if (isIOS) return 'iOS';
-    if (isWindows) return 'Windows';
-    if (isMacOS) return 'macOS';
-    if (isLinux) return 'Linux';
-    if (isFuchsia) return 'Fuchsia';
-    return 'Unknown';
+    if (isWeb) return 'web';
+    if (isAndroid) return 'android';
+    if (isIOS) return 'ios';
+    if (isWindows) return 'windows';
+    if (isMacOS) return 'macos';
+    if (isLinux) return 'linux';
+    if (isFuchsia) return 'fuchsia';
+    return 'unknown';
   }
 }

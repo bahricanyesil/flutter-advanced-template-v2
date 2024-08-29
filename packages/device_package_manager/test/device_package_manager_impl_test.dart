@@ -115,5 +115,7 @@ void main() {
     test('deviceOS returns correct value', () {
       expect(manager.deviceOS, equals('android'));
     });
+
+
   });
 }

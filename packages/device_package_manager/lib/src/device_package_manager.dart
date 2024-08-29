@@ -5,9 +5,6 @@
 /// about the device and the application package. Implementations of this class
 /// should provide platform-specific logic to fetch this information.
 abstract interface class DevicePackageManager {
-  /// Creates a [DevicePackageManager] instance.
-  const DevicePackageManager();
-
   /// Initializes the device package manager.
   ///
   /// This method should be called before using any other methods of this class.
@@ -27,10 +24,10 @@ abstract interface class DevicePackageManager {
   Future<AppPackageInfo> getPackageInfo();
 
   /// Returns the name of the operating system running on the device.
-  String get deviceOS;
+  String? get deviceOS;
 
   /// Returns the version of the operating system running on the device.
-  Future<String> get deviceOSVersion;
+  Future<String?> get deviceOSVersion;
 
   /// Returns `true` if the current device is an iPad, otherwise returns `false`
   Future<bool> get isIpad;
@@ -66,13 +63,13 @@ final class AppDeviceInfo {
   final String id;
 
   /// The model name or number of the device.
-  final String model;
+  final String? model;
 
   /// The name of the operating system running on the device.
   final String os;
 
   /// The version of the operating system running on the device.
-  final String osVersion;
+  final String? osVersion;
 
   /// Returns `true` if the current device is an iPad,
   /// otherwise returns `false`.

@@ -43,8 +43,7 @@ base class DevicePackageManagerImpl implements DevicePackageManager {
         'windows' => _deviceInfo.windowsInfo,
         'macos' => _deviceInfo.macOsInfo,
         'linux' => _deviceInfo.linuxInfo,
-        'android' => _deviceInfo.androidInfo,
-        _ => Future<BaseDeviceInfo?>.value(),
+        _ => _deviceInfo.androidInfo,
       };
 
   @override

@@ -1,5 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:device_package_manager/device_package_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -7,6 +8,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 class MockDeviceInfoPlugin extends Mock implements DeviceInfoPlugin {}
 
 class MockPackageInfo extends Mock implements PackageInfo {}
+
+const String _baseOS = 'TestBaseOS';
+const int _sdkInt = 30;
+const String _release = '11';
+const String _codename = 'R';
+const String _incremental = '123456';
+const int _previewSdkInt = 0;
+const String _securityPatch = '2023-05-01';
 
 void main() {
   group('DevicePackageManagerImpl', () {
@@ -29,56 +38,13 @@ void main() {
       mockDeviceInfo = MockDeviceInfoPlugin();
       mockPackageInfo = MockPackageInfo();
 
-      // Define the variables
-      const String baseOS = 'TestBaseOS';
-      const int sdkInt = 30;
-      const String release = '11';
-      const String codename = 'R';
-      const String incremental = '123456';
-      const int previewSdkInt = 0;
-      const String securityPatch = '2023-05-01';
-
-      when(() => mockDeviceInfo.androidInfo).thenAnswer(
-        (_) async => AndroidDeviceInfo.fromMap(
-          <String, dynamic>{
-            'id': 'test_id',
-            'model': 'Test Model',
-            'version': <String, dynamic>{
-              'baseOS': baseOS,
-              'sdkInt': sdkInt,
-              'release': release,
-              'codename': codename,
-              'incremental': incremental,
-              'previewSdkInt': previewSdkInt,
-              'securityPatch': securityPatch,
-            },
-            'board': 'test_board',
-            'bootloader': 'test_bootloader',
-            'brand': 'test_brand',
-            'device': 'test_device',
-            'display': 'test_display',
-            'fingerprint': 'test_fingerprint',
-            'hardware': 'test_hardware',
-            'host': 'test_host',
-            'manufacturer': 'test_manufacturer',
-            'product': 'test_product',
-            'supportedAbis': <String>['test_abi'],
-            'systemFeatures': <String>['test_feature'],
-            'tags': 'test_tag',
-            'type': 'test_type',
-            'isPhysicalDevice': true,
-            'displaySizeInches': 5.5,
-            'displayWidthPx': 1080,
-            'displayHeightPx': 1920,
-            'displayMetrics': <String, dynamic>{
-              'widthPx': 1080.0,
-              'heightPx': 1920.0,
-              'xDpi': 480.0,
-              'yDpi': 480.0,
-            },
-            'serialNumber': 'test_serial_number',
-          },
+      when(() => mockDeviceInfo.iosInfo).thenAnswer(
+        (_) async => IosDeviceInfo.fromMap(
+          _iosFakeDeviceInfoMap,
         ),
+      );
+      when(() => mockDeviceInfo.androidInfo).thenAnswer(
+        (_) async => AndroidDeviceInfo.fromMap(_androidFakeDeviceInfo),
       );
 
       when(() => mockPackageInfo.appName).thenReturn('Test App');
@@ -92,11 +58,13 @@ void main() {
     });
 
     test('init method initializes device info', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
       await manager.init();
       verify(() => mockDeviceInfo.androidInfo).called(1);
     });
 
     test('getDeviceInfo returns correct AppDeviceInfo', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
       final AppDeviceInfo deviceInfo = await manager.getDeviceInfo();
       expect(deviceInfo.id, equals('test_id'));
       expect(deviceInfo.model, equals('Test Model'));
@@ -113,9 +81,76 @@ void main() {
     });
 
     test('deviceOS returns correct value', () {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(manager.deviceOS, equals('android'));
     });
 
+    test('isIpad returns true for iPad model', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
 
+      final DevicePackageManagerImpl iosManager =
+          await DevicePackageManagerImpl.create(
+        deviceInfo: mockDeviceInfo,
+      );
+      expect(await iosManager.isIpad, isTrue);
+    });
   });
+}
+
+Map<String, dynamic> get _iosFakeDeviceInfoMap => <String, dynamic>{
+      'name': 'Test Device',
+      'systemName': 'Test OS',
+      'systemVersion': '11',
+      'model': 'iPad Pro',
+      'localizedModel': 'iPad Pro',
+      'identifierForVendor': '1234567890',
+      'isPhysicalDevice': true,
+      'utsname': <String, dynamic>{
+        'sysname': 'Test OS',
+        'nodename': 'Test Device',
+        'release': '11',
+        'version': '11',
+        'machine': 'iPad Pro',
+      },
+    };
+
+Map<String, dynamic> get _androidFakeDeviceInfo {
+  return <String, dynamic>{
+    'id': 'test_id',
+    'model': 'Test Model',
+    'version': <String, dynamic>{
+      'baseOS': _baseOS,
+      'sdkInt': _sdkInt,
+      'release': _release,
+      'codename': _codename,
+      'incremental': _incremental,
+      'previewSdkInt': _previewSdkInt,
+      'securityPatch': _securityPatch,
+    },
+    'board': 'test_board',
+    'bootloader': 'test_bootloader',
+    'brand': 'test_brand',
+    'device': 'test_device',
+    'display': 'test_display',
+    'fingerprint': 'test_fingerprint',
+    'hardware': 'test_hardware',
+    'host': 'test_host',
+    'manufacturer': 'test_manufacturer',
+    'product': 'test_product',
+    'supportedAbis': <String>['test_abi'],
+    'systemFeatures': <String>['test_feature'],
+    'tags': 'test_tag',
+    'type': 'test_type',
+    'isPhysicalDevice': true,
+    'displaySizeInches': 5.5,
+    'displayWidthPx': 1080,
+    'displayHeightPx': 1920,
+    'displayMetrics': <String, dynamic>{
+      'widthPx': 1080.0,
+      'heightPx': 1920.0,
+      'xDpi': 480.0,
+      'yDpi': 480.0,
+    },
+    'serialNumber': 'test_serial_number',
+  };
 }

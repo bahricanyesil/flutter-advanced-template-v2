@@ -1,32 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockLogManager extends LogManager with Mock {
-  final StreamController<BaseLogMessage> _streamController =
-      StreamController<BaseLogMessage>();
-
-  @override
-  Stream<BaseLogMessage> get logStream => _streamController.stream;
-
-  void addLogMessage(BaseLogMessage message) {
-    _streamController.add(message);
-  }
-
-  @override
-  Future<void> close() async {
-    await _streamController.close();
-  }
-
-  @override
-  Future<void> logFlutterError(FlutterErrorDetails details) async {
-    // Override only if needed for specific behavior
-    return super.logFlutterError(details);
-  }
-}
+import 'mocks/mock_log_manager.dart';
 
 void main() {
   group('LogManager', () {
@@ -69,12 +46,14 @@ void main() {
 
     test('emits messages to stream', () async {
       final MockLogManager logManager = MockLogManager();
-      final List<BaseLogMessage> logMessages = <BaseLogMessage>[];
+      final List<BaseLogMessageModel> logMessages = <BaseLogMessageModel>[];
 
       logManager.logStream.listen(logMessages.add);
 
-      const BaseLogMessage logMessage =
-          BaseLogMessage(message: 'Info message', logLevel: LogLevel.info);
+      const BaseLogMessageModel logMessage = BaseLogMessageModel(
+        message: 'Info message',
+        logLevel: LogLevels.info,
+      );
       logManager.addLogMessage(logMessage);
 
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -145,17 +124,19 @@ void main() {
   group('BaseLogMessageX', () {
     test('isWarningOrError returns true for warning and error levels', () {
       expect(
-        const BaseLogMessage(message: 'Warning', logLevel: LogLevel.warning)
+        const BaseLogMessageModel(
+          message: 'Warning',
+          logLevel: LogLevels.warning,
+        ).isWarningOrError,
+        isTrue,
+      );
+      expect(
+        const BaseLogMessageModel(message: 'Error', logLevel: LogLevels.error)
             .isWarningOrError,
         isTrue,
       );
       expect(
-        const BaseLogMessage(message: 'Error', logLevel: LogLevel.error)
-            .isWarningOrError,
-        isTrue,
-      );
-      expect(
-        const BaseLogMessage(message: 'Fatal', logLevel: LogLevel.fatal)
+        const BaseLogMessageModel(message: 'Fatal', logLevel: LogLevels.fatal)
             .isWarningOrError,
         isTrue,
       );
@@ -163,12 +144,12 @@ void main() {
 
     test('isWarningOrError returns false for info and debug levels', () {
       expect(
-        const BaseLogMessage(message: 'Info', logLevel: LogLevel.info)
+        const BaseLogMessageModel(message: 'Info', logLevel: LogLevels.info)
             .isWarningOrError,
         isFalse,
       );
       expect(
-        const BaseLogMessage(message: 'Debug', logLevel: LogLevel.debug)
+        const BaseLogMessageModel(message: 'Debug', logLevel: LogLevels.debug)
             .isWarningOrError,
         isFalse,
       );

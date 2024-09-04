@@ -1,26 +1,16 @@
 import 'package:exception_report_manager/src/firebase_exception_report_manager.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockFirebaseCrashlytics extends Mock implements FirebaseCrashlytics {}
-
-class MockLogManager extends Mock implements LogManager {
-  @override
-  Stream<BaseLogMessage> get logStream => const Stream<BaseLogMessage>.empty();
-}
-
-class FakeBaseLogMessage extends Fake implements BaseLogMessage {}
-
-class FakeFlutterErrorDetails extends Fake implements FlutterErrorDetails {
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) => '';
-}
+import 'fakes/fake_base_log_message.dart';
+import 'fakes/fake_flutter_error_details.dart';
+import 'mocks/mock_firebase_crashlytics.dart';
+import 'mocks/mock_log_manager.dart';
 
 void main() {
-  late FirebaseCrashlyticsReportManager manager;
+  late FirebaseExceptionReportManager manager;
   late MockFirebaseCrashlytics mockCrashlytics;
   late MockLogManager mockLogManager;
 
@@ -32,7 +22,7 @@ void main() {
   setUp(() {
     mockCrashlytics = MockFirebaseCrashlytics();
     mockLogManager = MockLogManager();
-    manager = FirebaseCrashlyticsReportManager(
+    manager = FirebaseExceptionReportManager(
       logManager: mockLogManager,
       crashlytics: mockCrashlytics,
     );
@@ -42,7 +32,7 @@ void main() {
         .thenAnswer((_) => Future<void>.value());
   });
 
-  group('FirebaseCrashlyticsReportManager', () {
+  group('FirebaseExceptionReportManager', () {
     test('enableReporting enables Crashlytics collection', () async {
       await manager.enableReporting();
       verify(() => mockCrashlytics.setCrashlyticsCollectionEnabled(true))
@@ -56,11 +46,11 @@ void main() {
     });
 
     group('report', () {
-      late BaseLogMessage testLog;
+      late BaseLogMessageModel testLog;
 
       setUp(() {
-        testLog = BaseLogMessage(
-          logLevel: LogLevel.error,
+        testLog = BaseLogMessageModel(
+          logLevel: LogLevels.error,
           message: 'Test error',
           error: Exception('Test'),
           stackTrace: StackTrace.current,
@@ -105,9 +95,9 @@ void main() {
         expect(result, isFalse);
         verifyNever(
           () => mockCrashlytics.recordError(
-            any<dynamic>(),
+            any<Object>(),
             any(),
-            reason: any<dynamic>(named: 'reason'),
+            reason: any<Object>(named: 'reason'),
             fatal: any(named: 'fatal'),
             information: any(named: 'information'),
           ),
@@ -149,7 +139,9 @@ void main() {
         );
 
         when(() => mockCrashlytics.recordFlutterFatalError(any()))
-            .thenAnswer((_) async {});
+            .thenAnswer((_) async {
+          return;
+        });
         when(
           () => mockCrashlytics.recordError(
             any<Object>(),

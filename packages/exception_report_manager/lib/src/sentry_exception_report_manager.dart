@@ -66,7 +66,7 @@ base class SentryExceptionReportManager extends ExceptionReportManager {
 
   @override
   Future<bool> report(
-    BaseLogMessage log, {
+    BaseLogMessageModel log, {
     Map<String, dynamic>? additionalContext,
   }) async {
     if (!enabledReporting) return false;

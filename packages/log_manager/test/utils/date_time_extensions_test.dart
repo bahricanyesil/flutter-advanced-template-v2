@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:log_manager/src/utils/date_time_extensions.dart';
+import 'package:log_manager/src/utils/date_time_log_extensions.dart';
 
 void main() {
   group('DateTime Extensions', () {

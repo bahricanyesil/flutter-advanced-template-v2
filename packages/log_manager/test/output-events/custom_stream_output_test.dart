@@ -6,12 +6,12 @@ import 'package:log_manager/log_manager.dart';
 void main() {
   group('CustomStreamOutput', () {
     late CustomStreamOutput customStreamOutput;
-    late StreamSubscription<BaseLogMessage>? subscription;
-    late List<BaseLogMessage> receivedMessages;
+    late StreamSubscription<BaseLogMessageModel>? subscription;
+    late List<BaseLogMessageModel> receivedMessages;
 
     setUp(() {
       customStreamOutput = CustomStreamOutput();
-      receivedMessages = <BaseLogMessage>[];
+      receivedMessages = <BaseLogMessageModel>[];
       subscription = null; // Initialize subscription to null
     });
 
@@ -24,14 +24,15 @@ void main() {
 
     test('should emit log messages to stream', () async {
       // Arrange
-      final BaseLogMessage logMessage = BaseLogMessage(
-        logLevel: LogLevel.info,
+      final BaseLogMessageModel logMessage = BaseLogMessageModel(
+        logLevel: LogLevels.info,
         message: 'Test message',
         time: DateTime.now(),
       );
 
       // Initialize subscription
-      subscription = customStreamOutput.stream.listen((BaseLogMessage message) {
+      subscription =
+          customStreamOutput.stream.listen((BaseLogMessageModel message) {
         receivedMessages.add(message);
       });
 
@@ -47,14 +48,15 @@ void main() {
 
     test('should not emit log messages when paused', () async {
       // Arrange
-      final BaseLogMessage logMessage = BaseLogMessage(
-        logLevel: LogLevel.info,
+      final BaseLogMessageModel logMessage = BaseLogMessageModel(
+        logLevel: LogLevels.info,
         message: 'Test message',
         time: DateTime.now(),
       );
 
       // Initialize subscription
-      subscription = customStreamOutput.stream.listen((BaseLogMessage message) {
+      subscription =
+          customStreamOutput.stream.listen((BaseLogMessageModel message) {
         receivedMessages.add(message);
       });
 
@@ -80,7 +82,9 @@ void main() {
     test('should close the stream when destroyed', () async {
       // Arrange
       subscription =
-          customStreamOutput.stream.listen((BaseLogMessage message) {});
+          customStreamOutput.stream.listen((BaseLogMessageModel message) {
+        receivedMessages.add(message);
+      });
 
       // Act
       await customStreamOutput.destroy();
@@ -89,8 +93,8 @@ void main() {
       // Check if the controller is closed and no further events are emitted
       expect(
         () => customStreamOutput.output(
-          BaseLogMessage(
-            logLevel: LogLevel.info,
+          BaseLogMessageModel(
+            logLevel: LogLevels.info,
             message: 'Test message',
             time: DateTime.now(),
           ),

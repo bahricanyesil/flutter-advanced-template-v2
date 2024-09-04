@@ -1,16 +1,10 @@
 import 'dart:convert';
 
-import 'package:log_manager/src/utils/date_time_extensions.dart';
-import 'package:log_manager/src/utils/log_extensions.dart';
+import 'package:log_manager/src/utils/custom_log_extensions.dart';
+import 'package:log_manager/src/utils/date_time_log_extensions.dart';
 import 'package:logger/logger.dart';
 
 import '../constants/log_levels.dart';
-
-/// A pretty printer for the logger package.
-final class DefaultPrettyPrinter extends CustomPrettyPrinter {
-  /// Creates a new instance of [DefaultPrettyPrinter].
-  DefaultPrettyPrinter() : super(onlyErrorStackTrace: true, printTime: false);
-}
 
 /// A custom pretty printer for the logger package.
 class CustomPrettyPrinter extends LogPrinter {
@@ -23,7 +17,7 @@ class CustomPrettyPrinter extends LogPrinter {
     this.printColors = true,
     this.printEmojis = true,
     this.printTime = false,
-    this.excludeBox = const <LogLevel, bool>{},
+    this.excludeBox = const <LogLevels, bool>{},
     this.noBoxingByDefault = false,
     this.excludePaths = const <String>[],
     this.onlyErrorStackTrace = false,
@@ -41,11 +35,11 @@ class CustomPrettyPrinter extends LogPrinter {
     _middleBorder = '$_middleCorner$singleDividerLine';
     _bottomBorder = '$_bottomLeftCorner$doubleDividerLine';
 
-    _includeBox = <LogLevel, bool>{};
-    for (final LogLevel l in LogLevel.values) {
+    _includeBox = <LogLevels, bool>{};
+    for (final LogLevels l in LogLevels.values) {
       _includeBox[l] = !noBoxingByDefault;
     }
-    excludeBox.forEach((LogLevel k, bool v) => _includeBox[k] = !v);
+    excludeBox.forEach((LogLevels k, bool v) => _includeBox[k] = !v);
   }
 
   /// Index of the first stack trace line to be included in the logs.
@@ -70,7 +64,7 @@ class CustomPrettyPrinter extends LogPrinter {
   final bool printTime;
 
   /// A map of log levels to whether to exclude the box.
-  final Map<LogLevel, bool> excludeBox;
+  final Map<LogLevels, bool> excludeBox;
 
   /// Whether to exclude the box by default.
   final bool noBoxingByDefault;
@@ -101,7 +95,7 @@ class CustomPrettyPrinter extends LogPrinter {
   final RegExp _browserStackTraceRegex =
       RegExp(r'^(?:package:)?(dart:\S+|\S+)');
 
-  late final Map<LogLevel, bool> _includeBox;
+  late final Map<LogLevels, bool> _includeBox;
 
   /// Whether to only print the stack trace in case of an error.
   final bool onlyErrorStackTrace;
@@ -180,9 +174,9 @@ class CustomPrettyPrinter extends LogPrinter {
         _isInExcludePaths(segment);
   }
 
-  Object _toEncodableFallback(dynamic object) => object.toString();
+  Object _toEncodableFallback(Object? object) => object.toString();
 
-  String _stringifyMessage(dynamic message) {
+  String _stringifyMessage(Object? message) {
     if (message is Map || message is Iterable) {
       final JsonEncoder encoder =
           JsonEncoder.withIndent('  ', _toEncodableFallback);
@@ -192,7 +186,7 @@ class CustomPrettyPrinter extends LogPrinter {
     }
   }
 
-  String _stringifyError(dynamic error) {
+  String _stringifyError(Object? error) {
     if (error is Map || error is Iterable) {
       final JsonEncoder encoder =
           JsonEncoder.withIndent('  ', _toEncodableFallback);
@@ -202,13 +196,13 @@ class CustomPrettyPrinter extends LogPrinter {
     }
   }
 
-  AnsiColor _getLogLevelAnsiColor(LogLevel level) =>
+  AnsiColor _getLogLevelAnsiColor(LogLevels level) =>
       printColors ? level.color : const AnsiColor.none();
 
-  String _getEmoji(LogLevel level) => printEmojis ? '${level.emoji} ' : '';
+  String _getEmoji(LogLevels level) => printEmojis ? '${level.emoji} ' : '';
 
   List<String> _formatAndPrint(
-    LogLevel level,
+    LogLevels level,
     String message,
     String? time,
     String? error,

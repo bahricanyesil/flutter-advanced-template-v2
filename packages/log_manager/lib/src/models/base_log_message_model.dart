@@ -8,9 +8,9 @@ import '../constants/log_levels.dart';
 /// It contains properties for the log message, log level, error,
 /// stack trace, and time.
 @immutable
-class BaseLogMessage {
-  /// Constructor for the [BaseLogMessage] class.
-  const BaseLogMessage({
+class BaseLogMessageModel {
+  /// Constructor for the [BaseLogMessageModel] class.
+  const BaseLogMessageModel({
     required this.message,
     required this.logLevel,
     this.error,
@@ -19,7 +19,7 @@ class BaseLogMessage {
   });
 
   /// The log message.
-  final dynamic message;
+  final Object? message;
 
   /// The error associated with the log message.
   final Object? error;
@@ -31,15 +31,15 @@ class BaseLogMessage {
   final DateTime? time;
 
   /// The log level of the message.
-  final LogLevel logLevel;
+  final LogLevels logLevel;
 }
 
-/// Extension methods for [BaseLogMessage]
+/// Extension methods for [BaseLogMessageModel]
 ///
 /// This extension provides methods for filtering log messages.
 ///
 /// It provides a method to check if the log message is a warning or error.
-extension BaseLogMessageX on BaseLogMessage {
+extension BaseLogMessageModelX on BaseLogMessageModel {
   /// Returns whether the log message is a warning or error.
-  bool get isWarningOrError => logLevel.compareTo(LogLevel.warning) <= 0;
+  bool get isWarningOrError => logLevel.compareTo(LogLevels.warning) <= 0;
 }

@@ -1,67 +1,18 @@
-import 'dart:async';
-
-import 'package:exception_report_manager/exception_report_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockExceptionReportManager extends Mock
-    implements ExceptionReportManager {}
-
-class FakeBaseLogMessage extends Fake implements BaseLogMessage {}
-
-class FakeFlutterErrorDetails extends Fake implements FlutterErrorDetails {
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Fake Flutter Error Details';
-  }
-}
-
-class MockLogManager extends Mock implements LogManager {}
-
-class TestExceptionReportManager extends ExceptionReportManager {
-  TestExceptionReportManager(super.logManager);
-  final List<BaseLogMessage> reportCalls = <BaseLogMessage>[];
-  final List<BaseLogMessage> reportFatalCalls = <BaseLogMessage>[];
-  bool reportCalled = false;
-  bool reportFatalCalled = false;
-
-  @override
-  Future<bool> report(
-    BaseLogMessage log, {
-    bool fatal = false,
-    Map<String, dynamic>? additionalContext,
-  }) async {
-    reportCalled =
-        await super.report(log, additionalContext: additionalContext);
-    if (reportCalled) reportCalls.add(log);
-    return reportCalled;
-  }
-
-  @override
-  Future<bool> reportFatal(
-    FlutterErrorDetails errorDetails, {
-    Map<String, dynamic>? additionalContext,
-  }) async {
-    final BaseLogMessage log = BaseLogMessage(
-      logLevel: LogLevel.error,
-      message: errorDetails.exceptionAsString(),
-      error: errorDetails.exception,
-      stackTrace: errorDetails.stack,
-    );
-    reportFatalCalled = await super
-        .reportFatal(errorDetails, additionalContext: additionalContext);
-    if (reportFatalCalled) reportFatalCalls.add(log);
-    return reportFatalCalled;
-  }
-}
+import 'fakes/fake_base_log_message.dart';
+import 'fakes/fake_flutter_error_details.dart';
+import 'mocks/mock_custom_exception_report_manager.dart';
+import 'mocks/mock_exception_report_manager.dart';
+import 'mocks/mock_log_manager.dart';
 
 void main() {
   late MockExceptionReportManager mockExceptionReportManager;
   late MockLogManager mockLogManager;
-  late TestExceptionReportManager testManager;
-  late StreamController<BaseLogMessage> logStreamController;
+  late MockCustomExceptionReportManager testManager;
 
   setUpAll(() {
     registerFallbackValue(FakeBaseLogMessage());
@@ -71,20 +22,19 @@ void main() {
   setUp(() {
     mockExceptionReportManager = MockExceptionReportManager();
     mockLogManager = MockLogManager();
-    logStreamController = StreamController<BaseLogMessage>.broadcast();
-    when(() => mockLogManager.logStream)
-        .thenAnswer((_) => logStreamController.stream);
-    testManager = TestExceptionReportManager(mockLogManager);
+    testManager = MockCustomExceptionReportManager(mockLogManager);
   });
 
   tearDown(() {
-    logStreamController.close();
+    mockLogManager.close();
   });
 
   group('ExceptionReportManager', () {
     test('enableReporting starts listening to log stream', () async {
       when(() => mockExceptionReportManager.enableReporting())
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
       when(() => mockExceptionReportManager.enabledReporting).thenReturn(true);
 
       await mockExceptionReportManager.enableReporting();
@@ -95,9 +45,13 @@ void main() {
 
     test('disableReporting stops listening to log stream', () async {
       when(() => mockExceptionReportManager.enableReporting())
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
       when(() => mockExceptionReportManager.disableReporting())
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
       when(() => mockExceptionReportManager.enabledReporting).thenReturn(false);
 
       await mockExceptionReportManager.enableReporting();
@@ -108,8 +62,8 @@ void main() {
     });
 
     test('report logs the exception', () async {
-      final BaseLogMessage testLog = BaseLogMessage(
-        logLevel: LogLevel.error,
+      final BaseLogMessageModel testLog = BaseLogMessageModel(
+        logLevel: LogLevels.error,
         message: 'Test error',
         error: Exception('Test'),
       );
@@ -160,7 +114,8 @@ void main() {
       );
 
       expect(testManager.reportFatalCalls.length, 1);
-      final BaseLogMessage reportedLog = testManager.reportFatalCalls.first;
+      final BaseLogMessageModel reportedLog =
+          testManager.reportFatalCalls.first;
 
       // Verify that lInfo was called twice
       verify(() => mockLogManager.lInfo(any())).called(2);
@@ -180,7 +135,7 @@ void main() {
 
       expect(reportedLog.error, errorDetails.exception);
       expect(reportedLog.stackTrace, errorDetails.stack);
-      expect(reportedLog.logLevel, LogLevel.error);
+      expect(reportedLog.logLevel, LogLevels.error);
       expect(reportedLog.message, errorDetails.exceptionAsString());
     });
 
@@ -200,38 +155,17 @@ void main() {
       verify(() => mockExceptionReportManager.shouldReport(any())).called(1);
     });
 
-    test('rate limiting works correctly', () async {
-      final BaseLogMessage baseLogMessage = BaseLogMessage(
-        logLevel: LogLevel.error,
-        message: 'Error',
-        error: Exception('Test'),
-      );
-
-      when(() => mockExceptionReportManager.report(any()))
-          .thenAnswer((_) async => true);
-      when(() => mockExceptionReportManager.maxReportsPerMinute).thenReturn(2);
-
-      // First two reports should go through
-      await mockExceptionReportManager.report(baseLogMessage);
-      await mockExceptionReportManager.report(baseLogMessage);
-
-      // Third report should be rate limited
-      await mockExceptionReportManager.report(baseLogMessage);
-
-      verify(() => mockExceptionReportManager.report(any())).called(3);
-    });
-
     test('reports error logs and respects rate limiting', () async {
       // Enable reporting
       await testManager.enableReporting();
 
       // Emit a log that should be reported
-      final BaseLogMessage errorLog = BaseLogMessage(
-        logLevel: LogLevel.error,
+      final BaseLogMessageModel errorLog = BaseLogMessageModel(
+        logLevel: LogLevels.error,
         message: 'Test error',
         error: Exception('Test exception'),
       );
-      logStreamController.add(errorLog);
+      mockLogManager.logStreamController.add(errorLog);
 
       // Wait for the async operations to complete
       await Future<void>.delayed(Duration.zero);
@@ -242,7 +176,7 @@ void main() {
 
       // Emit multiple logs to trigger rate limiting
       for (int i = 0; i < testManager.maxReportsPerMinute; i++) {
-        logStreamController.add(errorLog);
+        mockLogManager.logStreamController.add(errorLog);
         await Future<void>.delayed(Duration.zero);
       }
 
@@ -257,8 +191,8 @@ void main() {
     });
 
     test('logs warning when rate limit is exceeded', () async {
-      final BaseLogMessage errorLog = BaseLogMessage(
-        logLevel: LogLevel.error,
+      final BaseLogMessageModel errorLog = BaseLogMessageModel(
+        logLevel: LogLevels.error,
         message: 'Test error',
         error: Exception('Test exception'),
       );

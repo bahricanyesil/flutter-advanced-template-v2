@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 
-/// The [LogLevel] enum is used to specify the level of logging that should
-enum LogLevel implements Comparable<LogLevel> {
+/// The [LogLevels] enum is used to specify the level of logging that should
+enum LogLevels implements Comparable<LogLevels> {
   /// The [all] level is used to log all messages.
   /// Color: Black
   all._(1000, '🔄', AnsiColor.fg(0)),
@@ -44,7 +44,7 @@ enum LogLevel implements Comparable<LogLevel> {
   /// Color: Transparent
   off._(0, '🚫', AnsiColor.none());
 
-  const LogLevel._(this.value, this.emoji, this.color);
+  const LogLevels._(this.value, this.emoji, this.color);
 
   /// Value of the level
   final int value;
@@ -56,8 +56,8 @@ enum LogLevel implements Comparable<LogLevel> {
   final AnsiColor color;
 
   @override
-  int compareTo(LogLevel other) => value.compareTo(other.value);
+  int compareTo(LogLevels other) => value.compareTo(other.value);
 
   @override
-  String toString() => '$LogLevel($value, $emoji, $color)';
+  String toString() => '$LogLevels($value, $emoji, $color)';
 }

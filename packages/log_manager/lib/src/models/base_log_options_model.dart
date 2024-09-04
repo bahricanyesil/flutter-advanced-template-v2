@@ -5,18 +5,18 @@ import 'base_log_message_model.dart';
 
 /// A function type that defines the signature for a log formatter.
 ///
-/// The [LogFormatter] function takes in a [BaseLogMessage] and [BaseLogOptions]
-/// as parameters and returns a [String]. It is used to format log messages
-/// according to the specified options.
+/// The [LogFormatter] function takes in a [BaseLogMessageModel]
+/// and [BaseLogOptionsModel] as parameters and returns a [String].
+/// It is used to format log messages according to the specified options.
 typedef LogFormatter = String Function(
-  BaseLogMessage message,
-  BaseLogOptions options,
+  BaseLogMessageModel message,
+  BaseLogOptionsModel options,
 );
 
 /// Represents the base options for logging.
 ///
-/// The [BaseLogOptions] class provides a set of options that can be used to
-/// configure logging behavior.
+/// The [BaseLogOptionsModel] class provides a set of options that can be
+/// used to configure logging behavior.
 ///
 /// The options include:
 /// - [level]: The log level to filter log messages.
@@ -25,18 +25,18 @@ typedef LogFormatter = String Function(
 /// - [logInRelease]: Whether to enable logging in release mode.
 /// - [formatter]: The log formatter to customize the log message format.
 @immutable
-final class BaseLogOptions {
-  /// Constructor for the [BaseLogOptions] class.
-  const BaseLogOptions({
+final class BaseLogOptionsModel {
+  /// Constructor for the [BaseLogOptionsModel] class.
+  const BaseLogOptionsModel({
     this.showTime = true,
     this.showEmoji = true,
     this.logInRelease = false,
-    this.level = LogLevel.info,
+    this.level = LogLevels.info,
     this.formatter,
   });
 
   /// The log level to filter log messages.
-  final LogLevel level;
+  final LogLevels level;
 
   /// Whether to display the timestamp in log messages.
   final bool showTime;

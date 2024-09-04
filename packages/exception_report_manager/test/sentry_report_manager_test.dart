@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-dynamic
+
 import 'package:exception_report_manager/src/sentry_exception_report_manager.dart';
 import 'package:exception_report_manager/src/utils/log_level_extensions.dart';
 import 'package:flutter/foundation.dart';
@@ -6,9 +8,8 @@ import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'mock_sentry_client.dart';
-
-class MockLogManager extends Mock implements LogManager {}
+import 'mocks/mock_log_manager.dart';
+import 'mocks/mock_sentry_client.dart';
 
 void main() {
   late SentryExceptionReportManager manager;
@@ -25,9 +26,6 @@ void main() {
   setUp(() async {
     mockSentryClient = MockSentryClient();
     mockLogManager = MockLogManager();
-
-    when(() => mockLogManager.logStream)
-        .thenAnswer((_) => const Stream<BaseLogMessage>.empty());
 
     await Sentry.init(
       (SentryOptions options) {
@@ -66,9 +64,9 @@ void main() {
     test('report captures exception with Sentry', () async {
       await manager.enableReporting(initSentry: false);
 
-      final BaseLogMessage logWithError = BaseLogMessage(
+      final BaseLogMessageModel logWithError = BaseLogMessageModel(
         message: 'Test error',
-        logLevel: LogLevel.error,
+        logLevel: LogLevels.error,
         error: Exception('Test'),
         stackTrace: StackTrace.current,
       );
@@ -226,9 +224,9 @@ void main() {
     test('captureMessage is called with correct parameters', () async {
       await manager.enableReporting(initSentry: false);
 
-      final BaseLogMessage logMessage = BaseLogMessage(
+      final BaseLogMessageModel logMessage = BaseLogMessageModel(
         message: 'Test message',
-        logLevel: LogLevel.error,
+        logLevel: LogLevels.error,
         time: DateTime.now(),
       );
 
@@ -248,9 +246,9 @@ void main() {
     test('captureMessage handles non-string messages', () async {
       await manager.enableReporting(initSentry: false);
 
-      final BaseLogMessage logMessage = BaseLogMessage(
+      final BaseLogMessageModel logMessage = BaseLogMessageModel(
         message: Exception('Test exception'),
-        logLevel: LogLevel.warning,
+        logLevel: LogLevels.warning,
         time: DateTime.now(),
       );
 
@@ -267,11 +265,12 @@ void main() {
       );
     });
 
-    test('captureMessage uses correct SentryLevel for each LogLevel', () async {
+    test('captureMessage uses correct SentryLevel for each LogLevels',
+        () async {
       await manager.enableReporting(initSentry: false);
 
-      for (final LogLevel logLevel in LogLevel.values) {
-        final BaseLogMessage logMessage = BaseLogMessage(
+      for (final LogLevels logLevel in LogLevels.values) {
+        final BaseLogMessageModel logMessage = BaseLogMessageModel(
           message: 'Test ${logLevel.name}',
           logLevel: logLevel,
           time: DateTime.now(),
@@ -281,7 +280,7 @@ void main() {
 
         expect(
           mockSentryClient.captureMessageCalls.length,
-          LogLevel.values.indexOf(logLevel) + 1,
+          LogLevels.values.indexOf(logLevel) + 1,
         );
         expect(
           mockSentryClient.captureMessageCalls.last.formatted,
@@ -297,9 +296,9 @@ void main() {
     test('captureMessage handles additional context', () async {
       await manager.enableReporting(initSentry: false);
 
-      final BaseLogMessage logMessage = BaseLogMessage(
+      final BaseLogMessageModel logMessage = BaseLogMessageModel(
         message: 'Test with context',
-        logLevel: LogLevel.info,
+        logLevel: LogLevels.info,
         time: DateTime.now(),
       );
 
@@ -331,9 +330,9 @@ void main() {
     test('captureMessage handles empty additional context', () async {
       await manager.enableReporting(initSentry: false);
 
-      final BaseLogMessage logMessage = BaseLogMessage(
+      final BaseLogMessageModel logMessage = BaseLogMessageModel(
         message: 'Test with empty context',
-        logLevel: LogLevel.debug,
+        logLevel: LogLevels.debug,
         time: DateTime.now(),
       );
 
@@ -364,9 +363,9 @@ void main() {
     test('captureException handles exception details', () async {
       await manager.enableReporting(initSentry: false);
 
-      final BaseLogMessage logMessage = BaseLogMessage(
+      final BaseLogMessageModel logMessage = BaseLogMessageModel(
         message: 'Test report with error',
-        logLevel: LogLevel.error,
+        logLevel: LogLevels.error,
         time: DateTime.now(),
         error: Exception('Test exception'),
         stackTrace: StackTrace.current,
@@ -383,9 +382,9 @@ void main() {
       expect(capturedCall.event.throwable, logMessage.error);
       expect(capturedCall.stackTrace, logMessage.stackTrace);
 
-      final BaseLogMessage withoutErrorLog = BaseLogMessage(
+      final BaseLogMessageModel withoutErrorLog = BaseLogMessageModel(
         message: 'Test report with error',
-        logLevel: LogLevel.error,
+        logLevel: LogLevels.error,
         time: DateTime.now(),
         stackTrace: StackTrace.current,
       );

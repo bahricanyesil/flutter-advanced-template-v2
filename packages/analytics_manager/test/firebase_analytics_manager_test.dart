@@ -1,14 +1,10 @@
 import 'package:analytics_manager/analytics_manager.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
-// Mock classes
-class MockFirebaseAnalytics extends Mock implements FirebaseAnalytics {}
-
-class MockLogManager extends Mock implements LogManager {}
+import 'mocks/mock_firebase_analytics.dart';
+import 'mocks/mock_log_manager.dart';
 
 void main() {
   late FirebaseAnalyticsManager analyticsManager;
@@ -21,9 +17,13 @@ void main() {
     mockFirebaseAnalytics = MockFirebaseAnalytics();
     mockLogManager = MockLogManager();
 
-    when(() => mockFirebaseAnalytics.logAppOpen()).thenAnswer((_) async {});
+    when(() => mockFirebaseAnalytics.logAppOpen()).thenAnswer((_) async {
+      return;
+    });
     when(() => mockFirebaseAnalytics.setAnalyticsCollectionEnabled(true))
-        .thenAnswer((_) async {});
+        .thenAnswer((_) async {
+      return;
+    });
     analyticsManager = await FirebaseAnalyticsManager.create(
       mockFirebaseAnalytics,
       mockLogManager,
@@ -44,7 +44,9 @@ void main() {
           name: any(named: 'name'),
           parameters: any(named: 'parameters'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager
           .didChangeAppLifecycleState(AppLifecycleState.resumed);
@@ -66,7 +68,9 @@ void main() {
     });
 
     test('should log app open events correctly', () async {
-      when(() => mockFirebaseAnalytics.logAppOpen()).thenAnswer((_) async {});
+      when(() => mockFirebaseAnalytics.logAppOpen()).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.logAppOpen();
 
@@ -90,7 +94,9 @@ void main() {
           name: any(named: 'name'),
           parameters: any(named: 'parameters'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.logEvent(
         'test_event',
@@ -126,7 +132,9 @@ void main() {
         () => mockFirebaseAnalytics.logScreenView(
           screenName: any(named: 'screenName'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.logScreenView('home_screen');
 
@@ -153,7 +161,9 @@ void main() {
           loginMethod: any(named: 'loginMethod'),
           parameters: any(named: 'parameters'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.onLogIn(loginMethod: 'google');
 
@@ -180,7 +190,9 @@ void main() {
           signUpMethod: any(named: 'signUpMethod'),
           parameters: any(named: 'parameters'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.onSignUp(signUpMethod: 'facebook');
 
@@ -209,7 +221,9 @@ void main() {
           method: any(named: 'method'),
           parameters: any(named: 'parameters'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.onShare(
         contentType: 'image',
@@ -257,7 +271,9 @@ void main() {
           affiliation: any(named: 'affiliation'),
           parameters: any(named: 'parameters'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.logPurchase(
         currency: 'USD',
@@ -311,7 +327,9 @@ void main() {
 
     test('should set user ID correctly', () async {
       when(() => mockFirebaseAnalytics.setUserId(id: any(named: 'id')))
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.setUserId('user_123');
 
@@ -333,7 +351,9 @@ void main() {
           name: any(named: 'name'),
           value: any(named: 'value'),
         ),
-      ).thenAnswer((_) async {});
+      ).thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.setUserProperty(
         name: 'property_name',
@@ -366,7 +386,9 @@ void main() {
 
     test('should reset analytics data correctly', () async {
       when(() => mockFirebaseAnalytics.resetAnalyticsData())
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.resetAnalyticsData();
 
@@ -402,7 +424,9 @@ void main() {
 
     test('should disable analytics correctly', () async {
       when(() => mockFirebaseAnalytics.setAnalyticsCollectionEnabled(false))
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
 
       await analyticsManager.disableAnalytics();
 

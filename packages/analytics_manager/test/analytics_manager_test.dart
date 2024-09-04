@@ -1,29 +1,8 @@
-import 'package:analytics_manager/analytics_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
-// Mock implementation of the LogManager for testing
-final class MockLogManager extends Mock implements LogManager {}
-
-final class MockAnalyticsManager extends AnalyticsManager {
-  const MockAnalyticsManager({super.logManager});
-
-  @override
-  Future<void> init() async {}
-
-  @override
-  void dispose() {}
-
-  @override
-  Future<void> resetAnalyticsData() async {}
-
-  @override
-  Future<void> enableAnalytics() async {}
-
-  @override
-  Future<void> disableAnalytics() async {}
-}
+import 'mocks/mock_analytics_manager.dart';
+import 'mocks/mock_log_manager.dart';
 
 void main() {
   late MockAnalyticsManager analyticsManager;

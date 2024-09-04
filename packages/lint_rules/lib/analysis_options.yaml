@@ -1,10 +1,10 @@
 analyzer:
   exclude:
     - build/**
-    - test/.test_coverage.dart
     - bin/cache/**
     - lib/generated_plugin_registrant.dart
     - test/**/*.mocks.dart
+    - test/.test_coverage.dart
     - "**/*.g.dart"
     - "**/*.gr.dart"
     - "**/*.gen.dart"
@@ -12,6 +12,7 @@ analyzer:
     - "**/*.mapper.dart"
     - "**/firebase_options*.dart"
     - "**/*.config.dart"
+    - 'example/**'
 
   language:
     strict-casts: true

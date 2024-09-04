@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use, no-empty-block
+// ignore_for_file: deprecated_member_use
 
 import 'dart:isolate';
 import 'dart:typed_data';

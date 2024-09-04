@@ -5,9 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-class MockDeviceInfoPlugin extends Mock implements DeviceInfoPlugin {}
-
-class MockPackageInfo extends Mock implements PackageInfo {}
+import 'mocks/mock_device_info_plugin.dart';
+import 'mocks/mock_package_info.dart';
 
 const String _baseOS = 'TestBaseOS';
 const int _sdkInt = 30;

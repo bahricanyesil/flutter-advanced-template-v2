@@ -2,7 +2,7 @@ import 'package:device_package_manager/device_package_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockDevicePackageManager extends Mock implements DevicePackageManager {}
+import 'mocks/mock_device_package_manager.dart';
 
 void main() {
   group('DevicePackageManager', () {
@@ -13,7 +13,9 @@ void main() {
     });
 
     test('init method is called', () async {
-      when(() => manager.init()).thenAnswer((_) async {});
+      when(() => manager.init()).thenAnswer((_) async {
+        return;
+      });
       await manager.init();
       verify(() => manager.init()).called(1);
     });

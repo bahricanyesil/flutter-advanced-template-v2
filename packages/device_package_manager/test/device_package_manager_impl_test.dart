@@ -36,12 +36,6 @@ void main() {
 
       mockDeviceInfo = MockDeviceInfoPlugin();
       mockPackageInfo = MockPackageInfo();
-
-      when(() => mockDeviceInfo.iosInfo).thenAnswer(
-        (_) async => IosDeviceInfo.fromMap(
-          _iosFakeDeviceInfoMap,
-        ),
-      );
       when(() => mockDeviceInfo.androidInfo).thenAnswer(
         (_) async => AndroidDeviceInfo.fromMap(_androidFakeDeviceInfo),
       );
@@ -51,9 +45,9 @@ void main() {
       when(() => mockPackageInfo.version).thenReturn('1.0.0');
       when(() => mockPackageInfo.buildNumber).thenReturn('1');
 
-      manager = await DevicePackageManagerImpl.create(
-        deviceInfo: mockDeviceInfo,
-      );
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      manager =
+          await DevicePackageManagerImpl.create(deviceInfo: mockDeviceInfo);
     });
 
     test('init method initializes device info', () async {
@@ -85,12 +79,17 @@ void main() {
     });
 
     test('isIpad returns true for iPad model', () async {
+      final MockDeviceInfoPlugin newMockDeviceInfo = MockDeviceInfoPlugin();
+
+      when(() => newMockDeviceInfo.iosInfo).thenAnswer(
+        (_) async => IosDeviceInfo.fromMap(
+          _iosFakeDeviceInfoMap,
+        ),
+      );
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
 
       final DevicePackageManagerImpl iosManager =
-          await DevicePackageManagerImpl.create(
-        deviceInfo: mockDeviceInfo,
-      );
+          await DevicePackageManagerImpl.create(deviceInfo: newMockDeviceInfo);
       expect(await iosManager.isIpad, isTrue);
     });
   });

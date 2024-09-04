@@ -54,7 +54,10 @@ final class ConnectivityPlusManager implements ConnectivityManager {
 
   @override
   Stream<List<ConnectivityResultType>> get monitorConnection =>
-      _connectionTypeController.stream;
+      _connectionTypeController.stream.distinct(
+        (List<ConnectivityResultType> a, List<ConnectivityResultType> b) =>
+            a.equals(b),
+      );
 
   @override
   bool get isConnected => _isConnected;

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
@@ -15,7 +13,6 @@ void main() {
   late MockExceptionReportManager mockExceptionReportManager;
   late MockLogManager mockLogManager;
   late MockCustomExceptionReportManager testManager;
-  late StreamController<BaseLogMessageModel> logStreamController;
 
   setUpAll(() {
     registerFallbackValue(FakeBaseLogMessage());
@@ -25,14 +22,11 @@ void main() {
   setUp(() {
     mockExceptionReportManager = MockExceptionReportManager();
     mockLogManager = MockLogManager();
-    logStreamController = StreamController<BaseLogMessageModel>.broadcast();
-    when(() => mockLogManager.logStream)
-        .thenAnswer((_) => logStreamController.stream);
     testManager = MockCustomExceptionReportManager(mockLogManager);
   });
 
   tearDown(() {
-    logStreamController.close();
+    mockLogManager.close();
   });
 
   group('ExceptionReportManager', () {
@@ -161,27 +155,6 @@ void main() {
       verify(() => mockExceptionReportManager.shouldReport(any())).called(1);
     });
 
-    test('rate limiting works correctly', () async {
-      final BaseLogMessageModel baseLogMessage = BaseLogMessageModel(
-        logLevel: LogLevels.error,
-        message: 'Error',
-        error: Exception('Test'),
-      );
-
-      when(() => mockExceptionReportManager.report(any()))
-          .thenAnswer((_) async => true);
-      when(() => mockExceptionReportManager.maxReportsPerMinute).thenReturn(2);
-
-      // First two reports should go through
-      await mockExceptionReportManager.report(baseLogMessage);
-      await mockExceptionReportManager.report(baseLogMessage);
-
-      // Third report should be rate limited
-      await mockExceptionReportManager.report(baseLogMessage);
-
-      verify(() => mockExceptionReportManager.report(any())).called(3);
-    });
-
     test('reports error logs and respects rate limiting', () async {
       // Enable reporting
       await testManager.enableReporting();
@@ -192,7 +165,7 @@ void main() {
         message: 'Test error',
         error: Exception('Test exception'),
       );
-      logStreamController.add(errorLog);
+      mockLogManager.logStreamController.add(errorLog);
 
       // Wait for the async operations to complete
       await Future<void>.delayed(Duration.zero);
@@ -203,7 +176,7 @@ void main() {
 
       // Emit multiple logs to trigger rate limiting
       for (int i = 0; i < testManager.maxReportsPerMinute; i++) {
-        logStreamController.add(errorLog);
+        mockLogManager.logStreamController.add(errorLog);
         await Future<void>.delayed(Duration.zero);
       }
 

@@ -27,9 +27,6 @@ void main() {
     mockSentryClient = MockSentryClient();
     mockLogManager = MockLogManager();
 
-    when(() => mockLogManager.logStream)
-        .thenAnswer((_) => const Stream<BaseLogMessageModel>.empty());
-
     await Sentry.init(
       (SentryOptions options) {
         options

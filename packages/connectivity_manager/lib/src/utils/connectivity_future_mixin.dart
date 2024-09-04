@@ -57,9 +57,11 @@ final class DataReloader {
     bool wasConnected = connectivityManager.isConnected;
     final StreamSubscription<List<ConnectivityResultType>> subscription =
         connectivityManager.monitorConnection
-            .listen((List<ConnectivityResultType> connections) {
+            .listen((List<ConnectivityResultType> connections) async {
       final bool isConnected = connections.hasConnection;
-      if (!wasConnected && isConnected) reloadFunction();
+      if (!wasConnected && isConnected) {
+        await reloadFunction();
+      }
       wasConnected = isConnected;
     });
     // ignore: cascade_invocations

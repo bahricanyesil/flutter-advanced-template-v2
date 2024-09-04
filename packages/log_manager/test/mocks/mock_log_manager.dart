@@ -5,13 +5,13 @@ import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
 final class MockLogManager extends LogManager with Mock {
-  final StreamController<BaseLogMessage> _streamController =
-      StreamController<BaseLogMessage>();
+  final StreamController<BaseLogMessageModel> _streamController =
+      StreamController<BaseLogMessageModel>();
 
   @override
-  Stream<BaseLogMessage> get logStream => _streamController.stream;
+  Stream<BaseLogMessageModel> get logStream => _streamController.stream;
 
-  void addLogMessage(BaseLogMessage message) {
+  void addLogMessage(BaseLogMessageModel message) {
     _streamController.add(message);
   }
 

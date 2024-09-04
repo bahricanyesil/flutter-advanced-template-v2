@@ -4,8 +4,8 @@ import 'package:log_manager/log_manager.dart';
 import 'package:log_manager/src/logger_build_mode.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'custom_test_platform_dispatcher.dart';
 import 'mocks/mock_build_mode.dart';
+import 'mocks/mock_custom_test_platform_dispatcher.dart';
 import 'mocks/mock_logger.dart';
 import 'mocks/mock_logger_wrapper.dart';
 import 'mocks/mock_stream_output.dart';
@@ -56,11 +56,13 @@ void main() {
     });
 
     test('emits messages to stream', () async {
-      final List<BaseLogMessage> logMessages = <BaseLogMessage>[];
+      final List<BaseLogMessageModel> logMessages = <BaseLogMessageModel>[];
       logManager.logStream.listen(logMessages.add);
 
-      const BaseLogMessage logMessage =
-          BaseLogMessage(message: 'Info message', logLevel: LogLevel.info);
+      const BaseLogMessageModel logMessage = BaseLogMessageModel(
+        message: 'Info message',
+        logLevel: LogLevels.info,
+      );
       logManager.streamOutput.output(logMessage);
 
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -74,8 +76,8 @@ void main() {
         exception: Exception('Test error'),
         stack: StackTrace.current,
       );
-      final CustomTestPlatformDispatcher customPlatformDispatcher =
-          CustomTestPlatformDispatcher(
+      final MockCustomTestPlatformDispatcher customPlatformDispatcher =
+          MockCustomTestPlatformDispatcher(
         platformDispatcher: PlatformDispatcher.instance,
       );
       // ignore: cascade_invocations
@@ -111,7 +113,7 @@ void main() {
 
     test('setUp method initializes LogManager correctly', () {
       when(() => mockBuildMode.isReleaseMode).thenReturn(false);
-      const BaseLogOptions options = BaseLogOptions(showTime: false);
+      const BaseLogOptionsModel options = BaseLogOptionsModel(showTime: false);
 
       final LoggerLogManager newLogManager = logManager.setUp<LoggerLogManager>(
         (LogManager logManager) => LoggerLogManager(logger: mockLogger),
@@ -176,8 +178,10 @@ setUp enables logging if not in
 
     test('Stream output listener listens messages successfully', () async {
       final Set<VoidCallback> callers = <VoidCallback>{};
-      const BaseLogMessage baseMessage =
-          BaseLogMessage(message: 'Test message', logLevel: LogLevel.info);
+      const BaseLogMessageModel baseMessage = BaseLogMessageModel(
+        message: 'Test message',
+        logLevel: LogLevels.info,
+      );
       when(() => mockLoggerWrapper.addOutputListener(any()))
           .thenAnswer((Invocation invocation) {
         // Capture the argument passed to addOutputListener
@@ -198,7 +202,7 @@ setUp enables logging if not in
       });
 
       // Set up
-      final List<BaseLogMessage> logMessages = <BaseLogMessage>[];
+      final List<BaseLogMessageModel> logMessages = <BaseLogMessageModel>[];
       logManager.logStream.listen(logMessages.add);
 
       // Enable logging

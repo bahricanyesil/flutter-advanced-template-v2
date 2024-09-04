@@ -46,12 +46,14 @@ void main() {
 
     test('emits messages to stream', () async {
       final MockLogManager logManager = MockLogManager();
-      final List<BaseLogMessage> logMessages = <BaseLogMessage>[];
+      final List<BaseLogMessageModel> logMessages = <BaseLogMessageModel>[];
 
       logManager.logStream.listen(logMessages.add);
 
-      const BaseLogMessage logMessage =
-          BaseLogMessage(message: 'Info message', logLevel: LogLevel.info);
+      const BaseLogMessageModel logMessage = BaseLogMessageModel(
+        message: 'Info message',
+        logLevel: LogLevels.info,
+      );
       logManager.addLogMessage(logMessage);
 
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -122,17 +124,19 @@ void main() {
   group('BaseLogMessageX', () {
     test('isWarningOrError returns true for warning and error levels', () {
       expect(
-        const BaseLogMessage(message: 'Warning', logLevel: LogLevel.warning)
+        const BaseLogMessageModel(
+          message: 'Warning',
+          logLevel: LogLevels.warning,
+        ).isWarningOrError,
+        isTrue,
+      );
+      expect(
+        const BaseLogMessageModel(message: 'Error', logLevel: LogLevels.error)
             .isWarningOrError,
         isTrue,
       );
       expect(
-        const BaseLogMessage(message: 'Error', logLevel: LogLevel.error)
-            .isWarningOrError,
-        isTrue,
-      );
-      expect(
-        const BaseLogMessage(message: 'Fatal', logLevel: LogLevel.fatal)
+        const BaseLogMessageModel(message: 'Fatal', logLevel: LogLevels.fatal)
             .isWarningOrError,
         isTrue,
       );
@@ -140,12 +144,12 @@ void main() {
 
     test('isWarningOrError returns false for info and debug levels', () {
       expect(
-        const BaseLogMessage(message: 'Info', logLevel: LogLevel.info)
+        const BaseLogMessageModel(message: 'Info', logLevel: LogLevels.info)
             .isWarningOrError,
         isFalse,
       );
       expect(
-        const BaseLogMessage(message: 'Debug', logLevel: LogLevel.debug)
+        const BaseLogMessageModel(message: 'Debug', logLevel: LogLevels.debug)
             .isWarningOrError,
         isFalse,
       );

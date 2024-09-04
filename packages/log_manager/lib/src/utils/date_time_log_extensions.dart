@@ -1,5 +1,5 @@
 /// Extension on [DateTime] class to provide additional functionality.
-extension AdvancedTemplateLoggerDateTimeExtensions on DateTime {
+extension DateTimeLogExtensions on DateTime {
   /// Returns a formatted string to indicate the time since the start time.
   String sinceDate(DateTime startTime) {
     final String h = _twoDigits(hour);

@@ -48,18 +48,18 @@ abstract class LogManager {
   ///
   /// The [fn] parameter is a function that returns an instance of the
   /// logger manager.
-  /// The [options] parameter is an optional parameter of type [BaseLogOptions]
-  /// that specifies the options for the logger manager.
+  /// The [options] parameter is an optional parameter of type
+  /// [BaseLogOptionsModel] that specifies the options for the logger manager.
   /// If no [options] parameter is provided, the default options will be used.
   ///
   /// Example usage:
   /// ```dart
   /// LogManager logManager = setUp<LogManager>(() =>
-  ///   LogManager(), BaseLogOptions());
+  ///   LogManager(), BaseLogOptionsModel());
   /// ```
   L setUp<L>(
     LoggerSetupCallback<L> fn, [
-    BaseLogOptions options = const BaseLogOptions(),
+    BaseLogOptionsModel options = const BaseLogOptionsModel(),
   ]);
 
   /// Closes the logger manager.
@@ -77,13 +77,13 @@ abstract class LogManager {
   /// ```
   Future<void> close();
 
-  /// Returns a stream of [BaseLogMessage] objects representing the logs.
+  /// Returns a stream of [BaseLogMessageModel] objects representing the logs.
   ///
   /// The stream emits log messages whenever a new log is added
   /// to the logger manager.
   /// Subscribers can listen to this stream to receive
   /// log messages in real-time.
-  Stream<BaseLogMessage> get logStream;
+  Stream<BaseLogMessageModel> get logStream;
 
   /// Logs a Flutter error.
   ///

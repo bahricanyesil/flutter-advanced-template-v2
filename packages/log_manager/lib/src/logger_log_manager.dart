@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:log_manager/src/logger_build_mode.dart';
 import 'package:log_manager/src/logger_output_wrapper.dart';
-import 'package:log_manager/src/utils/string_extensions.dart';
+import 'package:log_manager/src/utils/string_log_extensions.dart';
 
 /// The [LogManager] class is used to manage logger.
 ///
@@ -97,12 +97,12 @@ final class LoggerLogManager extends LogManager {
   }
 
   @override
-  Stream<BaseLogMessage> get logStream => _streamOutput.stream;
+  Stream<BaseLogMessageModel> get logStream => _streamOutput.stream;
 
   @override
   L setUp<L>(
     LoggerSetupCallback<L> fn, [
-    BaseLogOptions options = const BaseLogOptions(),
+    BaseLogOptionsModel options = const BaseLogOptionsModel(),
   ]) {
     if (_buildMode.isReleaseMode && !options.logInRelease) {
       disableLogging();

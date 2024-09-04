@@ -46,11 +46,11 @@ void main() {
     });
 
     group('report', () {
-      late BaseLogMessage testLog;
+      late BaseLogMessageModel testLog;
 
       setUp(() {
-        testLog = BaseLogMessage(
-          logLevel: LogLevel.error,
+        testLog = BaseLogMessageModel(
+          logLevel: LogLevels.error,
           message: 'Test error',
           error: Exception('Test'),
           stackTrace: StackTrace.current,

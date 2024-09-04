@@ -3,7 +3,7 @@ import 'package:log_manager/log_manager.dart';
 
 void main() {
   group('LogEvent Extensions', () {
-    test('should convert LogEvent to BaseLogMessage', () {
+    test('should convert LogEvent to BaseLogMessageModel', () {
       final LogEvent logEvent = LogEvent(
         Level.off,
         'Test message',
@@ -12,9 +12,9 @@ void main() {
         time: DateTime.now(),
       );
 
-      final BaseLogMessage logMessage = logEvent.logMessage;
+      final BaseLogMessageModel logMessage = logEvent.logMessage;
 
-      expect(logMessage.logLevel, LogLevel.off);
+      expect(logMessage.logLevel, LogLevels.off);
       expect(logMessage.message, 'Test message');
       expect(logMessage.error, 'Test error');
       expect(logMessage.stackTrace, logEvent.stackTrace);

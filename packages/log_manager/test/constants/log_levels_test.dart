@@ -2,76 +2,85 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
 
 void main() {
-  group('LogLevel', () {
+  group('LogLevels', () {
     test('should have correct enum values', () {
-      expect(LogLevel.all.value, 1000);
-      expect(LogLevel.trace.value, 600);
-      expect(LogLevel.debug.value, 500);
-      expect(LogLevel.info.value, 400);
-      expect(LogLevel.warning.value, 300);
-      expect(LogLevel.error.value, 200);
-      expect(LogLevel.fatal.value, 100);
-      expect(LogLevel.off.value, 0);
+      expect(LogLevels.all.value, 1000);
+      expect(LogLevels.trace.value, 600);
+      expect(LogLevels.debug.value, 500);
+      expect(LogLevels.info.value, 400);
+      expect(LogLevels.warning.value, 300);
+      expect(LogLevels.error.value, 200);
+      expect(LogLevels.fatal.value, 100);
+      expect(LogLevels.off.value, 0);
     });
 
     test('should compare log levels correctly', () {
-      expect(LogLevel.all.compareTo(LogLevel.trace), greaterThan(0));
-      expect(LogLevel.debug.compareTo(LogLevel.info), greaterThan(0));
-      expect(LogLevel.warning.compareTo(LogLevel.error), greaterThan(0));
-      expect(LogLevel.fatal.compareTo(LogLevel.off), greaterThan(0));
+      expect(LogLevels.all.compareTo(LogLevels.trace), greaterThan(0));
+      expect(LogLevels.debug.compareTo(LogLevels.info), greaterThan(0));
+      expect(LogLevels.warning.compareTo(LogLevels.error), greaterThan(0));
+      expect(LogLevels.fatal.compareTo(LogLevels.off), greaterThan(0));
     });
 
     test('should have correct string representation', () {
       expect(
-        LogLevel.all.toString(),
-        'LogLevel(1000, 🔄, ${const AnsiColor.fg(0)})',
+        LogLevels.all.toString(),
+        'LogLevels(1000, 🔄, ${const AnsiColor.fg(0)})',
       );
       expect(
-        LogLevel.trace.toString(),
-        'LogLevel(600, 🔍, ${const AnsiColor.fg(4)})',
+        LogLevels.trace.toString(),
+        'LogLevels(600, 🔍, ${const AnsiColor.fg(4)})',
       );
       expect(
-        LogLevel.debug.toString(),
-        'LogLevel(500, 🐛, ${const AnsiColor.fg(244)})',
+        LogLevels.debug.toString(),
+        'LogLevels(500, 🐛, ${const AnsiColor.fg(244)})',
       );
       expect(
-        LogLevel.info.toString(),
-        'LogLevel(400, ℹ️, ${const AnsiColor.fg(2)})',
+        LogLevels.info.toString(),
+        'LogLevels(400, ℹ️, ${const AnsiColor.fg(2)})',
       );
       expect(
-        LogLevel.warning.toString(),
-        'LogLevel(300, ⚠️, ${const AnsiColor.fg(3)})',
+        LogLevels.warning.toString(),
+        'LogLevels(300, ⚠️, ${const AnsiColor.fg(3)})',
       );
       expect(
-        LogLevel.error.toString(),
-        'LogLevel(200, ❌, ${const AnsiColor.fg(1)})',
+        LogLevels.error.toString(),
+        'LogLevels(200, ❌, ${const AnsiColor.fg(1)})',
       );
       expect(
-        LogLevel.fatal.toString(),
-        'LogLevel(100, 💣, ${const AnsiColor.fg(5)})',
+        LogLevels.fatal.toString(),
+        'LogLevels(100, 💣, ${const AnsiColor.fg(5)})',
       );
       expect(
-        LogLevel.off.toString(),
-        'LogLevel(0, 🚫, ${const AnsiColor.none()})',
+        LogLevels.off.toString(),
+        'LogLevels(0, 🚫, ${const AnsiColor.none()})',
       );
     });
 
     test('should have correct color representation', () {
       // Note: Adjust the expected values to match the actual output
-      expect(LogLevel.all.color.toString(), const AnsiColor.fg(0).toString());
-      expect(LogLevel.trace.color.toString(), const AnsiColor.fg(4).toString());
+      expect(LogLevels.all.color.toString(), const AnsiColor.fg(0).toString());
       expect(
-        LogLevel.debug.color.toString(),
+        LogLevels.trace.color.toString(),
+        const AnsiColor.fg(4).toString(),
+      );
+      expect(
+        LogLevels.debug.color.toString(),
         const AnsiColor.fg(244).toString(),
       );
-      expect(LogLevel.info.color.toString(), const AnsiColor.fg(2).toString());
+      expect(LogLevels.info.color.toString(), const AnsiColor.fg(2).toString());
       expect(
-        LogLevel.warning.color.toString(),
+        LogLevels.warning.color.toString(),
         const AnsiColor.fg(3).toString(),
       );
-      expect(LogLevel.error.color.toString(), const AnsiColor.fg(1).toString());
-      expect(LogLevel.fatal.color.toString(), const AnsiColor.fg(5).toString());
-      expect(LogLevel.off.color.toString(), const AnsiColor.none().toString());
+      expect(
+        LogLevels.error.color.toString(),
+        const AnsiColor.fg(1).toString(),
+      );
+      expect(
+        LogLevels.fatal.color.toString(),
+        const AnsiColor.fg(5).toString(),
+      );
+      expect(LogLevels.off.color.toString(), const AnsiColor.none().toString());
     });
   });
 }

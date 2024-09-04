@@ -11,7 +11,7 @@ abstract class ExceptionReportManager {
   /// The logger manager instance.
   final LogManager? logManager;
 
-  StreamSubscription<BaseLogMessage>? _subscription;
+  StreamSubscription<BaseLogMessageModel>? _subscription;
 
   /// Custom error filter function
   bool Function(Object? error)? errorFilter;
@@ -27,11 +27,11 @@ abstract class ExceptionReportManager {
   @mustCallSuper
   Future<void> enableReporting() async {
     _subscription ??= logManager?.logStream
-        .where((BaseLogMessage log) => log.isWarningOrError)
+        .where((BaseLogMessageModel log) => log.isWarningOrError)
         .listen(_listenLogMessage);
   }
 
-  Future<void> _listenLogMessage(BaseLogMessage log) async {
+  Future<void> _listenLogMessage(BaseLogMessageModel log) async {
     if (shouldReport(log.error)) {
       await report(log);
     }
@@ -48,7 +48,7 @@ abstract class ExceptionReportManager {
   /// Reports the given [log] as an exception.
   @mustCallSuper
   Future<bool> report(
-    BaseLogMessage log, {
+    BaseLogMessageModel log, {
     Map<String, dynamic>? additionalContext,
   }) async {
     return _processReport(log, additionalContext: additionalContext);
@@ -60,8 +60,8 @@ abstract class ExceptionReportManager {
     FlutterErrorDetails errorDetails, {
     Map<String, dynamic>? additionalContext,
   }) async {
-    final BaseLogMessage log = BaseLogMessage(
-      logLevel: LogLevel.error,
+    final BaseLogMessageModel log = BaseLogMessageModel(
+      logLevel: LogLevels.error,
       message: errorDetails.exceptionAsString(),
       error: errorDetails.exception,
       stackTrace: errorDetails.stack,
@@ -74,7 +74,7 @@ abstract class ExceptionReportManager {
   }
 
   Future<bool> _processReport(
-    BaseLogMessage log, {
+    BaseLogMessageModel log, {
     Map<String, dynamic>? additionalContext,
     bool isFatal = false,
   }) async {
@@ -97,7 +97,7 @@ abstract class ExceptionReportManager {
   }
 
   Map<String, dynamic> _prepareReportData(
-    BaseLogMessage log,
+    BaseLogMessageModel log,
     Map<String, dynamic>? additionalContext,
     bool isFatal,
   ) {

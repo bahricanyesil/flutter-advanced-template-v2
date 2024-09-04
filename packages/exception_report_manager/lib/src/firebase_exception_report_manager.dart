@@ -39,7 +39,7 @@ base class FirebaseExceptionReportManager extends ExceptionReportManager {
 
   @override
   Future<bool> report(
-    BaseLogMessage log, {
+    BaseLogMessageModel log, {
     bool fatal = false,
     Map<String, dynamic>? additionalContext,
   }) async {

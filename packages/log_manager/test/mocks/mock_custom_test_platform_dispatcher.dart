@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 /// [PlatformDispatcher] that wraps another [PlatformDispatcher] and
 /// allows faking of some properties for testing purposes.
@@ -13,16 +14,17 @@ import 'package:flutter_test/flutter_test.dart';
 ///
 ///   * [TestFlutterView], which wraps a [FlutterView] for testing and
 ///     mocking purposes.
-class CustomTestPlatformDispatcher implements PlatformDispatcher {
-  /// Constructs a [CustomTestPlatformDispatcher] that
+final class MockCustomTestPlatformDispatcher extends Mock
+    implements PlatformDispatcher {
+  /// Constructs a [MockCustomTestPlatformDispatcher] that
   /// defers all behavior to the given
   /// [PlatformDispatcher] unless explicitly overridden for test purposes.
-  CustomTestPlatformDispatcher({
+  MockCustomTestPlatformDispatcher({
     required PlatformDispatcher platformDispatcher,
   }) : _platformDispatcher = platformDispatcher;
 
   /// The [PlatformDispatcher] that is wrapped by
-  /// this [CustomTestPlatformDispatcher].
+  /// this [MockCustomTestPlatformDispatcher].
   final PlatformDispatcher _platformDispatcher;
 
   @override

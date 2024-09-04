@@ -1,17 +1,19 @@
 import 'package:exception_report_manager/exception_report_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
+import 'package:mocktail/mocktail.dart';
 
-class CustomExceptionReportManager extends ExceptionReportManager {
-  CustomExceptionReportManager(super.logManager);
-  final List<BaseLogMessage> reportCalls = <BaseLogMessage>[];
-  final List<BaseLogMessage> reportFatalCalls = <BaseLogMessage>[];
+class MockCustomExceptionReportManager extends ExceptionReportManager
+    with Mock {
+  MockCustomExceptionReportManager(super.logManager);
+  final List<BaseLogMessageModel> reportCalls = <BaseLogMessageModel>[];
+  final List<BaseLogMessageModel> reportFatalCalls = <BaseLogMessageModel>[];
   bool reportCalled = false;
   bool reportFatalCalled = false;
 
   @override
   Future<bool> report(
-    BaseLogMessage log, {
+    BaseLogMessageModel log, {
     bool fatal = false,
     Map<String, dynamic>? additionalContext,
   }) async {
@@ -26,8 +28,8 @@ class CustomExceptionReportManager extends ExceptionReportManager {
     FlutterErrorDetails errorDetails, {
     Map<String, dynamic>? additionalContext,
   }) async {
-    final BaseLogMessage log = BaseLogMessage(
-      logLevel: LogLevel.error,
+    final BaseLogMessageModel log = BaseLogMessageModel(
+      logLevel: LogLevels.error,
       message: errorDetails.exceptionAsString(),
       error: errorDetails.exception,
       stackTrace: errorDetails.stack,

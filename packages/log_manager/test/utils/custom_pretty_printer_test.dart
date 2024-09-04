@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
-import 'package:log_manager/src/utils/date_time_extensions.dart';
+import 'package:log_manager/src/utils/date_time_log_extensions.dart';
+import 'package:log_manager/src/utils/default_pretty_printer.dart';
 
 void main() {
   group('CustomPrettyPrinter', () {
@@ -21,7 +22,7 @@ void main() {
       expect(printer.lineLength, 100);
       expect(printer.printColors, true);
       expect(printer.printEmojis, true);
-      expect(printer.excludeBox, <LogLevel, bool>{});
+      expect(printer.excludeBox, <LogLevels, bool>{});
       expect(printer.noBoxingByDefault, false);
       expect(printer.excludePaths, <String>[]);
       expect(printer.onlyErrorStackTrace, false);

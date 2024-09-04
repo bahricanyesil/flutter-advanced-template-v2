@@ -8,28 +8,28 @@ import 'base_log_output.dart';
 /// This class provides a stream-based output for logging events. It allows
 /// listeners to receive a stream of lists of strings representing log lines.
 /// The output can be controlled by pausing and resuming the stream.
-interface class CustomStreamOutput implements ILogOutput {
+interface class CustomStreamOutput implements BaseLogOutput {
   /// Constructor for the [CustomStreamOutput] class.
   CustomStreamOutput() {
-    _controller = StreamController<BaseLogMessage>.broadcast(
+    _controller = StreamController<BaseLogMessageModel>.broadcast(
       onListen: () => _shouldForward = true,
       onCancel: () => _shouldForward = false,
     );
   }
 
-  late StreamController<BaseLogMessage> _controller;
+  late StreamController<BaseLogMessageModel> _controller;
   bool _shouldForward = false;
   bool _isClosed = false;
 
   /// The stream of log lines.
-  Stream<BaseLogMessage> get stream => _controller.stream;
+  Stream<BaseLogMessageModel> get stream => _controller.stream;
 
   /// Outputs a log event.
   ///
   /// If the stream is not currently forwarding, the log event will not be
   /// added to the stream.
   @override
-  void output(BaseLogMessage logMessage) {
+  void output(BaseLogMessageModel logMessage) {
     if (_isClosed) {
       throw StateError('Stream output is closed');
     }

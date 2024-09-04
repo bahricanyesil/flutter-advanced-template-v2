@@ -15,5 +15,5 @@ export 'src/models/base_log_options_model.dart';
 export 'src/output-events/base_log_output.dart';
 export 'src/output-events/custom_stream_output.dart';
 export 'src/output-events/dev_console_output.dart';
+export 'src/utils/custom_log_extensions.dart';
 export 'src/utils/custom_pretty_printer.dart';
-export 'src/utils/log_extensions.dart';

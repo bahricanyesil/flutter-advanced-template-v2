@@ -1,5 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockFilePicker extends Mock {
-  // Mock implementation...
-}
+final class MockFilePicker extends Mock implements FilePicker {}

@@ -1,40 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:log_manager/src/logger_build_mode.dart';
-import 'package:log_manager/src/logger_output_wrapper.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'custom_test_platform_dispatcher.dart';
-
-// Mock classes
-class MockLogger extends Mock implements Logger {
-  @override
-  Future<void> close() async =>
-      super.noSuchMethod(Invocation.method(#close, <Object?>[]));
-}
-
-class MockStreamOutput extends Mock implements CustomStreamOutput {
-  final StreamController<BaseLogMessage> _controller =
-      StreamController<BaseLogMessage>.broadcast();
-
-  @override
-  Stream<BaseLogMessage> get stream => _controller.stream;
-
-  @override
-  void output(BaseLogMessage message) => _controller.add(message);
-
-  @override
-  Future<void> destroy() async =>
-      super.noSuchMethod(Invocation.method(#destroy, <Object?>[]));
-}
-
-// Mock class for LoggerWrapper
-class MockLoggerWrapper extends Mock implements LoggerOutputWrapper {}
-
-class MockBuildMode extends Mock implements LoggerBuildMode {}
+import 'mocks/mock_build_mode.dart';
+import 'mocks/mock_logger.dart';
+import 'mocks/mock_logger_wrapper.dart';
+import 'mocks/mock_stream_output.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

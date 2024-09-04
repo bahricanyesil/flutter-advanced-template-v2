@@ -79,8 +79,9 @@ void main() {
 
     test('should close the stream when destroyed', () async {
       // Arrange
-      subscription =
-          customStreamOutput.stream.listen((BaseLogMessage message) {});
+      subscription = customStreamOutput.stream.listen((BaseLogMessage message) {
+        receivedMessages.add(message);
+      });
 
       // Act
       await customStreamOutput.destroy();

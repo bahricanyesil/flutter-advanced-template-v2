@@ -220,7 +220,8 @@ void main() {
     });
 
     test('should use _toEncodableFallback when encoding JSON', () {
-      final dynamic message = <String, String Function()>{
+      final Map<String, String Function()> message =
+          <String, String Function()>{
         'key': () => 'value',
       }; // Use a non-serializable object to trigger fallback
 

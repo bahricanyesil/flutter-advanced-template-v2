@@ -1,0 +1,22 @@
+name: connectivity_manager
+description: A module to manage connectivity services for Flutter apps.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  connectivity_plus: ^6.0.5
+
+  log_manager:
+    path: ../log_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4

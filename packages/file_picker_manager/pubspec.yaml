@@ -11,7 +11,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # File picker
   file_picker: ^8.1.2
+
+  # Logging
+  log_manager:
+    path: ../log_manager
 
 dev_dependencies:
   flutter_test:

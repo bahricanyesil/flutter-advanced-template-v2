@@ -1,66 +1,20 @@
 import 'dart:async';
 
-import 'package:exception_report_manager/exception_report_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockExceptionReportManager extends Mock
-    implements ExceptionReportManager {}
-
-class FakeBaseLogMessage extends Fake implements BaseLogMessage {}
-
-class FakeFlutterErrorDetails extends Fake implements FlutterErrorDetails {
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Fake Flutter Error Details';
-  }
-}
-
-class MockLogManager extends Mock implements LogManager {}
-
-class TestExceptionReportManager extends ExceptionReportManager {
-  TestExceptionReportManager(super.logManager);
-  final List<BaseLogMessage> reportCalls = <BaseLogMessage>[];
-  final List<BaseLogMessage> reportFatalCalls = <BaseLogMessage>[];
-  bool reportCalled = false;
-  bool reportFatalCalled = false;
-
-  @override
-  Future<bool> report(
-    BaseLogMessage log, {
-    bool fatal = false,
-    Map<String, dynamic>? additionalContext,
-  }) async {
-    reportCalled =
-        await super.report(log, additionalContext: additionalContext);
-    if (reportCalled) reportCalls.add(log);
-    return reportCalled;
-  }
-
-  @override
-  Future<bool> reportFatal(
-    FlutterErrorDetails errorDetails, {
-    Map<String, dynamic>? additionalContext,
-  }) async {
-    final BaseLogMessage log = BaseLogMessage(
-      logLevel: LogLevel.error,
-      message: errorDetails.exceptionAsString(),
-      error: errorDetails.exception,
-      stackTrace: errorDetails.stack,
-    );
-    reportFatalCalled = await super
-        .reportFatal(errorDetails, additionalContext: additionalContext);
-    if (reportFatalCalled) reportFatalCalls.add(log);
-    return reportFatalCalled;
-  }
-}
+import 'custom_exception_report_manager.dart';
+import 'fakes/fake_base_log_message.dart';
+import 'fakes/fake_flutter_error_details.dart';
+import 'mocks/mock_exception_report_manager.dart';
+import 'mocks/mock_log_manager.dart';
 
 void main() {
   late MockExceptionReportManager mockExceptionReportManager;
   late MockLogManager mockLogManager;
-  late TestExceptionReportManager testManager;
+  late CustomExceptionReportManager testManager;
   late StreamController<BaseLogMessage> logStreamController;
 
   setUpAll(() {
@@ -74,7 +28,7 @@ void main() {
     logStreamController = StreamController<BaseLogMessage>.broadcast();
     when(() => mockLogManager.logStream)
         .thenAnswer((_) => logStreamController.stream);
-    testManager = TestExceptionReportManager(mockLogManager);
+    testManager = CustomExceptionReportManager(mockLogManager);
   });
 
   tearDown(() {
@@ -84,7 +38,9 @@ void main() {
   group('ExceptionReportManager', () {
     test('enableReporting starts listening to log stream', () async {
       when(() => mockExceptionReportManager.enableReporting())
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
       when(() => mockExceptionReportManager.enabledReporting).thenReturn(true);
 
       await mockExceptionReportManager.enableReporting();
@@ -95,9 +51,13 @@ void main() {
 
     test('disableReporting stops listening to log stream', () async {
       when(() => mockExceptionReportManager.enableReporting())
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
       when(() => mockExceptionReportManager.disableReporting())
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async {
+        return;
+      });
       when(() => mockExceptionReportManager.enabledReporting).thenReturn(false);
 
       await mockExceptionReportManager.enableReporting();

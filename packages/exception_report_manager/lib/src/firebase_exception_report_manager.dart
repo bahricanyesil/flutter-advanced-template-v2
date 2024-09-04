@@ -12,12 +12,12 @@ import 'exception_report_manager.dart';
 ///
 /// It provides a default implementation for the [report] and [reportFatal]
 /// methods that use Firebase Crashlytics for exception reporting.
-base class FirebaseCrashlyticsReportManager extends ExceptionReportManager {
-  /// Creates a new [FirebaseCrashlyticsReportManager].
+base class FirebaseExceptionReportManager extends ExceptionReportManager {
+  /// Creates a new [FirebaseExceptionReportManager].
   ///
   /// The [crashlytics] parameter is optional and defaults to the global
   /// Firebase Crashlytics instance.
-  FirebaseCrashlyticsReportManager({
+  FirebaseExceptionReportManager({
     required FirebaseCrashlytics crashlytics,
     LogManager? logManager,
   })  : _crashlytics = crashlytics,

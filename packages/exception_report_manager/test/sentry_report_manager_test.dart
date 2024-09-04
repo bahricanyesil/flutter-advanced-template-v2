@@ -1,3 +1,5 @@
+// ignore_for_file: avoid-dynamic
+
 import 'package:exception_report_manager/src/sentry_exception_report_manager.dart';
 import 'package:exception_report_manager/src/utils/log_level_extensions.dart';
 import 'package:flutter/foundation.dart';
@@ -6,9 +8,8 @@ import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'mock_sentry_client.dart';
-
-class MockLogManager extends Mock implements LogManager {}
+import 'mocks/mock_log_manager.dart';
+import 'mocks/mock_sentry_client.dart';
 
 void main() {
   late SentryExceptionReportManager manager;

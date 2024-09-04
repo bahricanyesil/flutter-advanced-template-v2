@@ -1,7 +1,9 @@
+// ignore_for_file: avoid-dynamic
+
 import 'package:mocktail/mocktail.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-class MockSentryClient with Mock implements SentryClient {
+final class MockSentryClient with Mock implements SentryClient {
   List<CaptureEventCall> captureEventCalls = <CaptureEventCall>[];
   List<CaptureExceptionCall> captureExceptionCalls = <CaptureExceptionCall>[];
   List<CaptureMessageCall> captureMessageCalls = <CaptureMessageCall>[];

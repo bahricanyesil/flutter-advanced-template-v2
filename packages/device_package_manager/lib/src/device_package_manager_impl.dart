@@ -23,12 +23,14 @@ base class DevicePackageManagerImpl implements DevicePackageManager {
   /// If not provided, a new instance will be created.
   static Future<DevicePackageManagerImpl> create({
     required DeviceInfoPlugin deviceInfo,
+    PackageInfo? packageInfo,
   }) async {
-    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final PackageInfo finalPackageInfo =
+        packageInfo ?? await PackageInfo.fromPlatform();
 
     return DevicePackageManagerImpl._(
       deviceInfo: deviceInfo,
-      packageInfo: packageInfo,
+      packageInfo: finalPackageInfo,
     );
   }
 

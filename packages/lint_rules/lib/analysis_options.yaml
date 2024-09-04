@@ -238,6 +238,9 @@ dart_code_metrics:
   extends:
     - recommended
 
+  rules:
+    - no-empty-block: false
+
   metrics:
     cyclomatic-complexity: 20
     max-nested-code: 5

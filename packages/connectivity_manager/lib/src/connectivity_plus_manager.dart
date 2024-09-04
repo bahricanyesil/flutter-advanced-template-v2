@@ -15,11 +15,12 @@ typedef UnOrderedEqualFunc = bool Function(Object? a, Object? b);
 /// connection and monitor changes in network connectivity.
 final class ConnectivityPlusManager implements ConnectivityManager {
   /// Creates a [ConnectivityPlusManager] instance.
-  ConnectivityPlusManager(this._connectivity, this._logManager) {
+  ConnectivityPlusManager(this._connectivity, {LogManager? logManager})
+      : _logManager = logManager {
     _initConnectivity();
   }
   final Connectivity _connectivity;
-  final LogManager _logManager;
+  final LogManager? _logManager;
 
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
@@ -42,7 +43,7 @@ final class ConnectivityPlusManager implements ConnectivityManager {
       final UnOrderedEqualFunc unOrdDeepEq =
           const DeepCollectionEquality.unordered().equals;
       if (!unOrdDeepEq(results.toConnectivityResultList, _connections)) {
-        _logManager.lDebug('''
+        _logManager?.lDebug('''
           Connectivity changed:\n
           Old Connections: $_connections\n
           New Connections: ${results.toConnectivityResultList}''');

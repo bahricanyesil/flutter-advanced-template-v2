@@ -234,6 +234,9 @@ code-style:
   format: true
 
 dart_code_metrics:
+  extends:
+    - recommended
+
   metrics:
     cyclomatic-complexity: 20
     max-nested-code: 5

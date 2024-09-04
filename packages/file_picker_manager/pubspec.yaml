@@ -1,5 +1,5 @@
-name: device_package_manager
-description: A module to manage device and package information for Flutter apps.
+name: file_picker_manager
+description: A module to manage file picking for Flutter apps.
 version: 0.0.1
 publish_to: none
 
@@ -11,8 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  device_info_plus: ^9.1.2
-  package_info_plus: ^5.0.1
+  file_picker: ^8.1.2
 
 dev_dependencies:
   flutter_test:

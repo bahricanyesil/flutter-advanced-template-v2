@@ -27,7 +27,7 @@ void main() {
         .thenAnswer((_) => streamController.stream);
 
     connectivityPlusManager =
-        ConnectivityPlusManager(mockConnectivity, mockLogManager);
+        ConnectivityPlusManager(mockConnectivity, logManager: mockLogManager);
   });
 
   test('Initial connectivity state should be disconnected', () async {

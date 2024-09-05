@@ -17,12 +17,16 @@ extension PermissionStatusTypesExtensions on PermissionStatusTypes {
 }
 
 /// Extension methods for [PermissionStatus].
-extension PermissionStatusExtensions on PermissionStatus {
+extension PermissionStatusExtensions on PermissionStatus? {
   /// Returns the [PermissionStatusTypes] equivalent of the [PermissionStatus].
-  PermissionStatusTypes get toPermissionStatusTypes {
-    return PermissionStatusTypes.values.firstWhere(
-      (PermissionStatusTypes e) => e.name.toLowerCase() == name.toLowerCase(),
-      orElse: () => PermissionStatusTypes.denied,
-    );
-  }
+  PermissionStatusTypes get toPermissionStatusTypes => switch (this) {
+        PermissionStatus.denied => PermissionStatusTypes.denied,
+        PermissionStatus.granted => PermissionStatusTypes.granted,
+        PermissionStatus.restricted => PermissionStatusTypes.restricted,
+        PermissionStatus.limited => PermissionStatusTypes.limited,
+        PermissionStatus.permanentlyDenied =>
+          PermissionStatusTypes.permanentlyDenied,
+        PermissionStatus.provisional => PermissionStatusTypes.provisional,
+        _ => PermissionStatusTypes.undefined,
+      };
 }

@@ -12,7 +12,7 @@ abstract interface class InAppReviewManager {
   /// This method prompts the user to leave a review for the app.
   /// It should be called when the app determines it is an appropriate
   /// time to ask for a review.
-  Future<void> requestReview();
+  Future<bool> requestReview();
 
   /// Checks if the in-app review functionality is available.
   ///
@@ -23,5 +23,5 @@ abstract interface class InAppReviewManager {
   Future<bool> isAvailable();
 
   /// Opens the store listing for the app.
-  Future<void> openStoreListing();
+  Future<bool> openStoreListing();
 }

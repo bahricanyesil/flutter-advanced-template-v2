@@ -20,10 +20,14 @@ final class InAppReviewManagerImpl implements InAppReviewManager {
     this._inAppReview, {
     this.appStoreId,
     this.microsoftStoreId,
+    this.rethrowExceptions = true,
     LogManager? logManager,
   }) : _logManager = logManager;
   final InAppReview _inAppReview;
   final LogManager? _logManager;
+
+  /// If true, exceptions will be rethrown.
+  final bool rethrowExceptions;
 
   /// The app store ID for the app. You can find it in the App Store Connect.
   /// You can either set in the constructor or later pass it to the
@@ -47,13 +51,14 @@ final class InAppReviewManagerImpl implements InAppReviewManager {
       return isAvailable;
     } catch (error) {
       _logManager?.lError('InAppReviewManagerImpl.isAvailable error: $error');
+      if (!rethrowExceptions) return false;
       rethrow;
     }
   }
 
   /// Opens the store listing for the app.
   @override
-  Future<void> openStoreListing({
+  Future<bool> openStoreListing({
     String? appStoreId,
     String? microsoftStoreId,
   }) async {
@@ -63,9 +68,11 @@ final class InAppReviewManagerImpl implements InAppReviewManager {
         microsoftStoreId: microsoftStoreId ?? this.microsoftStoreId,
       );
       _logManager?.lInfo('InAppReviewManagerImpl.openStoreListing called');
+      return true;
     } catch (error) {
       _logManager
           ?.lError('InAppReviewManagerImpl.openStoreListing error: $error');
+      if (!rethrowExceptions) return false;
       rethrow;
     }
   }
@@ -75,7 +82,7 @@ final class InAppReviewManagerImpl implements InAppReviewManager {
   /// This method calls the [requestReview] method of the [InAppReview] instance
   /// to prompt the user to leave a review for the app.
   @override
-  Future<void> requestReview() async {
+  Future<bool> requestReview() async {
     try {
       final bool available = await isAvailable();
       if (!available) {
@@ -83,8 +90,10 @@ final class InAppReviewManagerImpl implements InAppReviewManager {
       }
       await _inAppReview.requestReview();
       _logManager?.lInfo('InAppReviewManagerImpl.requestReview called');
+      return true;
     } catch (error) {
       _logManager?.lError('InAppReviewManagerImpl.requestReview error: $error');
+      if (!rethrowExceptions) return false;
       rethrow;
     }
   }

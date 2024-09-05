@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:permission_manager/src/permission_handler_service.dart';
-import 'package:permission_manager/src/utils/permission_status_types_extensions.dart';
+// ignore: depend_on_referenced_packages
+import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 
 import 'constants/permission_status_types.dart';
 import 'constants/permission_types.dart';
 import 'permission_manager.dart';
+import 'service/permission_handler_service.dart';
+import 'service/permission_handler_service_impl.dart';
+import 'utils/permission_status_types_extensions.dart';
 import 'utils/permission_types_extensions.dart';
 
 /// Implementation of the [PermissionManager] interface.
@@ -32,7 +34,7 @@ final class PermissionManagerImpl implements PermissionManager {
     PermissionHandlerService? permissionHandler,
   })  : _logManager = logManager,
         permissionHandlerService =
-            permissionHandler ?? const PermissionHandlerService();
+            permissionHandler ?? const PermissionHandlerServiceImpl();
 
   final LogManager? _logManager;
 
@@ -48,7 +50,7 @@ final class PermissionManagerImpl implements PermissionManager {
     PermissionTypes permissionType,
   ) async {
     try {
-      final PermissionStatus status =
+      final PermissionStatus? status =
           await permissionHandlerService.request(permissionType.toPermission);
       _logManager?.lDebug('Permission status: $status');
       return status.toPermissionStatusTypes;

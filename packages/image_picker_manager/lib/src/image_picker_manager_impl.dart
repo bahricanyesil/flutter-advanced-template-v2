@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_manager/src/constants/camera_device_types.dart';
 import 'package:log_manager/log_manager.dart';
 
 import 'constants/image_source_types.dart';
@@ -31,7 +32,7 @@ final class ImagePickerManagerImpl implements ImagePickerManager {
     double maxWidth = 1024,
     double maxHeight = 1024,
     int imageQuality = 75,
-    CameraDevice preferredCameraDevice = CameraDevice.rear,
+    CameraDeviceTypes preferredCameraDevice = CameraDeviceTypes.rear,
     bool requestFullMetadata = true,
   }) async {
     try {
@@ -40,7 +41,7 @@ final class ImagePickerManagerImpl implements ImagePickerManager {
         maxWidth: maxWidth,
         maxHeight: maxHeight,
         imageQuality: imageQuality,
-        preferredCameraDevice: preferredCameraDevice,
+        preferredCameraDevice: preferredCameraDevice.toPackageCameraDevice,
         requestFullMetadata: requestFullMetadata,
       );
       if (pickedImage != null) {

@@ -9,7 +9,7 @@ abstract interface class PermissionManager {
   Future<bool> checkPermission(PermissionTypes permissionType);
 
   /// Opens the app settings.
-  Future<void> openAppSettings();
+  Future<bool> openAppSettings();
 
   /// Checks and requests the permission.
   Future<bool> checkAndRequestPermission(PermissionTypes permissionType);

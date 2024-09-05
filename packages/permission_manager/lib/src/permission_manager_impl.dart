@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_manager/src/permission_handler_service.dart';
+import 'package:permission_manager/src/utils/permission_status_types_extensions.dart';
 
+import 'constants/permission_status_types.dart';
 import 'constants/permission_types.dart';
 import 'permission_manager.dart';
 import 'utils/permission_types_extensions.dart';
@@ -26,7 +29,10 @@ final class PermissionManagerImpl implements PermissionManager {
   const PermissionManagerImpl({
     LogManager? logManager,
     this.rethrowExceptions = true,
-  }) : _logManager = logManager;
+    PermissionHandlerService? permissionHandler,
+  })  : _logManager = logManager,
+        permissionHandlerService =
+            permissionHandler ?? const PermissionHandlerService();
 
   final LogManager? _logManager;
 
@@ -34,29 +40,37 @@ final class PermissionManagerImpl implements PermissionManager {
   /// exceptions.
   final bool rethrowExceptions;
 
+  /// The [PermissionHandlerService] instance.
+  final PermissionHandlerService permissionHandlerService;
+
   @override
-  Future<bool> requestPermission(PermissionTypes permissionType) async {
+  Future<PermissionStatusTypes> requestPermission(
+    PermissionTypes permissionType,
+  ) async {
     try {
       final PermissionStatus status =
-          await permissionType.toPermission.request();
+          await permissionHandlerService.request(permissionType.toPermission);
       _logManager?.lDebug('Permission status: $status');
-      return status.isGranted;
+      return status.toPermissionStatusTypes;
     } catch (e) {
       _logManager?.lError('Error requesting permission: $e');
-      if (!rethrowExceptions) return false;
+      if (!rethrowExceptions) return PermissionStatusTypes.undefined;
       rethrow;
     }
   }
 
   @override
-  Future<bool> checkPermission(PermissionTypes permissionType) async {
+  Future<PermissionStatusTypes> checkPermission(
+    PermissionTypes permissionType,
+  ) async {
     try {
-      final PermissionStatus status = await permissionType.toPermission.status;
+      final PermissionStatus status =
+          await permissionHandlerService.status(permissionType.toPermission);
       _logManager?.lDebug('Permission status: $status');
-      return status.isGranted;
+      return status.toPermissionStatusTypes;
     } catch (e) {
       _logManager?.lError('Error checking permission: $e');
-      if (!rethrowExceptions) return false;
+      if (!rethrowExceptions) return PermissionStatusTypes.undefined;
       rethrow;
     }
   }
@@ -64,7 +78,7 @@ final class PermissionManagerImpl implements PermissionManager {
   @override
   Future<bool> openAppSettings() async {
     try {
-      final bool opened = await openAppSettings();
+      final bool opened = await permissionHandlerService.openAppSettings();
       _logManager?.lDebug('App settings opened: $opened');
       return opened;
     } catch (e) {
@@ -75,11 +89,14 @@ final class PermissionManagerImpl implements PermissionManager {
   }
 
   @override
-  Future<bool> checkAndRequestPermission(PermissionTypes permissionType) async {
-    final bool isGranted = await checkPermission(permissionType);
-    if (!isGranted) {
+  Future<PermissionStatusTypes> checkAndRequestPermission(
+    PermissionTypes permissionType,
+  ) async {
+    final PermissionStatusTypes permissionStatus =
+        await checkPermission(permissionType);
+    if (!permissionStatus.isGranted) {
       return requestPermission(permissionType);
     }
-    return isGranted;
+    return permissionStatus;
   }
 }

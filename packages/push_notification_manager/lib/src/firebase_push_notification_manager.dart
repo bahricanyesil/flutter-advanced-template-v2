@@ -12,36 +12,30 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   /// Constructs a firebase push notification manager.
   FirebasePushNotificationManager({
     required FirebaseMessaging firebaseMessaging,
-    this.onMessageCallback,
+    OnMessageCallback? onMessageCallback,
+    OnMessageCallback? onMessageOpenedAppCallback,
     PermissionManager? permissionManager,
     LogManager? logManager,
   })  : _firebaseMessaging = firebaseMessaging,
         _permissionManager = permissionManager,
-        _logManager = logManager;
+        _logManager = logManager,
+        _onMessageCallback = onMessageCallback,
+        _onMessageOpenedAppCallback = onMessageOpenedAppCallback;
 
   final FirebaseMessaging _firebaseMessaging;
   final LogManager? _logManager;
   final PermissionManager? _permissionManager;
 
   /// Callback for handling messages. You should set this to react to messages.
-  @override
-  OnMessageCallback? onMessageCallback;
+  final OnMessageCallback? _onMessageCallback;
 
   /// Callback for handling messages when the app is opened from a notification.
   /// You should set this to react to messages when the app is opened from a
   /// notification.
-  @override
-  OnMessageCallback? onMessageOpenedAppCallback;
+  final OnMessageCallback? _onMessageOpenedAppCallback;
 
   /// Static field to hold the background message handler
-  static BackgroundMessageCallback? _backgroundMessageHandler;
-
-  /// Static method to set the background message handler
-  @override
-  // ignore: avoid_setters_without_getters
-  set backgroundMessageHandler(BackgroundMessageCallback handler) {
-    _backgroundMessageHandler = handler;
-  }
+  static OnMessageCallback? _backgroundMessageHandler;
 
   bool _hasPermission = false;
   @override
@@ -52,24 +46,11 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     await checkAndUpdatePermissionStatus();
     await requestPermission();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      _logManager?.lDebug(
-        '''Message received in foreground: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
-      );
-      onMessage(message.toCompleteMap);
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _logManager?.lDebug(
-        '''Message opened by user: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
-      );
-      onMessageOpenedApp(message.toCompleteMap);
-    });
-
-    if (_backgroundMessageHandler != null) {
-      FirebaseMessaging.onBackgroundMessage(
-        _firebaseMessagingBackgroundHandler,
-      );
+    if (_onMessageCallback != null) {
+      setOnMessageListener(_onMessageCallback);
+    }
+    if (_onMessageOpenedAppCallback != null) {
+      setOnMessageOpenedAppListener(_onMessageOpenedAppCallback);
     }
   }
 
@@ -99,18 +80,6 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
 
     _logManager?.lDebug('Permission status updated: $_hasPermission');
     return _hasPermission;
-  }
-
-  @override
-  Future<void> onMessage(Map<String, dynamic> message) async {
-    _logManager?.lDebug('Message received in foreground: $message');
-    onMessageCallback?.call(message);
-  }
-
-  @override
-  Future<void> onMessageOpenedApp(Map<String, dynamic> message) async {
-    _logManager?.lDebug('Message opened by user: $message');
-    onMessageOpenedAppCallback?.call(message);
   }
 
   @override
@@ -154,5 +123,35 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
 
     _logManager?.lDebug('Permission status checked: $_hasPermission');
     return _hasPermission;
+  }
+
+  @override
+  void setOnMessageListener(OnMessageCallback callback) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _logManager?.lDebug(
+        '''Message received in foreground: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
+      );
+      callback(message.toCompleteMap);
+    });
+  }
+
+  @override
+  void setOnMessageOpenedAppListener(OnMessageCallback callback) {
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _logManager?.lDebug(
+        '''Message opened by user: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
+      );
+      callback(message.toCompleteMap);
+    });
+  }
+
+  @override
+  void setOnBackgroundMessageListener(OnMessageCallback callback) {
+    _backgroundMessageHandler = callback;
+    if (_backgroundMessageHandler != null) {
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
+    }
   }
 }

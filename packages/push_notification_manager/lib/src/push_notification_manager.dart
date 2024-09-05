@@ -3,11 +3,6 @@ import 'dart:async';
 /// Callback type for handling messages.
 typedef OnMessageCallback = FutureOr<void> Function(Map<String, dynamic>);
 
-/// Callback type for handling background messages.
-typedef BackgroundMessageCallback = FutureOr<void> Function(
-  Map<String, dynamic>,
-);
-
 /// Base abstract interface for notification manager.
 abstract interface class PushNotificationManager {
   /// Initialize the push notification service
@@ -15,12 +10,6 @@ abstract interface class PushNotificationManager {
 
   /// Request notification permissions
   Future<bool> requestPermission();
-
-  /// Handle notifications received in the foreground
-  Future<void> onMessage(Map<String, dynamic> message);
-
-  /// Handle when a notification is opened by the user
-  Future<void> onMessageOpenedApp(Map<String, dynamic> message);
 
   /// Get the device's Firebase messaging token
   Future<String?> getToken();
@@ -38,14 +27,13 @@ abstract interface class PushNotificationManager {
   bool get hasPermission;
 
   /// Set the background message handler
-  // ignore: avoid_setters_without_getters
-  set backgroundMessageHandler(BackgroundMessageCallback handler);
+  void setOnBackgroundMessageListener(OnMessageCallback callback);
 
   /// Callback for handling messages. You should set this to react to messages.
-  OnMessageCallback? onMessageCallback;
+  void setOnMessageListener(OnMessageCallback callback);
 
   /// Callback for handling messages when the app is opened from a notification.
   /// You should set this to react to messages when the app is opened from a
   /// notification.
-  OnMessageCallback? onMessageOpenedAppCallback;
+  void setOnMessageOpenedAppListener(OnMessageCallback callback);
 }

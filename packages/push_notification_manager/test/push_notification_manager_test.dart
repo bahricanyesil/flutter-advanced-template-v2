@@ -1,4 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+// ignore: depend_on_referenced_packages
+import 'package:firebase_messaging_platform_interface/firebase_messaging_platform_interface.dart'
+    as firebase_messaging_platform_interface;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:permission_manager/permission_manager.dart';
@@ -66,6 +70,8 @@ void main() {
       firebaseMessaging: mockFirebaseMessaging,
       logManager: mockLogManager,
       permissionManager: mockPermissionManager,
+      onMessageCallback: (Map<String, dynamic> msg) {},
+      onMessageOpenedAppCallback: (Map<String, dynamic> msg) {},
     );
   });
 
@@ -90,23 +96,6 @@ void main() {
       expect(pushNotificationManager.hasPermission, isTrue);
       verify(() => mockLogManager.lDebug('Permission status updated: true'))
           .called(1);
-    });
-
-    test('onMessage calls onMessageCallback', () async {
-      final Map<String, String> message = <String, String>{'key': 'value'};
-      pushNotificationManager.onMessageCallback = (Map<String, dynamic> msg) {
-        expect(msg, message);
-      };
-      await pushNotificationManager.onMessage(message);
-    });
-
-    test('onMessageOpenedApp calls onMessageOpenedAppCallback', () async {
-      final Map<String, String> message = <String, String>{'key': 'value'};
-      pushNotificationManager.onMessageOpenedAppCallback =
-          (Map<String, dynamic> msg) {
-        expect(msg, message);
-      };
-      await pushNotificationManager.onMessageOpenedApp(message);
     });
 
     test('getToken retrieves token', () async {
@@ -162,23 +151,94 @@ void main() {
           .called(1);
     });
 
-    test('should call background message handler', () async {
-      // Arrange
-      final FirebasePushNotificationManager manager =
-          FirebasePushNotificationManager(
-        firebaseMessaging: FirebaseMessaging.instance,
+    test('onMessage listener is triggered', () async {
+      final Map<String, dynamic> messageData = <String, dynamic>{
+        'key': 'value',
+      };
+      const RemoteNotification remoteNotification = RemoteNotification(
+        title: 'Test Title',
+        body: 'Test Body',
+      );
+      final RemoteMessage remoteMessage = RemoteMessage(
+        data: messageData,
+        notification: remoteNotification,
       );
 
-      // Mock the background message handler
-      final Map<String, String> messageData = <String, String>{'key': 'value'};
-      final RemoteMessage message = RemoteMessage(data: messageData);
-      const bool handlerCalled = false;
+      pushNotificationManager.setOnMessageListener((Map<String, dynamic> msg) {
+        expect(msg, dataToListenedMessage(messageData, remoteNotification));
+      });
 
-      manager.backgroundMessageHandler = customBackgroundMessageHandler;
+      // Simulate receiving a message
+      firebase_messaging_platform_interface.FirebaseMessagingPlatform.onMessage
+          .add(remoteMessage);
+
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
+
+    test('onMessageOpenedApp listener is triggered', () async {
+      final Map<String, dynamic> messageData = <String, dynamic>{
+        'test_key': 'test_value',
+      };
+      const RemoteNotification remoteNotification = RemoteNotification(
+        title: 'Opened Notification',
+        body: 'Notification opened by user',
+      );
+      final RemoteMessage remoteMessage = RemoteMessage(
+        data: messageData,
+        notification: remoteNotification,
+      );
+
+      pushNotificationManager
+          .setOnMessageOpenedAppListener((Map<String, dynamic> msg) {
+        expect(msg, dataToListenedMessage(messageData, remoteNotification));
+      });
+
+      firebase_messaging_platform_interface
+          .FirebaseMessagingPlatform.onMessageOpenedApp
+          .add(remoteMessage);
+
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+    });
+
+    test('setOnBackgroundMessageListener is triggered', () async {
+      final Map<String, dynamic> messageData = <String, dynamic>{
+        'key': 'value',
+      };
+      const RemoteNotification remoteNotification = RemoteNotification(
+        title: 'Test Title',
+        body: 'Test Body',
+      );
+      final RemoteMessage remoteMessage = RemoteMessage(
+        data: messageData,
+        notification: remoteNotification,
+      );
+
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      pushNotificationManager
+          .setOnBackgroundMessageListener((Map<String, dynamic> msg) {
+        expect(msg, dataToListenedMessage(messageData, remoteNotification));
+      });
+
+      await firebase_messaging_platform_interface
+          .FirebaseMessagingPlatform.onBackgroundMessage
+          ?.call(remoteMessage);
+
+      await Future<void>.delayed(const Duration(milliseconds: 100));
     });
   });
 }
 
-Future<void> customBackgroundMessageHandler(Map<String, dynamic> data) async {
-  print('Background message handler called with data: $data');
+Map<String, dynamic> dataToListenedMessage(
+  Map<String, dynamic> data,
+  RemoteNotification? notification,
+) {
+  return <String, dynamic>{
+    'data': data,
+    'notification': notification,
+    'title': notification?.title,
+    'body': notification?.body,
+    'messageId': null,
+    'sentTime': null,
+    'ttl': null,
+  };
 }

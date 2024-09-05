@@ -1,21 +1,13 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
 
 import 'push_notification_manager.dart';
 import 'utils/remote_message_extensions.dart';
 
-/// Callback type for handling messages.
-typedef OnMessageCallback = FutureOr<void> Function(Map<String, dynamic>);
-
-/// Callback type for handling background messages.
-typedef BackgroundMessageCallback = Future<void> Function(RemoteMessage);
-
 /// Firebase push notification manager.
-@visibleForTesting
 final class FirebasePushNotificationManager implements PushNotificationManager {
   /// Constructs a firebase push notification manager.
   FirebasePushNotificationManager({
@@ -32,25 +24,28 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   final PermissionManager? _permissionManager;
 
   /// Callback for handling messages. You should set this to react to messages.
+  @override
   OnMessageCallback? onMessageCallback;
 
   /// Callback for handling messages when the app is opened from a notification.
   /// You should set this to react to messages when the app is opened from a
   /// notification.
-  OnMessageCallback? onMessageOpenedAppCallback;
-
-  bool _hasPermission = false;
   @override
-  bool get hasPermission => _hasPermission;
+  OnMessageCallback? onMessageOpenedAppCallback;
 
   /// Static field to hold the background message handler
   static BackgroundMessageCallback? _backgroundMessageHandler;
 
   /// Static method to set the background message handler
+  @override
   // ignore: avoid_setters_without_getters
-  static set backgroundMessageHandler(BackgroundMessageCallback handler) {
+  set backgroundMessageHandler(BackgroundMessageCallback handler) {
     _backgroundMessageHandler = handler;
   }
+
+  bool _hasPermission = false;
+  @override
+  bool get hasPermission => _hasPermission;
 
   @override
   Future<void> initialize() async {
@@ -71,16 +66,20 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
       onMessageOpenedApp(message.toCompleteMap);
     });
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    if (_backgroundMessageHandler != null) {
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
+    }
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(
     RemoteMessage message,
   ) async =>
-      _backgroundMessageHandler?.call(message);
+      _backgroundMessageHandler?.call(message.toCompleteMap);
 
   @override
-  Future<void> requestPermission() async {
+  Future<bool> requestPermission() async {
     final NotificationSettings permissionRes =
         await _firebaseMessaging.requestPermission();
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
@@ -92,14 +91,14 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     _hasPermission = initStatus == AuthorizationStatus.authorized ||
         initStatus == AuthorizationStatus.provisional;
 
-    if (!_hasPermission) {
-      final PermissionStatusTypes? statusType =
-          await _permissionManager?.checkAndRequestPermission(
-        PermissionTypes.notification,
-      );
-      _hasPermission = statusType?.isGranted ?? false;
-    }
+    final PermissionStatusTypes? statusType =
+        await _permissionManager?.checkAndRequestPermission(
+      PermissionTypes.notification,
+    );
+    _hasPermission = statusType?.isGranted ?? false;
+
     _logManager?.lDebug('Permission status updated: $_hasPermission');
+    return _hasPermission;
   }
 
   @override
@@ -122,27 +121,31 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   }
 
   @override
-  Future<void> subscribeToTopic(String topic) async {
+  Future<bool> subscribeToTopic(String topic) async {
     if (_hasPermission) {
       await _firebaseMessaging.subscribeToTopic(topic);
       _logManager?.lDebug('Subscribed to topic: $topic');
+      return true;
     } else {
-      _logManager?.lDebug('No permission to subscribe to topic: $topic');
+      _logManager?.lWarning('No permission to subscribe to topic: $topic');
+      return false;
     }
   }
 
   @override
-  Future<void> unsubscribeFromTopic(String topic) async {
+  Future<bool> unsubscribeFromTopic(String topic) async {
     if (_hasPermission) {
       await _firebaseMessaging.unsubscribeFromTopic(topic);
       _logManager?.lDebug('Unsubscribed from topic: $topic');
+      return true;
     } else {
       _logManager?.lDebug('No permission to unsubscribe from topic: $topic');
+      return false;
     }
   }
 
   @override
-  Future<void> checkAndUpdatePermissionStatus() async {
+  Future<bool> checkAndUpdatePermissionStatus() async {
     final NotificationSettings settings =
         await _firebaseMessaging.getNotificationSettings();
     _hasPermission =
@@ -150,5 +153,6 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
             settings.authorizationStatus == AuthorizationStatus.provisional;
 
     _logManager?.lDebug('Permission status checked: $_hasPermission');
+    return _hasPermission;
   }
 }

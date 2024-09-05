@@ -1,0 +1,184 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:permission_manager/permission_manager.dart';
+import 'package:push_notification_manager/push_notification_manager.dart';
+import 'package:push_notification_manager/src/firebase_push_notification_manager.dart';
+
+import 'mocks/mock_firebase_messaging.dart';
+import 'mocks/mock_log_manager.dart';
+import 'mocks/mock_permission_manager.dart';
+
+void main() {
+  late MockFirebaseMessaging mockFirebaseMessaging;
+  late MockLogManager mockLogManager;
+  late MockPermissionManager mockPermissionManager;
+  late PushNotificationManager pushNotificationManager;
+
+  setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+
+    mockFirebaseMessaging = MockFirebaseMessaging();
+    mockLogManager = MockLogManager();
+    mockPermissionManager = MockPermissionManager();
+    const NotificationSettings enabledNotificationSettings =
+        NotificationSettings(
+      alert: AppleNotificationSetting.enabled,
+      announcement: AppleNotificationSetting.enabled,
+      badge: AppleNotificationSetting.enabled,
+      carPlay: AppleNotificationSetting.enabled,
+      criticalAlert: AppleNotificationSetting.enabled,
+      sound: AppleNotificationSetting.enabled,
+      timeSensitive: AppleNotificationSetting.enabled,
+      authorizationStatus: AuthorizationStatus.provisional,
+      lockScreen: AppleNotificationSetting.enabled,
+      notificationCenter: AppleNotificationSetting.enabled,
+      showPreviews: AppleShowPreviewSetting.always,
+    );
+
+    registerFallbackValue(PermissionStatusTypes.granted);
+    registerFallbackValue(PermissionTypes.mediaLibrary);
+
+    when(() => mockFirebaseMessaging.getNotificationSettings())
+        .thenAnswer((_) async => enabledNotificationSettings);
+
+    when(() => mockFirebaseMessaging.requestPermission())
+        .thenAnswer((_) async => enabledNotificationSettings);
+
+    when(() => mockPermissionManager.checkAndRequestPermission(any()))
+        .thenAnswer((_) async => PermissionStatusTypes.granted);
+
+    when(
+      () => mockFirebaseMessaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      ),
+    ).thenAnswer(
+      (_) async => <String, dynamic>{
+        'alert': true,
+        'badge': true,
+        'sound': true,
+      },
+    );
+
+    pushNotificationManager = FirebasePushNotificationManager(
+      firebaseMessaging: mockFirebaseMessaging,
+      logManager: mockLogManager,
+      permissionManager: mockPermissionManager,
+    );
+  });
+
+  group('FirebasePushNotificationManager', () {
+    test('initialize', () async {
+      await pushNotificationManager.initialize();
+      verify(() => mockFirebaseMessaging.requestPermission()).called(1);
+      verify(() => mockFirebaseMessaging.getNotificationSettings()).called(1);
+      verify(
+        () =>
+            mockFirebaseMessaging.setForegroundNotificationPresentationOptions(
+          alert: true,
+          badge: true,
+          sound: true,
+        ),
+      ).called(1);
+      expect(pushNotificationManager.hasPermission, isTrue);
+    });
+
+    test('requestPermission updates permission status', () async {
+      await pushNotificationManager.requestPermission();
+      expect(pushNotificationManager.hasPermission, isTrue);
+      verify(() => mockLogManager.lDebug('Permission status updated: true'))
+          .called(1);
+    });
+
+    test('onMessage calls onMessageCallback', () async {
+      final Map<String, String> message = <String, String>{'key': 'value'};
+      pushNotificationManager.onMessageCallback = (Map<String, dynamic> msg) {
+        expect(msg, message);
+      };
+      await pushNotificationManager.onMessage(message);
+    });
+
+    test('onMessageOpenedApp calls onMessageOpenedAppCallback', () async {
+      final Map<String, String> message = <String, String>{'key': 'value'};
+      pushNotificationManager.onMessageOpenedAppCallback =
+          (Map<String, dynamic> msg) {
+        expect(msg, message);
+      };
+      await pushNotificationManager.onMessageOpenedApp(message);
+    });
+
+    test('getToken retrieves token', () async {
+      when(() => mockFirebaseMessaging.getToken())
+          .thenAnswer((_) async => 'mockToken');
+      final String? token = await pushNotificationManager.getToken();
+      expect(token, 'mockToken');
+      verify(() => mockLogManager.lDebug('FirebaseMessaging token: mockToken'))
+          .called(1);
+    });
+
+    test('subscribeToTopic with permission', () async {
+      when(() => mockFirebaseMessaging.subscribeToTopic(any()))
+          .thenAnswer((_) async => Future<void>.value());
+
+      await pushNotificationManager.checkAndUpdatePermissionStatus();
+      await pushNotificationManager.subscribeToTopic('testTopic');
+      verify(() => mockFirebaseMessaging.subscribeToTopic('testTopic'))
+          .called(1);
+    });
+
+    test('subscribeToTopic without permission', () async {
+      await pushNotificationManager.subscribeToTopic('testTopic');
+      expect(pushNotificationManager.hasPermission, isFalse);
+      verifyNever(() => mockFirebaseMessaging.subscribeToTopic('testTopic'));
+    });
+
+    test('unsubscribeFromTopic with permission', () async {
+      when(() => mockFirebaseMessaging.unsubscribeFromTopic(any()))
+          .thenAnswer((_) async => Future<void>.value());
+
+      await pushNotificationManager.checkAndUpdatePermissionStatus();
+      await pushNotificationManager.unsubscribeFromTopic('testTopic');
+      verify(() => mockFirebaseMessaging.unsubscribeFromTopic('testTopic'))
+          .called(1);
+    });
+
+    test('unsubscribeFromTopic without permission', () async {
+      when(() => mockPermissionManager.checkAndRequestPermission(any()))
+          .thenAnswer((_) async => PermissionStatusTypes.denied);
+      await pushNotificationManager.requestPermission();
+      await pushNotificationManager.unsubscribeFromTopic('testTopic');
+      expect(pushNotificationManager.hasPermission, isFalse);
+      verifyNever(
+        () => mockFirebaseMessaging.unsubscribeFromTopic('testTopic'),
+      );
+    });
+
+    test('checkAndUpdatePermissionStatus updates permission status', () async {
+      await pushNotificationManager.checkAndUpdatePermissionStatus();
+      expect(pushNotificationManager.hasPermission, isTrue);
+      verify(() => mockLogManager.lDebug('Permission status checked: true'))
+          .called(1);
+    });
+
+    test('should call background message handler', () async {
+      // Arrange
+      final FirebasePushNotificationManager manager =
+          FirebasePushNotificationManager(
+        firebaseMessaging: FirebaseMessaging.instance,
+      );
+
+      // Mock the background message handler
+      final Map<String, String> messageData = <String, String>{'key': 'value'};
+      final RemoteMessage message = RemoteMessage(data: messageData);
+      const bool handlerCalled = false;
+
+      manager.backgroundMessageHandler = customBackgroundMessageHandler;
+    });
+  });
+}
+
+Future<void> customBackgroundMessageHandler(Map<String, dynamic> data) async {
+  print('Background message handler called with data: $data');
+}

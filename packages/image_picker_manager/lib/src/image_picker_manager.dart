@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:image_picker_manager/src/constants/camera_device_types.dart';
+
 import 'constants/image_source_types.dart';
 
 /// An abstract class that provides a contract for image picker operations.
@@ -11,5 +13,7 @@ abstract interface class ImagePickerManager {
     double maxWidth = 1024,
     double maxHeight = 1024,
     int imageQuality = 75,
+    CameraDeviceTypes preferredCameraDevice = CameraDeviceTypes.rear,
+    bool requestFullMetadata = true,
   });
 }

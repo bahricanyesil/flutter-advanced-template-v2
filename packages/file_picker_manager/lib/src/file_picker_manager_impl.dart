@@ -66,8 +66,8 @@ final class FilePickerManagerImpl implements FilePickerManager {
       return null;
     } catch (e) {
       _logManager?.lError('Error picking file: $e');
-      if (rethrowExceptions) rethrow;
-      return null;
+      if (!rethrowExceptions) return null;
+      rethrow;
     }
   }
 }

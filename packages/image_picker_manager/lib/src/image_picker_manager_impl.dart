@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_manager/src/constants/camera_device_types.dart';
 import 'package:log_manager/log_manager.dart';
 
 import 'constants/image_source_types.dart';
@@ -19,11 +20,17 @@ import 'image_picker_manager.dart';
 final class ImagePickerManagerImpl implements ImagePickerManager {
   /// Creates an [ImagePickerManagerImpl] with the given
   /// [ImagePicker] and [LogManager].
-  const ImagePickerManagerImpl(this._imagePicker, {LogManager? logManager})
-      : _logManager = logManager;
+  const ImagePickerManagerImpl(
+    this._imagePicker, {
+    LogManager? logManager,
+    this.rethrowExceptions = true,
+  }) : _logManager = logManager;
 
   final ImagePicker _imagePicker;
   final LogManager? _logManager;
+
+  /// Whether to handle exceptions.
+  final bool rethrowExceptions;
 
   @override
   Future<File?> pickImage({
@@ -31,6 +38,8 @@ final class ImagePickerManagerImpl implements ImagePickerManager {
     double maxWidth = 1024,
     double maxHeight = 1024,
     int imageQuality = 75,
+    CameraDeviceTypes preferredCameraDevice = CameraDeviceTypes.rear,
+    bool requestFullMetadata = true,
   }) async {
     try {
       final XFile? pickedImage = await _imagePicker.pickImage(
@@ -38,6 +47,8 @@ final class ImagePickerManagerImpl implements ImagePickerManager {
         maxWidth: maxWidth,
         maxHeight: maxHeight,
         imageQuality: imageQuality,
+        preferredCameraDevice: preferredCameraDevice.toPackageCameraDevice,
+        requestFullMetadata: requestFullMetadata,
       );
       if (pickedImage != null) {
         _logManager
@@ -49,7 +60,8 @@ final class ImagePickerManagerImpl implements ImagePickerManager {
       return null;
     } catch (e) {
       _logManager?.lError('Error picking image: $e');
-      return null;
+      if (!rethrowExceptions) return null;
+      rethrow;
     }
   }
 }

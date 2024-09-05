@@ -20,11 +20,17 @@ import 'image_picker_manager.dart';
 final class ImagePickerManagerImpl implements ImagePickerManager {
   /// Creates an [ImagePickerManagerImpl] with the given
   /// [ImagePicker] and [LogManager].
-  const ImagePickerManagerImpl(this._imagePicker, {LogManager? logManager})
-      : _logManager = logManager;
+  const ImagePickerManagerImpl(
+    this._imagePicker, {
+    LogManager? logManager,
+    this.rethrowExceptions = true,
+  }) : _logManager = logManager;
 
   final ImagePicker _imagePicker;
   final LogManager? _logManager;
+
+  /// Whether to handle exceptions.
+  final bool rethrowExceptions;
 
   @override
   Future<File?> pickImage({
@@ -54,7 +60,8 @@ final class ImagePickerManagerImpl implements ImagePickerManager {
       return null;
     } catch (e) {
       _logManager?.lError('Error picking image: $e');
-      return null;
+      if (!rethrowExceptions) return null;
+      rethrow;
     }
   }
 }

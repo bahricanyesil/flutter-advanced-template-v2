@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_manager/src/connectivity_plus_manager.dart';
-import 'package:connectivity_manager/src/constants/connectivity_result_type.dart';
+import 'package:connectivity_manager/src/enums/connectivity_result_type.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

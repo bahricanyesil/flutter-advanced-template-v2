@@ -1,6 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 
-import '../constants/custom_file_types.dart';
+import '../enums/custom_file_types.dart';
 
 /// An extension that provides a conversion method for [CustomFileTypes].
 extension CustomFileTypesExtensions on CustomFileTypes {

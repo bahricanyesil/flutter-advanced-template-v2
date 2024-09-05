@@ -3,3 +3,4 @@
 library in_app_review_manager;
 
 export 'src/in_app_review_manager.dart';
+export 'src/in_app_review_manager_impl.dart';

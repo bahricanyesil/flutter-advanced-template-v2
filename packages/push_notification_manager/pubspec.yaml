@@ -14,6 +14,10 @@ dependencies:
   # Push Notification Packages
   firebase_messaging: ^15.1.0
 
+  # Permission Manager
+  permission_manager:
+    path: ../permission_manager
+
   # Log Manager
   log_manager:
     path: ../log_manager

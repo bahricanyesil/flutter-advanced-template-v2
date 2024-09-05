@@ -31,6 +31,8 @@ final class ImagePickerManagerImpl implements ImagePickerManager {
     double maxWidth = 1024,
     double maxHeight = 1024,
     int imageQuality = 75,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+    bool requestFullMetadata = true,
   }) async {
     try {
       final XFile? pickedImage = await _imagePicker.pickImage(
@@ -38,6 +40,8 @@ final class ImagePickerManagerImpl implements ImagePickerManager {
         maxWidth: maxWidth,
         maxHeight: maxHeight,
         imageQuality: imageQuality,
+        preferredCameraDevice: preferredCameraDevice,
+        requestFullMetadata: requestFullMetadata,
       );
       if (pickedImage != null) {
         _logManager

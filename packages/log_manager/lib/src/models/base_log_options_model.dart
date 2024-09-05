@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../constants/log_levels.dart';
+import '../enums/log_levels.dart';
 import 'base_log_message_model.dart';
 
 /// A function type that defines the signature for a log formatter.

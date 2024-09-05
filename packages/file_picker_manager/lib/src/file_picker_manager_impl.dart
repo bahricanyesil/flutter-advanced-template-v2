@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 
-import 'constants/custom_file_types.dart';
+import 'enums/custom_file_types.dart';
 import 'file_picker_manager.dart';
 import 'utils/custom_file_picker_statuses_extensions.dart';
 import 'utils/custom_file_types_extensions.dart';

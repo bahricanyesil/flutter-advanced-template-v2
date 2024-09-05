@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:permission_manager/src/constants/permission_status_types.dart';
-import 'package:permission_manager/src/constants/permission_types.dart';
+import 'package:permission_manager/src/enums/permission_status_types.dart';
+import 'package:permission_manager/src/enums/permission_types.dart';
 import 'package:permission_manager/src/permission_manager_impl.dart';
 import 'package:permission_manager/src/service/permission_handler_service.dart';
 import 'package:permission_manager/src/utils/permission_status_types_extensions.dart';

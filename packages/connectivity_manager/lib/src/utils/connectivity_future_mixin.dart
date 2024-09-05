@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../connectivity_manager.dart';
-import '../constants/connectivity_result_type.dart';
+import '../enums/connectivity_result_type.dart';
 
 /// A mixin that provides a way to reload data when the device
 /// is connected to the internet.

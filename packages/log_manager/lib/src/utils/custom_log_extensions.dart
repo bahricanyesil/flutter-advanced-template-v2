@@ -1,4 +1,4 @@
-import 'package:log_manager/src/constants/log_levels.dart';
+import 'package:log_manager/src/enums/log_levels.dart';
 import 'package:logger/logger.dart';
 
 import '../models/base_log_message_model.dart';

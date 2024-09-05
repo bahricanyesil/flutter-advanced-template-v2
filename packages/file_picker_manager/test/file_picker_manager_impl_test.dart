@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:file_picker_manager/src/constants/custom_file_picker_statuses.dart';
-import 'package:file_picker_manager/src/constants/custom_file_types.dart';
+import 'package:file_picker_manager/src/enums/custom_file_picker_statuses.dart';
+import 'package:file_picker_manager/src/enums/custom_file_types.dart';
 import 'package:file_picker_manager/src/file_picker_manager_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

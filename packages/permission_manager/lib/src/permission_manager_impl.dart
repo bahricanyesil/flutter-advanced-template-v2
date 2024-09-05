@@ -3,8 +3,8 @@ import 'package:log_manager/log_manager.dart';
 // ignore: depend_on_referenced_packages
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 
-import 'constants/permission_status_types.dart';
-import 'constants/permission_types.dart';
+import 'enums/permission_status_types.dart';
+import 'enums/permission_types.dart';
 import 'permission_manager.dart';
 import 'service/permission_handler_service.dart';
 import 'service/permission_handler_service_impl.dart';

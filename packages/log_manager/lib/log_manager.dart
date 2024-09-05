@@ -7,7 +7,7 @@ library log_manager;
 
 export 'package:logger/logger.dart';
 
-export 'src/constants/log_levels.dart';
+export 'src/enums/log_levels.dart';
 export 'src/log_manager.dart';
 export 'src/logger_log_manager.dart';
 export 'src/models/base_log_message_model.dart';

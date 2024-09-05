@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_picker_manager/src/constants/camera_device_types.dart';
-import 'package:image_picker_manager/src/constants/image_source_types.dart';
+import 'package:image_picker_manager/src/enums/camera_device_types.dart';
+import 'package:image_picker_manager/src/enums/image_source_types.dart';
 import 'package:image_picker_manager/src/image_picker_manager_impl.dart';
 import 'package:mocktail/mocktail.dart';
 

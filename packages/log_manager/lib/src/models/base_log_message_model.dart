@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import '../constants/log_levels.dart';
+import '../enums/log_levels.dart';
 
 /// Represents a base log message.
 ///

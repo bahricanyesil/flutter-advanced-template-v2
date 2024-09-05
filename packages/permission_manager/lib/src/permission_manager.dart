@@ -1,5 +1,5 @@
-import 'constants/permission_status_types.dart';
-import 'constants/permission_types.dart';
+import 'enums/permission_status_types.dart';
+import 'enums/permission_types.dart';
 
 /// Interface for managing permissions.
 abstract interface class PermissionManager {

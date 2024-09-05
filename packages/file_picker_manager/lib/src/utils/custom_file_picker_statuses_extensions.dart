@@ -1,6 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 
-import '../constants/custom_file_picker_statuses.dart';
+import '../enums/custom_file_picker_statuses.dart';
 
 /// An extension on [FilePickerStatus] to convert it
 /// to [CustomFilePickerStatuses].

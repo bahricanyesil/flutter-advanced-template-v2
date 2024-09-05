@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:image_picker_manager/src/constants/camera_device_types.dart';
+import 'package:image_picker_manager/src/enums/camera_device_types.dart';
 
-import 'constants/image_source_types.dart';
+import 'enums/image_source_types.dart';
 
 /// An abstract class that provides a contract for image picker operations.
 // ignore: one_member_abstracts

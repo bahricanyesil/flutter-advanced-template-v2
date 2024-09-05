@@ -6,7 +6,7 @@ import 'package:log_manager/log_manager.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'connectivity_manager.dart';
-import 'constants/connectivity_result_type.dart';
+import 'enums/connectivity_result_type.dart';
 
 /// Type definition for the function that checks if two objects are equal.
 typedef UnOrderedEqualFunc = bool Function(Object? a, Object? b);

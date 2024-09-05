@@ -1,5 +1,5 @@
-name: image_picker_manager
-description: A module to manage image picking for Flutter apps.
+name: in_app_review_manager
+description: A module to manage in-app reviews for Flutter apps.
 version: 0.0.1
 publish_to: none
 
@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Image Picker
-  image_picker: ^1.1.2
+  # In-App Review
+  in_app_review: ^2.0.9
 
   # Logging
   log_manager:

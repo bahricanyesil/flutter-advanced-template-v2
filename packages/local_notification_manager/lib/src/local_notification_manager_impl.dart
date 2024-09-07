@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:local_notification_manager/src/enums/notification_importance.dart';
 import 'package:local_notification_manager/src/models/custom_notification_response_model.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
@@ -78,13 +76,6 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
   @override
   Future<bool> initialize() async {
     try {
-      final AndroidNotificationChannel channel = AndroidNotificationChannel(
-        _settings.channelId,
-        _settings.channelName,
-        description: _settings.channelDescription,
-        importance: _settings.importance.toLocalImportance,
-      );
-
       final AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings(_settings.icon);
       final DarwinInitializationSettings initializationSettingsDarwin =
@@ -111,11 +102,6 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
           CustomNotificationResponseModel.fromNotificationResponse(r),
         ),
       );
-
-      await localNotificationPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.createNotificationChannel(channel);
 
       final PermissionStatusTypes? statusType = await _permissionManager
           ?.checkPermission(PermissionTypes.notification);

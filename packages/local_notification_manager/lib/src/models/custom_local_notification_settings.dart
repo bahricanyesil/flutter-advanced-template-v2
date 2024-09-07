@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as local;
 
+import '../enums/custom_notification_visibility.dart';
 import '../enums/notification_category.dart';
 import '../enums/notification_importance.dart';
 import '../enums/notification_interruption_level.dart';
 import '../enums/notification_priority.dart';
-import '../enums/notification_visibility.dart';
 
 /// Custom local notification settings.
 class CustomLocalNotificationSettings {
@@ -32,7 +32,7 @@ class CustomLocalNotificationSettings {
     this.ledColor,
     this.sound,
     this.ticker,
-    this.visibility = NotificationVisibility.private,
+    this.visibility = CustomNotificationVisibility.private,
     this.category,
     this.timeoutAfter,
     this.ongoing = false,
@@ -108,7 +108,7 @@ class CustomLocalNotificationSettings {
   final String? ticker;
 
   /// The visibility of the notification.
-  final NotificationVisibility visibility;
+  final CustomNotificationVisibility visibility;
 
   /// The category of the notification.
   final NotificationCategory? category;

@@ -1,16 +1,5 @@
 import 'models/custom_notification_response_model.dart';
 
-typedef OnDidReceiveLocalNotificationCallback = Function(
-  int id,
-  String? title,
-  String? body,
-  String? payload,
-);
-
-typedef OnDidReceiveNotificationResponseCallback = Function(
-  CustomNotificationResponseModel response,
-);
-
 /// Abstract class for the local notification manager.
 abstract interface class LocalNotificationManager {
   /// Initializes the local notification manager.

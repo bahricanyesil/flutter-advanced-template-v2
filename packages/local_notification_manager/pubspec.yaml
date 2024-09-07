@@ -18,8 +18,13 @@ dependencies:
   flutter_timezone: ^3.0.1
   timezone: ^0.9.4
 
+  # Log Manager
   log_manager:
     path: ../log_manager
+
+  # Permission Manager
+  permission_manager:
+    path: ../permission_manager
 
 dev_dependencies:
   flutter_test:

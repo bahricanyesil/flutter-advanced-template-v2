@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as local;
 
 import '../enums/notification_category.dart';
 import '../enums/notification_importance.dart';
@@ -100,4 +102,69 @@ class CustomLocalNotificationSettings {
   final bool suppressSound;
   final bool transient;
   final List<Map<String, String>> actions;
+}
+
+extension CustomLocalNotificationSettingsExtension
+    on CustomLocalNotificationSettings {
+  local.NotificationDetails get toLocalNotificationDetails =>
+      local.NotificationDetails(
+        android: _androidDetails,
+        iOS: _iOSDetails,
+        linux: _linuxDetails,
+      );
+
+  local.AndroidNotificationDetails get _androidDetails =>
+      local.AndroidNotificationDetails(
+        channelId,
+        channelName,
+        channelDescription: channelDescription,
+        importance: importance.toLocalImportance,
+        priority: priority.toLocalPriority,
+        enableVibration: enableVibration,
+        vibrationPattern: vibrationPattern,
+        enableLights: enableLights,
+        ledColor: ledColor,
+        sound: sound != null
+            ? local.RawResourceAndroidNotificationSound(sound!)
+            : null,
+        ticker: ticker,
+        visibility: visibility.toLocalAndroidVisibility,
+        category: category?.toLocalAndroidCategory,
+        timeoutAfter: timeoutAfter,
+        ongoing: ongoing,
+        autoCancel: autoCancel,
+        onlyAlertOnce: onlyAlertOnce,
+        showWhen: showWhen,
+        usesChronometer: usesChronometer,
+      );
+
+  local.DarwinNotificationDetails get _iOSDetails =>
+      local.DarwinNotificationDetails(
+        presentAlert: presentAlert,
+        presentBadge: presentBadge,
+        presentSound: presentSound,
+        badgeNumber: badgeNumber,
+        threadIdentifier: threadIdentifier,
+        interruptionLevel: interruptionLevel?.toDarwinInterruptionLevel,
+        subtitle: subtitle,
+        sound: sound,
+        attachments: attachments
+            ?.map((attachment) => local.DarwinNotificationAttachment(
+                attachment['identifier'] ?? ''))
+            .toList(),
+      );
+
+  local.LinuxNotificationDetails get _linuxDetails =>
+      local.LinuxNotificationDetails(
+        urgency: importance.toLocalLinuxUrgency,
+        resident: resident,
+        suppressSound: suppressSound,
+        transient: transient,
+        actions: actions
+            .map((action) => local.LinuxNotificationAction(
+                  key: action['key'] ?? '',
+                  label: action['label'] ?? '',
+                ))
+            .toList(),
+      );
 }

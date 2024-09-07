@@ -3,10 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:local_notification_manager/src/enums/notification_category.dart';
 import 'package:local_notification_manager/src/enums/notification_importance.dart';
-import 'package:local_notification_manager/src/enums/notification_interruption_level.dart';
-import 'package:local_notification_manager/src/enums/notification_priority.dart';
 import 'package:local_notification_manager/src/models/custom_notification_response_model.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
@@ -126,6 +123,7 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
     required String title,
     required String body,
     String? payload,
+    CustomLocalNotificationSettings? settings,
   }) async {
     if (!isEnabled) return false;
     try {
@@ -134,10 +132,9 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
       if (statusType?.isGranted == false) {
         throw Exception('No permission to show notification');
       }
-      final NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: _androidDetails);
-      await localNotificationPlugin
-          .show(id, title, body, platformChannelSpecifics, payload: payload);
+      await localNotificationPlugin.show(
+          id, title, body, (settings ?? _settings).toLocalNotificationDetails,
+          payload: payload);
 
       _logManager?.lDebug(
         '''Notification shown: {id: $id, title: $title, body: $body, payload: $payload}''',
@@ -157,6 +154,7 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
     required String body,
     required DateTime scheduledDate,
     String? payload,
+    CustomLocalNotificationSettings? settings,
   }) async {
     if (!isEnabled) return false;
     try {
@@ -174,7 +172,7 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
         title,
         body,
         timezonedDate,
-        _platformSpecificDetails,
+        (settings ?? _settings).toLocalNotificationDetails,
         payload: payload,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
@@ -269,69 +267,6 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
       return false;
     }
   }
-
-  NotificationDetails get _platformSpecificDetails => NotificationDetails(
-        android: _androidDetails,
-        iOS: _iOSDetails,
-        linux: _linuxDetails,
-      );
-
-  AndroidNotificationDetails get _androidDetails => AndroidNotificationDetails(
-        _settings.channelId,
-        _settings.channelName,
-        channelDescription: _settings.channelDescription,
-        importance: _settings.importance.toLocalImportance,
-        priority: _settings.priority.toLocalPriority,
-        enableVibration: _settings.enableVibration,
-        vibrationPattern: _settings.vibrationPattern,
-        enableLights: _settings.enableLights,
-        ledColor: _settings.ledColor,
-        sound: _settings.sound != null
-            ? RawResourceAndroidNotificationSound(_settings.sound!)
-            : null,
-        ticker: _settings.ticker,
-        visibility: _settings.visibility == NotificationVisibility.public
-            ? NotificationVisibility.public
-            : _settings.visibility == NotificationVisibility.secret
-                ? NotificationVisibility.secret
-                : NotificationVisibility.private,
-        category: _settings.category?.toLocalAndroidCategory,
-        timeoutAfter: _settings.timeoutAfter,
-        ongoing: _settings.ongoing,
-        autoCancel: _settings.autoCancel,
-        onlyAlertOnce: _settings.onlyAlertOnce,
-        showWhen: _settings.showWhen,
-        usesChronometer: _settings.usesChronometer,
-      );
-
-  DarwinNotificationDetails get _iOSDetails => DarwinNotificationDetails(
-        presentAlert: _settings.presentAlert,
-        presentBadge: _settings.presentBadge,
-        presentSound: _settings.presentSound,
-        badgeNumber: _settings.badgeNumber,
-        threadIdentifier: _settings.threadIdentifier,
-        interruptionLevel:
-            _settings.interruptionLevel?.toDarwinInterruptionLevel,
-        subtitle: _settings.subtitle,
-        sound: _settings.sound,
-        attachments: _settings.attachments
-            ?.map((attachment) =>
-                DarwinNotificationAttachment(attachment['identifier'] ?? ''))
-            .toList(),
-      );
-
-  LinuxNotificationDetails get _linuxDetails => LinuxNotificationDetails(
-        urgency: _settings.importance.toLocalLinuxUrgency,
-        resident: _settings.resident,
-        suppressSound: _settings.suppressSound,
-        transient: _settings.transient,
-        actions: _settings.actions
-            .map((action) => LinuxNotificationAction(
-                  key: action['key'] ?? '',
-                  label: action['label'] ?? '',
-                ))
-            .toList(),
-      );
 
   // You can customize this implementation.
   bool get isEnabled => true;

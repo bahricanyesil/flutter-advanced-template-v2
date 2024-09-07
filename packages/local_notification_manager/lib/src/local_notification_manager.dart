@@ -1,3 +1,4 @@
+import 'models/custom_local_notification_settings.dart';
 import 'models/custom_notification_response_model.dart';
 
 /// Abstract class for the local notification manager.
@@ -11,6 +12,7 @@ abstract interface class LocalNotificationManager {
     required String title,
     required String body,
     String? payload,
+    CustomLocalNotificationSettings? settings,
   });
 
   /// Schedules a notification.
@@ -20,6 +22,7 @@ abstract interface class LocalNotificationManager {
     required String body,
     required DateTime scheduledDate,
     String? payload,
+    CustomLocalNotificationSettings? settings,
   });
 
   /// Cancels a notification.

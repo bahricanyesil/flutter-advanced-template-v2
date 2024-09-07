@@ -1,14 +1,26 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+/// The importance of a notification.
 enum NotificationImportance {
+  /// The minimum importance.
   min,
+
+  /// The low importance.
   low,
+
+  /// The normal importance.
   normal,
+
+  /// The high importance.
   high,
+
+  /// The maximum importance.
   max,
 }
 
+/// Extension for [NotificationImportance].
 extension NotificationImportanceExtension on NotificationImportance {
+  /// Get the corresponding [Importance].
   Importance get toLocalImportance => switch (this) {
         NotificationImportance.min => Importance.min,
         NotificationImportance.low => Importance.low,
@@ -17,6 +29,7 @@ extension NotificationImportanceExtension on NotificationImportance {
         NotificationImportance.max => Importance.max,
       };
 
+  /// Get the corresponding [LinuxNotificationUrgency].
   LinuxNotificationUrgency get toLocalLinuxUrgency => switch (this) {
         NotificationImportance.min => LinuxNotificationUrgency.low,
         NotificationImportance.low => LinuxNotificationUrgency.low,

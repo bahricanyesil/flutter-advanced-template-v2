@@ -12,6 +12,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'local_notification_manager.dart';
 import 'models/custom_local_notification_settings.dart';
 
+/// The callback for receiving a local notification.
 typedef ReceivedLocalNotificationCallback = FutureOr<void> Function(
   int id,
   String? title,
@@ -19,6 +20,8 @@ typedef ReceivedLocalNotificationCallback = FutureOr<void> Function(
   String? payload,
 );
 
+/// The callback for receiving a notification response.
+///
 typedef ReceivedNotificationResponseCallback = FutureOr<bool> Function(
   CustomNotificationResponseModel response,
 );
@@ -30,7 +33,7 @@ typedef ReceivedNotificationResponseCallback = FutureOr<bool> Function(
 /// It also uses the [PermissionManager] to manage permissions.
 /// It also uses the [LogManager] to log messages.
 @immutable
-final class LocalNotificationManagerImpl implements LocalNotificationManager {
+base class LocalNotificationManagerImpl implements LocalNotificationManager {
   /// Constructs a local notification manager.
   const LocalNotificationManagerImpl({
     required this.localNotificationPlugin,
@@ -46,16 +49,30 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
         _permissionManager = permissionManager,
         _settings = customSettings;
 
+  /// The log manager.
   final LogManager? _logManager;
+
+  /// The permission manager.
   final PermissionManager? _permissionManager;
+
+  /// The local notification plugin.
   final FlutterLocalNotificationsPlugin localNotificationPlugin;
 
+  /// The callback for receiving a local notification.
   final ReceivedLocalNotificationCallback? receiveLocalNotificationCallback;
+
+  /// The callback for receiving a notification response.
   final ReceivedNotificationResponseCallback?
       receiveNotificationResponseCallback;
+
+  /// The callback for receiving a background notification response.
   final ReceivedNotificationResponseCallback?
       receiveBackgroundNotificationResponseCallback;
+
+  /// The custom local notification settings.
   final CustomLocalNotificationSettings _settings;
+
+  /// Whether to rethrow exceptions.
   final bool rethrowExceptions;
 
   @override
@@ -133,8 +150,12 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
         throw Exception('No permission to show notification');
       }
       await localNotificationPlugin.show(
-          id, title, body, (settings ?? _settings).toLocalNotificationDetails,
-          payload: payload);
+        id,
+        title,
+        body,
+        (settings ?? _settings).toLocalNotificationDetails,
+        payload: payload,
+      );
 
       _logManager?.lDebug(
         '''Notification shown: {id: $id, title: $title, body: $body, payload: $payload}''',
@@ -219,7 +240,11 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
 
   @override
   Future<bool> onDidReceiveLocalNotification(
-      int id, String? title, String? body, String? payload) async {
+    int id,
+    String? title,
+    String? body,
+    String? payload,
+  ) async {
     try {
       _logManager?.lDebug(
         '''Notification received: {id: $id, title: $title, body: $body, payload: $payload}''',
@@ -268,6 +293,9 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
     }
   }
 
-  // You can customize this implementation.
+  /// Whether the local notification manager is enabled.
+  ///
+  /// This is a placeholder implementation.
+  /// You can customize this implementation.
   bool get isEnabled => true;
 }

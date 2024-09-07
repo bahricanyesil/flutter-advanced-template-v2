@@ -41,7 +41,8 @@ abstract interface class LocalNotificationManager {
 
   /// On did receive notification response callback.
   Future<bool> onDidReceiveNotificationResponse(
-      CustomNotificationResponseModel response);
+    CustomNotificationResponseModel response,
+  );
 
   /// On did receive background notification response callback.
   Future<bool> onDidReceiveBackgroundNotificationResponse(

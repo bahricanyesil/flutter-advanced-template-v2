@@ -3,13 +3,17 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:local_notification_manager/src/enums/notification_category.dart';
+import 'package:local_notification_manager/src/enums/notification_importance.dart';
+import 'package:local_notification_manager/src/enums/notification_interruption_level.dart';
+import 'package:local_notification_manager/src/enums/notification_priority.dart';
 import 'package:local_notification_manager/src/models/custom_notification_response_model.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import 'local_notification_manager.dart';
-import 'models/custom_notification_settings.dart';
+import 'models/custom_local_notification_settings.dart';
 
 typedef ReceivedLocalNotificationCallback = FutureOr<void> Function(
   int id,
@@ -38,11 +42,12 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
     this.receiveLocalNotificationCallback,
     this.receiveNotificationResponseCallback,
     this.receiveBackgroundNotificationResponseCallback,
-    NotificationSettings settings = const NotificationSettings(),
+    CustomLocalNotificationSettings customSettings =
+        const CustomLocalNotificationSettings(),
     this.rethrowExceptions = true,
   })  : _logManager = logManager,
         _permissionManager = permissionManager,
-        _settings = settings;
+        _settings = customSettings;
 
   final LogManager? _logManager;
   final PermissionManager? _permissionManager;
@@ -53,7 +58,7 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
       receiveNotificationResponseCallback;
   final ReceivedNotificationResponseCallback?
       receiveBackgroundNotificationResponseCallback;
-  final NotificationSettings _settings;
+  final CustomLocalNotificationSettings _settings;
   final bool rethrowExceptions;
 
   @override
@@ -63,7 +68,7 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
         _settings.channelId,
         _settings.channelName,
         description: _settings.channelDescription,
-        importance: _settings.importance,
+        importance: _settings.importance.toLocalImportance,
       );
 
       final AndroidInitializationSettings initializationSettingsAndroid =
@@ -161,8 +166,6 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
         throw Exception('No permission to schedule notification');
       }
 
-      final NotificationDetails platformChannelSpecifics =
-          NotificationDetails(android: _androidDetails);
       final tz.TZDateTime timezonedDate =
           tz.TZDateTime.from(scheduledDate, tz.local);
 
@@ -171,7 +174,7 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
         title,
         body,
         timezonedDate,
-        platformChannelSpecifics,
+        _platformSpecificDetails,
         payload: payload,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
@@ -267,12 +270,67 @@ final class LocalNotificationManagerImpl implements LocalNotificationManager {
     }
   }
 
+  NotificationDetails get _platformSpecificDetails => NotificationDetails(
+        android: _androidDetails,
+        iOS: _iOSDetails,
+        linux: _linuxDetails,
+      );
+
   AndroidNotificationDetails get _androidDetails => AndroidNotificationDetails(
         _settings.channelId,
         _settings.channelName,
         channelDescription: _settings.channelDescription,
-        importance: _settings.importance,
-        priority: _settings.priority,
+        importance: _settings.importance.toLocalImportance,
+        priority: _settings.priority.toLocalPriority,
+        enableVibration: _settings.enableVibration,
+        vibrationPattern: _settings.vibrationPattern,
+        enableLights: _settings.enableLights,
+        ledColor: _settings.ledColor,
+        sound: _settings.sound != null
+            ? RawResourceAndroidNotificationSound(_settings.sound!)
+            : null,
+        ticker: _settings.ticker,
+        visibility: _settings.visibility == NotificationVisibility.public
+            ? NotificationVisibility.public
+            : _settings.visibility == NotificationVisibility.secret
+                ? NotificationVisibility.secret
+                : NotificationVisibility.private,
+        category: _settings.category?.toLocalAndroidCategory,
+        timeoutAfter: _settings.timeoutAfter,
+        ongoing: _settings.ongoing,
+        autoCancel: _settings.autoCancel,
+        onlyAlertOnce: _settings.onlyAlertOnce,
+        showWhen: _settings.showWhen,
+        usesChronometer: _settings.usesChronometer,
+      );
+
+  DarwinNotificationDetails get _iOSDetails => DarwinNotificationDetails(
+        presentAlert: _settings.presentAlert,
+        presentBadge: _settings.presentBadge,
+        presentSound: _settings.presentSound,
+        badgeNumber: _settings.badgeNumber,
+        threadIdentifier: _settings.threadIdentifier,
+        interruptionLevel:
+            _settings.interruptionLevel?.toDarwinInterruptionLevel,
+        subtitle: _settings.subtitle,
+        sound: _settings.sound,
+        attachments: _settings.attachments
+            ?.map((attachment) =>
+                DarwinNotificationAttachment(attachment['identifier'] ?? ''))
+            .toList(),
+      );
+
+  LinuxNotificationDetails get _linuxDetails => LinuxNotificationDetails(
+        urgency: _settings.importance.toLocalLinuxUrgency,
+        resident: _settings.resident,
+        suppressSound: _settings.suppressSound,
+        transient: _settings.transient,
+        actions: _settings.actions
+            .map((action) => LinuxNotificationAction(
+                  key: action['key'] ?? '',
+                  label: action['label'] ?? '',
+                ))
+            .toList(),
       );
 
   // You can customize this implementation.

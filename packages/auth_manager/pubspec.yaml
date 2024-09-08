@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Firebase Auth
+  firebase_auth: ^5.2.0
+
   # Logging
   log_manager:
     path: ../log_manager

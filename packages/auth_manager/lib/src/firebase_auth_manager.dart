@@ -30,8 +30,8 @@ final class FirebaseAuthManager implements AuthManager {
       return AuthResultEntity(user: userCredential.user?.toEntity);
     } on FirebaseAuthException catch (e) {
       _logManager?.lDebug('Error signing out: $e');
-      return AuthResultEntity(errorMessage: e.message);
-    } catch (e) {
+      return AuthResultEntity(errorMessage: e.message ?? e.code);
+    } on Exception catch (e) {
       _logManager?.lDebug('Error signing in: $e');
       return AuthResultEntity(errorMessage: e.toString());
     }
@@ -45,7 +45,7 @@ final class FirebaseAuthManager implements AuthManager {
       return const AuthResultEntity();
     } on FirebaseAuthException catch (e) {
       _logManager?.lDebug('Error signing out: $e');
-      return AuthResultEntity(errorMessage: e.message);
+      return AuthResultEntity(errorMessage: e.message ?? e.code);
     } catch (e) {
       _logManager?.lDebug('Error signing out: $e');
       return AuthResultEntity(errorMessage: e.toString());
@@ -67,7 +67,7 @@ final class FirebaseAuthManager implements AuthManager {
       return AuthResultEntity(user: userCredential.user?.toEntity);
     } on FirebaseAuthException catch (e) {
       _logManager?.lDebug('Error creating user: $e');
-      return AuthResultEntity(errorMessage: e.message);
+      return AuthResultEntity(errorMessage: e.message ?? e.code);
     } catch (e) {
       _logManager?.lDebug('Error creating user: $e');
       return AuthResultEntity(errorMessage: e.toString());
@@ -82,7 +82,7 @@ final class FirebaseAuthManager implements AuthManager {
       return const AuthResultEntity();
     } on FirebaseAuthException catch (e) {
       _logManager?.lDebug('Error creating user: $e');
-      return AuthResultEntity(errorMessage: e.message);
+      return AuthResultEntity(errorMessage: e.message ?? e.code);
     } catch (e) {
       _logManager?.lDebug('Error sending password reset email: $e');
       return AuthResultEntity(errorMessage: e.toString());

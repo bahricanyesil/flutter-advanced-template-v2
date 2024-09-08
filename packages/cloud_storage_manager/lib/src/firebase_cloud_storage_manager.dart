@@ -105,7 +105,7 @@ final class FirebaseCloudStorageManager implements CloudStorageManager {
       }
       final Directory appDocDir = await getApplicationDocumentsDirectory();
       final String filePath =
-          customDownloadPath ?? '${appDocDir.absolute}/${storageRef.name}';
+          customDownloadPath ?? '${appDocDir.path}/${storageRef.name}';
       final File file = File(filePath);
 
       final DownloadTask downloadTask = storageRef.writeToFile(file);

@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_storage_manager/cloud_storage_manager.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+// ignore: depend_on_referenced_packages
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
+import 'fakes/fake_path_provider_platform.dart';
+import 'mocks/mock_download_task.dart';
 import 'mocks/mock_file.dart';
 import 'mocks/mock_firebase_reference.dart';
 import 'mocks/mock_firebase_storage.dart';
@@ -11,6 +17,8 @@ import 'mocks/mock_task_snapshot.dart';
 import 'mocks/mock_upload_task.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late MockFirebaseStorage mockStorage;
   late MockLogManager mockLogManager;
   late FirebaseCloudStorageManager cloudStorageManager;
@@ -22,6 +30,7 @@ void main() {
   });
 
   setUp(() {
+    PathProviderPlatform.instance = FakePathProviderPlatform();
     mockStorage = MockFirebaseStorage();
     mockLogManager = MockLogManager();
     mockUploadTask = MockUploadTask();
@@ -169,6 +178,99 @@ void main() {
 
       final (String?, String?) result =
           await cloudStorageManager.getFileDownloadUrl('test/file.txt');
+
+      expect(result.$1, isNull);
+      expect(result.$2, 'Exception: Generic error');
+    });
+  });
+
+  group('downloadFile', () {
+    late MockDownloadTask mockDownloadTask;
+    late MockTaskSnapshot mockTaskSnapshot;
+
+    setUp(() {
+      mockDownloadTask = MockDownloadTask();
+      mockTaskSnapshot = MockTaskSnapshot();
+    });
+
+    test('successful download from path', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      const String fileName = 'file.txt';
+      when(() => mockReference.name).thenReturn(fileName);
+      when(() => mockReference.writeToFile(any()))
+          .thenAnswer((_) => mockDownloadTask);
+      when(() => mockDownloadTask.snapshotEvents).thenAnswer(
+        (_) =>
+            Stream<TaskSnapshot>.fromIterable(<TaskSnapshot>[mockTaskSnapshot]),
+      );
+      when(() => mockTaskSnapshot.state).thenReturn(TaskState.success);
+      when(() => mockTaskSnapshot.totalBytes).thenReturn(100);
+      when(() => mockTaskSnapshot.bytesTransferred).thenReturn(100);
+
+      const String downloadPath = 'test/file.txt';
+      final (File?, String?) result =
+          await cloudStorageManager.downloadFile(downloadPath);
+
+      expect(result.$1, isA<File>());
+      expect(
+        result.$1?.path,
+        '${FakePathProviderPlatform.kApplicationDocumentsPath}/$fileName',
+      );
+      expect(result.$2, isNull);
+    });
+
+    test('successful download from URL', () async {
+      when(() => mockStorage.refFromURL(any())).thenReturn(mockReference);
+      when(() => mockReference.writeToFile(any()))
+          .thenAnswer((_) => mockDownloadTask);
+      const String fileName = 'file.txt';
+      when(() => mockReference.name).thenReturn(fileName);
+      when(() => mockDownloadTask.snapshotEvents).thenAnswer(
+        (_) =>
+            Stream<TaskSnapshot>.fromIterable(<TaskSnapshot>[mockTaskSnapshot]),
+      );
+      when(() => mockTaskSnapshot.state).thenReturn(TaskState.success);
+      when(() => mockTaskSnapshot.totalBytes).thenReturn(100);
+      when(() => mockTaskSnapshot.bytesTransferred).thenReturn(100);
+
+      final (File?, String?) result = await cloudStorageManager
+          .downloadFile('https://example.com/file.txt', fromUrl: true);
+
+      expect(result.$1, isA<File>());
+      expect(
+        result.$1?.path,
+        '${FakePathProviderPlatform.kApplicationDocumentsPath}/$fileName',
+      );
+      expect(result.$2, isNull);
+    });
+
+    test('FirebaseException during download', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      const String fileName = 'file.txt';
+      when(() => mockReference.name).thenReturn(fileName);
+      when(() => mockReference.writeToFile(any())).thenThrow(
+        FirebaseException(plugin: 'storage', message: 'Download failed'),
+      );
+
+      final (File?, String?) result =
+          await cloudStorageManager.downloadFile('test/file.txt');
+
+      expect(result.$1, isNull);
+      expect(result.$2, 'Download failed');
+    });
+
+    test('generic exception during download', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      const String fileName = 'file.txt';
+      when(() => mockReference.name).thenReturn(fileName);
+      when(() => mockReference.writeToFile(any()))
+          .thenThrow(Exception('Generic error'));
+
+      final (File?, String?) result =
+          await cloudStorageManager.downloadFile('test/file.txt');
 
       expect(result.$1, isNull);
       expect(result.$2, 'Exception: Generic error');

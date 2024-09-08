@@ -5,17 +5,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mock_exceptions/mock_exceptions.dart';
+import 'package:mocktail/mocktail.dart';
 
+import 'mocks/mock_firebase_firestore.dart';
 import 'mocks/mock_log_manager.dart';
 
 void main() {
   late FakeFirebaseFirestore fakeFirestore;
   late FirebaseCloudDatabaseManager manager;
   late MockLogManager mockLogManager;
+  late MockFirebaseFirestore mockFirestore;
 
   setUp(() async {
     fakeFirestore = FakeFirebaseFirestore();
     mockLogManager = MockLogManager();
+    mockFirestore = MockFirebaseFirestore();
     manager = FirebaseCloudDatabaseManager(
       fakeFirestore,
       logManager: mockLogManager,
@@ -254,6 +258,37 @@ void main() {
 
       expect(result.$1, isA<Stream<QuerySnapshot<Map<String, dynamic>>>>());
       expect(result.$2, isNull);
+    });
+
+    test('should handle FirebaseException and Exception', () async {
+      final FirebaseCloudDatabaseManager streamManager =
+          FirebaseCloudDatabaseManager(
+        mockFirestore,
+        logManager: mockLogManager,
+      );
+      const String collectionName = 'test_collection_error';
+      const String exceptionMessage = 'Error fetching documents stream';
+      when(() => mockFirestore.collection(collectionName).snapshots())
+          .thenThrow(
+        FirebaseException(
+          plugin: 'firestore',
+          message: exceptionMessage,
+        ),
+      );
+      final (Stream<QuerySnapshot<Map<String, dynamic>>>?, String?) result =
+          streamManager.streamDocs(collectionName);
+
+      expect(result.$1, isNull);
+      expect(result.$2, exceptionMessage);
+
+      when(() => mockFirestore.collection(collectionName).snapshots())
+          .thenThrow(
+        Exception(exceptionMessage),
+      );
+      final (Stream<QuerySnapshot<Map<String, dynamic>>>?, String?) result2 =
+          streamManager.streamDocs(collectionName);
+      expect(result2.$1, isNull);
+      expect(result2.$2, Exception(exceptionMessage).toString());
     });
   });
 

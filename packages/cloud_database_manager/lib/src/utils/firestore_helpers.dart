@@ -23,5 +23,9 @@ abstract final class FirestoreHelpers {
           query.where(condition.field, isLessThanOrEqualTo: condition.value),
         WhereOperator.arrayContains =>
           query.where(condition.field, arrayContains: condition.value),
+        WhereOperator.arrayContainsAny => query.where(
+            condition.field,
+            arrayContainsAny: condition.value as Iterable<Object?>,
+          ),
       };
 }

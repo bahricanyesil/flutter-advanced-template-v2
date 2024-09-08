@@ -17,7 +17,10 @@ enum WhereOperator {
   isLessThanOrEqualTo('<='),
 
   /// Array contains operator.
-  arrayContains('array-contains');
+  arrayContains('array-contains'),
+
+  /// Array contains any operator.
+  arrayContainsAny('array-contains-any');
 
   const WhereOperator(this.value);
 

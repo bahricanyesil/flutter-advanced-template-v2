@@ -39,9 +39,9 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
           ?.lDebug('Document fetched successfully from Firestore. $data');
       return (data, null);
     } on FirebaseException catch (e) {
-      _logManager?.lError('Error fetching document: ${e.message}');
+      _logManager?.lError('Error fetching document: ${e.message ?? e.code}');
       if (rethrowExceptions) rethrow;
-      return (null, e.message);
+      return (null, e.message ?? e.code);
     } catch (e) {
       _logManager?.lError('Error fetching document: $e');
       if (rethrowExceptions) rethrow;
@@ -70,9 +70,10 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
           ?.lDebug('Documents fetched successfully from Firestore. $documents');
       return (documents, null);
     } on FirebaseException catch (e) {
-      _logManager?.lError('Error fetching all documents: ${e.message}');
+      _logManager
+          ?.lError('Error fetching all documents: ${e.message ?? e.code}');
       if (rethrowExceptions) rethrow;
-      return (null, e.message);
+      return (null, e.message ?? e.code);
     } catch (e) {
       _logManager?.lError('Error fetching all documents: $e');
       if (rethrowExceptions) rethrow;
@@ -92,9 +93,11 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       );
       return (snapshotStream, null);
     } on FirebaseException catch (e) {
-      _logManager?.lError('Error fetching all documents stream: ${e.message}');
+      _logManager?.lError(
+        'Error fetching all documents stream: ${e.message ?? e.code}',
+      );
       if (rethrowExceptions) rethrow;
-      return (null, e.message);
+      return (null, e.message ?? e.code);
     } catch (e) {
       _logManager?.lError('Error fetching all documents stream: $e');
       if (rethrowExceptions) rethrow;
@@ -115,9 +118,9 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       _logManager?.lDebug('Document added successfully to Firestore. $dataMap');
       return (dataMap, null);
     } on FirebaseException catch (e) {
-      _logManager?.lError('Error adding document: ${e.message}');
+      _logManager?.lError('Error adding document: ${e.message ?? e.code}');
       if (rethrowExceptions) rethrow;
-      return (null, e.message);
+      return (null, e.message ?? e.code);
     } catch (e) {
       _logManager?.lError('Error adding document: $e');
       if (rethrowExceptions) rethrow;
@@ -137,9 +140,9 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
           ?.lDebug('Document updated successfully in Firestore. $updateData');
       return null;
     } on FirebaseException catch (e) {
-      _logManager?.lError('Error updating document: ${e.message}');
+      _logManager?.lError('Error updating document: ${e.message ?? e.code}');
       if (rethrowExceptions) rethrow;
-      return e.message;
+      return e.message ?? e.code;
     } catch (e) {
       _logManager?.lError('Error updating document: $e');
       if (rethrowExceptions) rethrow;
@@ -152,15 +155,22 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
     try {
       final DocumentReference<Map<String, dynamic>> doc =
           _firestore.collection(collection).doc(id);
-      if (!(await doc.get()).exists) {
-        throw Exception('Document does not exist in Firestore.');
+      final DocumentSnapshot<Map<String, dynamic>> docSnapshot =
+          await doc.get();
+      if (!docSnapshot.exists) {
+        throw FirebaseException(
+          plugin: 'firestore',
+          message: 'Document does not exist in Firestore.',
+          code: 'document-not-found',
+          stackTrace: StackTrace.current,
+        );
       }
-      await _firestore.collection(collection).doc(id).delete();
+      await doc.delete();
       return null;
     } on FirebaseException catch (e) {
-      _logManager?.lError('Error deleting document: ${e.message}');
+      _logManager?.lError('Error deleting document: ${e.message ?? e.code}');
       if (rethrowExceptions) rethrow;
-      return e.message;
+      return e.message ?? e.code;
     } catch (e) {
       _logManager?.lError('Error deleting document: $e');
       if (rethrowExceptions) rethrow;

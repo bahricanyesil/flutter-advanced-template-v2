@@ -23,5 +23,7 @@ dev_dependencies:
     sdk: flutter
   lint_rules:
     path: ../lint_rules
-  mocktail: ^1.0.4
+
+  # Fake Firestore for testing
+  fake_cloud_firestore: ^3.0.2
 

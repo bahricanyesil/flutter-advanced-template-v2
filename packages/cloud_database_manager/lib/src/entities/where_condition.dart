@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../enums/where_operator.dart';
+
 /// A class to represent a where condition.
 @immutable
 final class WhereCondition<T> {
@@ -14,7 +16,7 @@ final class WhereCondition<T> {
   final String field;
 
   /// Operator to apply.
-  final String operator;
+  final WhereOperator operator;
 
   /// Value to compare.
   final T value;

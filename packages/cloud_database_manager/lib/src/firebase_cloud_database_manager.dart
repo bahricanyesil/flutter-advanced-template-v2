@@ -11,14 +11,20 @@ import 'utils/query_document_snapshot_extensions.dart';
 @immutable
 final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
   /// Creates a new instance of the [FirebaseCloudDatabaseManager].
-  const FirebaseCloudDatabaseManager(this._firestore, {LogManager? logManager})
-      : _logManager = logManager;
+  const FirebaseCloudDatabaseManager(
+    this._firestore, {
+    LogManager? logManager,
+    this.rethrowExceptions = false,
+  }) : _logManager = logManager;
 
   /// The [FirebaseFirestore] instance.
   final FirebaseFirestore _firestore;
 
   /// The [LogManager] instance.
   final LogManager? _logManager;
+
+  /// Whether to rethrow exceptions.
+  final bool rethrowExceptions;
 
   @override
   Future<(Map<String, dynamic>?, String?)> fetchDocumentById(
@@ -34,22 +40,24 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       return (data, null);
     } on FirebaseException catch (e) {
       _logManager?.lError('Error fetching document: ${e.message}');
+      if (rethrowExceptions) rethrow;
       return (null, e.message);
     } catch (e) {
       _logManager?.lError('Error fetching document: $e');
+      if (rethrowExceptions) rethrow;
       return (null, e.toString());
     }
   }
 
   @override
-  Future<(List<Map<String, dynamic>>?, String?)> fetchAllDocuments<T>(
+  Future<(List<Map<String, dynamic>>?, String?)> fetchAllDocuments(
     String collection, {
-    WhereCondition<T>? condition,
+    WhereCondition<Object>? condition,
   }) async {
     try {
       Query<Map<String, dynamic>> query = _firestore.collection(collection);
       if (condition != null) {
-        query = FirestoreHelpers.applyCondition<T>(query, condition);
+        query = FirestoreHelpers.applyCondition<Object>(query, condition);
       }
       final QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await query.get();
@@ -63,9 +71,11 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       return (documents, null);
     } on FirebaseException catch (e) {
       _logManager?.lError('Error fetching all documents: ${e.message}');
+      if (rethrowExceptions) rethrow;
       return (null, e.message);
     } catch (e) {
       _logManager?.lError('Error fetching all documents: $e');
+      if (rethrowExceptions) rethrow;
       return (null, e.toString());
     }
   }
@@ -83,9 +93,11 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       return (snapshotStream, null);
     } on FirebaseException catch (e) {
       _logManager?.lError('Error fetching all documents stream: ${e.message}');
+      if (rethrowExceptions) rethrow;
       return (null, e.message);
     } catch (e) {
       _logManager?.lError('Error fetching all documents stream: $e');
+      if (rethrowExceptions) rethrow;
       return (null, e.toString());
     }
   }
@@ -104,9 +116,11 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       return (dataMap, null);
     } on FirebaseException catch (e) {
       _logManager?.lError('Error adding document: ${e.message}');
+      if (rethrowExceptions) rethrow;
       return (null, e.message);
     } catch (e) {
       _logManager?.lError('Error adding document: $e');
+      if (rethrowExceptions) rethrow;
       return (null, e.toString());
     }
   }
@@ -124,9 +138,11 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       return null;
     } on FirebaseException catch (e) {
       _logManager?.lError('Error updating document: ${e.message}');
+      if (rethrowExceptions) rethrow;
       return e.message;
     } catch (e) {
       _logManager?.lError('Error updating document: $e');
+      if (rethrowExceptions) rethrow;
       return e.toString();
     }
   }
@@ -143,9 +159,11 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       return null;
     } on FirebaseException catch (e) {
       _logManager?.lError('Error deleting document: ${e.message}');
+      if (rethrowExceptions) rethrow;
       return e.message;
     } catch (e) {
       _logManager?.lError('Error deleting document: $e');
+      if (rethrowExceptions) rethrow;
       return e.toString();
     }
   }

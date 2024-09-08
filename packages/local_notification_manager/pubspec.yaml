@@ -1,0 +1,35 @@
+name: local_notification_manager
+description: A module to manage local notifications for Flutter apps.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Local Notification
+  flutter_local_notifications: ^17.2.2
+
+  # Timezone related packages
+  flutter_timezone: ^3.0.1
+  timezone: ^0.9.4
+
+  # Log Manager
+  log_manager:
+    path: ../log_manager
+
+  # Permission Manager
+  permission_manager:
+    path: ../permission_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint_rules:
+    path: ../lint_rules
+  mocktail: ^1.0.4
+

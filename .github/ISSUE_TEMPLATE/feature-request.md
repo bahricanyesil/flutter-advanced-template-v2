@@ -9,12 +9,6 @@ assignees: bahricanyesil
 
 ## 🚀 Feature Request
 
-### Template Name
-
-### About
-
-This template helps you propose new features or enhancements for the Flutter Advanced Template v2. Please provide detailed information to help us understand and evaluate your request.
-
 ### Issue Default Title
 
 **Feature Request: [Brief Description of the Feature]**

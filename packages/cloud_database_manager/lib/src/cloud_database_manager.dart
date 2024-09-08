@@ -9,9 +9,9 @@ abstract interface class CloudDatabaseManager {
   );
 
   /// Fetches all documents from the specified collection.
-  Future<(List<Map<String, dynamic>>?, String?)> fetchAllDocuments(
+  Future<(List<Map<String, dynamic>>?, String?)> fetchAllDocuments<T>(
     String collection, {
-    WhereCondition<Object>? condition,
+    WhereCondition<T>? condition,
   });
 
   /// Adds a document to the specified collection.

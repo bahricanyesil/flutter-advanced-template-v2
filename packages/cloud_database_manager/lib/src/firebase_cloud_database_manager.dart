@@ -4,6 +4,8 @@ import 'package:log_manager/log_manager.dart';
 
 import 'cloud_database_manager.dart';
 import 'entities/where_condition.dart';
+import 'utils/firestore_helpers.dart';
+import 'utils/query_document_snapshot_extensions.dart';
 
 /// A base class for managing Firestore operations.
 @immutable
@@ -40,14 +42,14 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
   }
 
   @override
-  Future<(List<Map<String, dynamic>>?, String?)> fetchAllDocuments(
+  Future<(List<Map<String, dynamic>>?, String?)> fetchAllDocuments<T>(
     String collection, {
-    WhereCondition<Object>? condition,
+    WhereCondition<T>? condition,
   }) async {
     try {
       Query<Map<String, dynamic>> query = _firestore.collection(collection);
       if (condition != null) {
-        query = FirestoreHelpers.applyCondition(query, condition);
+        query = FirestoreHelpers.applyCondition<T>(query, condition);
       }
       final QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await query.get();

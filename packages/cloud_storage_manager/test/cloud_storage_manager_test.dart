@@ -82,4 +82,53 @@ void main() {
       expect(result.$2, 'Exception: Generic error');
     });
   });
+
+  group('deleteFile', () {
+    test('successful delete from path', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      when(() => mockReference.delete())
+          .thenAnswer((_) => Future<void>.value());
+
+      final String? result =
+          await cloudStorageManager.deleteFile('test/file.txt');
+
+      expect(result, isNull);
+    });
+
+    test('successful delete from URL', () async {
+      when(() => mockStorage.refFromURL(any())).thenReturn(mockReference);
+      when(() => mockReference.delete())
+          .thenAnswer((_) => Future<void>.value());
+
+      final String? result = await cloudStorageManager
+          .deleteFile('https://example.com/file.txt', fromUrl: true);
+
+      expect(result, isNull);
+    });
+
+    test('FirebaseException during delete', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      when(() => mockReference.delete()).thenThrow(
+        FirebaseException(plugin: 'storage', message: 'Delete failed'),
+      );
+
+      final String? result =
+          await cloudStorageManager.deleteFile('test/file.txt');
+
+      expect(result, 'Delete failed');
+    });
+
+    test('generic exception during delete', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      when(() => mockReference.delete()).thenThrow(Exception('Generic error'));
+
+      final String? result =
+          await cloudStorageManager.deleteFile('test/file.txt');
+
+      expect(result, 'Exception: Generic error');
+    });
+  });
 }

@@ -11,9 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Logging
-  log_manager:
-    path: ../log_manager
+  # Secure Storage
+  flutter_secure_storage: ^9.2.2
 
 dev_dependencies:
   flutter_test:

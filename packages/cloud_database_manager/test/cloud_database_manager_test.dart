@@ -267,6 +267,40 @@ void main() {
       expect(result.$1?['name'], 'New Test');
       expect(result.$2, isNull);
     });
+
+    test('should handle FirebaseException and Exception', () async {
+      const String collectionName = 'test_collection';
+      const String docPath = 'docPath';
+      final DocumentReference<Map<String, dynamic>> doc =
+          fakeFirestore.collection(collectionName).doc(docPath);
+      const String exceptionMessage = 'Error adding document';
+      whenCalling(Invocation.method(#set, null)).on(doc).thenThrow(
+            FirebaseException(plugin: 'firestore', message: exceptionMessage),
+          );
+      final (Map<String, dynamic>?, String?) result = await manager.addDocument(
+        collectionName,
+        <String, dynamic>{'name': 'New Test'},
+        docPath: docPath,
+      );
+      expect(result.$1, isNull);
+      expect(result.$2, exceptionMessage);
+
+      const String collectionName2 = 'test_collection2';
+      const String docPath2 = 'docPath2';
+      final DocumentReference<Map<String, dynamic>> doc2 =
+          fakeFirestore.collection(collectionName2).doc(docPath2);
+      whenCalling(Invocation.method(#set, null)).on(doc2).thenThrow(
+            Exception(exceptionMessage),
+          );
+      final (Map<String, dynamic>?, String?) result2 =
+          await manager.addDocument(
+        collectionName2,
+        <String, dynamic>{'name': 'New Test'},
+        docPath: docPath2,
+      );
+      expect(result2.$1, isNull);
+      expect(result2.$2, Exception(exceptionMessage).toString());
+    });
   });
 
   group('updateDocument', () {
@@ -289,6 +323,43 @@ void main() {
               .doc(docRef.id)
               .get();
       expect(updatedDoc.data()?['name'], 'Updated Test');
+    });
+
+    test('should handle FirebaseException and Exception', () async {
+      const String collectionName = 'test_collection';
+      const String docId = '1';
+      await fakeFirestore.collection(collectionName).doc(docId).set(
+        <String, dynamic>{'name': 'To Update'},
+      );
+      final DocumentReference<Map<String, dynamic>> doc =
+          fakeFirestore.collection(collectionName).doc(docId);
+      const String exceptionMessage = 'Error updating document';
+      whenCalling(Invocation.method(#update, null)).on(doc).thenThrow(
+            FirebaseException(plugin: 'firestore', message: exceptionMessage),
+          );
+      final String? result = await manager.updateDocument(
+        collectionName,
+        docId,
+        <String, dynamic>{'name': 'Updated Test'},
+      );
+      expect(result, exceptionMessage);
+
+      const String collectionName2 = 'test_collection_2';
+      const String docId2 = '2';
+      await fakeFirestore.collection(collectionName2).doc(docId2).set(
+        <String, dynamic>{'name': 'To Update'},
+      );
+      final DocumentReference<Map<String, dynamic>> doc2 =
+          fakeFirestore.collection(collectionName2).doc(docId2);
+      whenCalling(Invocation.method(#update, null)).on(doc2).thenThrow(
+            Exception(exceptionMessage),
+          );
+      final String? result2 = await manager.updateDocument(
+        collectionName2,
+        docId2,
+        <String, dynamic>{'name': 'Updated Test'},
+      );
+      expect(result2, Exception(exceptionMessage).toString());
     });
   });
 
@@ -317,7 +388,27 @@ void main() {
 
       const String expectedExceptionMessage =
           'Document does not exist in Firestore.';
-      expect(result, expectedExceptionMessage);
+      expect(result, Exception(expectedExceptionMessage).toString());
+    });
+
+    test('should handle FirebaseException and Exception', () async {
+      const String collectionName = 'test_collection';
+      const String docId = '1';
+      await fakeFirestore.collection(collectionName).doc(docId).set(
+        <String, dynamic>{'name': 'To Delete'},
+      );
+      final DocumentReference<Map<String, dynamic>> doc =
+          fakeFirestore.collection(collectionName).doc(docId);
+
+      const String exceptionMessage = 'Error deleting document';
+      whenCalling(Invocation.method(#delete, null)).on(doc).thenThrow(
+            FirebaseException(plugin: 'firestore', message: exceptionMessage),
+          );
+
+      final String? result =
+          await manager.deleteDocument(collectionName, docId);
+
+      expect(result, exceptionMessage);
     });
   });
 }

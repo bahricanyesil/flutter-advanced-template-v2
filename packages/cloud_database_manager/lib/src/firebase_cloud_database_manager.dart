@@ -108,11 +108,15 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
   @override
   Future<(Map<String, dynamic>?, String?)> addDocument(
     String collection,
-    Map<String, dynamic> newDoc,
-  ) async {
+    Map<String, dynamic> newDoc, {
+    String? docPath,
+  }) async {
     try {
+      final CollectionReference<Map<String, dynamic>> collectionRef =
+          _firestore.collection(collection);
       final DocumentReference<Map<String, dynamic>> docRef =
-          await _firestore.collection(collection).add(newDoc);
+          collectionRef.doc(docPath);
+      await docRef.set(newDoc);
       final DocumentSnapshot<Map<String, dynamic>> doc = await docRef.get();
       final Map<String, dynamic>? dataMap = doc.exists ? doc.dataWithId : null;
       _logManager?.lDebug('Document added successfully to Firestore. $dataMap');
@@ -135,7 +139,9 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
     Map<String, dynamic> updateData,
   ) async {
     try {
-      await _firestore.collection(collection).doc(id).update(updateData);
+      final DocumentReference<Map<String, dynamic>> doc =
+          _firestore.collection(collection).doc(id);
+      await doc.update(updateData);
       _logManager
           ?.lDebug('Document updated successfully in Firestore. $updateData');
       return null;
@@ -158,12 +164,7 @@ final class FirebaseCloudDatabaseManager implements CloudDatabaseManager {
       final DocumentSnapshot<Map<String, dynamic>> docSnapshot =
           await doc.get();
       if (!docSnapshot.exists) {
-        throw FirebaseException(
-          plugin: 'firestore',
-          message: 'Document does not exist in Firestore.',
-          code: 'document-not-found',
-          stackTrace: StackTrace.current,
-        );
+        throw Exception('Document does not exist in Firestore.');
       }
       await doc.delete();
       return null;

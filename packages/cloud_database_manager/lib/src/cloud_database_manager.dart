@@ -17,8 +17,9 @@ abstract interface class CloudDatabaseManager {
   /// Adds a document to the specified collection.
   Future<(Map<String, dynamic>?, String?)> addDocument(
     String collection,
-    Map<String, dynamic> data,
-  );
+    Map<String, dynamic> data, {
+    String? docPath,
+  });
 
   /// Updates a document in the specified collection by ID.
   Future<String?> updateDocument(

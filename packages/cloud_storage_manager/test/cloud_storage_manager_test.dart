@@ -131,4 +131,47 @@ void main() {
       expect(result, 'Exception: Generic error');
     });
   });
+
+  group('getFileDownloadUrl', () {
+    test('successful get download URL', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      when(() => mockReference.getDownloadURL()).thenAnswer(
+        (_) => Future<String>.value('https://example.com/file.txt'),
+      );
+
+      final (String?, String?) result =
+          await cloudStorageManager.getFileDownloadUrl('test/file.txt');
+
+      expect(result.$1, 'https://example.com/file.txt');
+      expect(result.$2, isNull);
+    });
+
+    test('FirebaseException during get download URL', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      when(() => mockReference.getDownloadURL()).thenThrow(
+        FirebaseException(plugin: 'storage', message: 'URL fetch failed'),
+      );
+
+      final (String?, String?) result =
+          await cloudStorageManager.getFileDownloadUrl('test/file.txt');
+
+      expect(result.$1, isNull);
+      expect(result.$2, 'URL fetch failed');
+    });
+
+    test('generic exception during get download URL', () async {
+      when(() => mockStorage.ref()).thenReturn(mockReference);
+      when(() => mockReference.child(any())).thenReturn(mockReference);
+      when(() => mockReference.getDownloadURL())
+          .thenThrow(Exception('Generic error'));
+
+      final (String?, String?) result =
+          await cloudStorageManager.getFileDownloadUrl('test/file.txt');
+
+      expect(result.$1, isNull);
+      expect(result.$2, 'Exception: Generic error');
+    });
+  });
 }

@@ -1,6 +1,4 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// ignore: depend_on_referenced_packages
-import 'package:flutter_local_notifications_platform_interface/flutter_local_notifications_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_notification_manager/src/enums/custom_notification_visibility.dart';
 import 'package:local_notification_manager/src/enums/notification_category.dart';
@@ -15,23 +13,16 @@ import 'package:permission_manager/permission_manager.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart';
 
-import 'mocks/mock_flutter_local_notification_platform.dart';
 import 'mocks/mock_flutter_local_notifications_plugin.dart';
 import 'mocks/mock_log_manager.dart';
+import 'mocks/mock_notification_response.dart';
 import 'mocks/mock_permission_manager.dart';
-
-class MockNotificationResponse extends Mock implements NotificationResponse {
-  @override
-  NotificationResponseType get notificationResponseType =>
-      NotificationResponseType.selectedNotification;
-}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
 
   late MockFlutterLocalNotificationsPlugin mockPlugin;
-  late MockFlutterLocalNotificationPlatform mockPlatform;
   late MockLogManager mockLogManager;
   late MockPermissionManager mockPermissionManager;
   late LocalNotificationManagerImpl manager;
@@ -46,20 +37,19 @@ void main() {
     registerFallbackValue(AndroidFlutterLocalNotificationsPlugin());
     registerFallbackValue(TZDateTime(getLocation('Europe/Istanbul'), 2000));
     registerFallbackValue(UILocalNotificationDateInterpretation.wallClockTime);
-    registerFallbackValue(NotificationResponseType.selectedNotification);
+    registerFallbackValue(NotificationResponseType.selectedNotificationAction);
     registerFallbackValue(
       const CustomNotificationResponseModel(
         id: 0,
         actionId: 'default',
-        responseType: CustomNotificationResponseModelType.selectedNotification,
+        responseType:
+            CustomNotificationResponseModelType.selectedNotificationAction,
       ),
     );
   });
 
   setUp(() {
-    mockPlatform = MockFlutterLocalNotificationPlatform();
     mockPlugin = MockFlutterLocalNotificationsPlugin();
-    FlutterLocalNotificationsPlatform.instance = mockPlatform;
     mockLogManager = MockLogManager();
     mockPermissionManager = MockPermissionManager();
     manager = LocalNotificationManagerImpl(
@@ -68,26 +58,14 @@ void main() {
       permissionManager: mockPermissionManager,
       rethrowExceptions: false,
       customSettings: _customSettings,
-      receiveLocalNotificationCallback: (
-        int id,
-        String? title,
-        String? body,
-        String? payload,
-      ) =>
-          true,
-      receiveBackgroundNotificationResponseCallback: (
-        CustomNotificationResponseModel response,
-      ) =>
-          true,
-      receiveNotificationResponseCallback: (
-        CustomNotificationResponseModel response,
-      ) =>
-          true,
+      receiveLocalNotificationCallback: (_, __, ___, ____) => true,
+      receiveBackgroundNotificationResponseCallback: (_) => true,
+      receiveNotificationResponseCallback: (_) => true,
     );
   });
 
   group('LocalNotificationManagerImpl', () {
-    test('initialize - success', () async {
+    test('initialize', () async {
       when(
         () => mockPlugin.initialize(
           any(),
@@ -100,15 +78,12 @@ void main() {
       when(() => mockPermissionManager.checkPermission(any()))
           .thenAnswer((_) async => PermissionStatusTypes.granted);
 
-      final bool result = await manager.initialize();
-
-      expect(result, true);
+      expect(await manager.initialize(), true);
       verify(
         () => mockLogManager.lDebug('Local notification manager initialized'),
       ).called(1);
-    });
 
-    test('initialize - failure', () async {
+      // Test failure case
       when(
         () => mockPlugin.initialize(
           any(),
@@ -118,255 +93,203 @@ void main() {
               any(named: 'onDidReceiveBackgroundNotificationResponse'),
         ),
       ).thenThrow(Exception('Test exception'));
-      final bool result = await manager.initialize();
-      expect(result, false);
+      expect(await manager.initialize(), false);
     });
 
-    test('showNotification - success', () async {
+    test('showNotification', () async {
       when(() => mockPermissionManager.checkPermission(any()))
           .thenAnswer((_) async => PermissionStatusTypes.granted);
       when(() => mockPlugin.show(any(), any(), any(), any()))
-          .thenAnswer((_) async {
-        return;
-      });
+          .thenAnswer((_) async {});
 
-      final bool result = await manager.showNotification(
-        id: 1,
-        title: 'Test',
-        body: 'Test body',
+      expect(
+        await manager.showNotification(
+          id: 1,
+          title: 'Test',
+          body: 'Test body',
+        ),
+        true,
       );
-
-      expect(result, true);
       verify(() => mockLogManager.lDebug(any())).called(1);
-    });
 
-    test('showNotification - no permission', () async {
+      // Test no permission case
       when(() => mockPermissionManager.checkPermission(any()))
           .thenAnswer((_) async => PermissionStatusTypes.denied);
-
-      final bool result = await manager.showNotification(
-        id: 1,
-        title: 'Test',
-        body: 'Test body',
+      expect(
+        await manager.showNotification(
+          id: 1,
+          title: 'Test',
+          body: 'Test body',
+        ),
+        false,
       );
-
-      expect(result, false);
       verify(() => mockLogManager.lError(any())).called(1);
     });
 
-    test('scheduleNotification - success', () async {
+    test('scheduleNotification', () async {
       when(() => mockPermissionManager.checkPermission(any()))
           .thenAnswer((_) async => PermissionStatusTypes.granted);
-      when(
-        () => _zonedScheduleCallback(mockPlugin),
-      ).thenAnswer((_) async {
-        return;
-      });
+      when(() => _zonedScheduleCallback(mockPlugin)).thenAnswer((_) async {});
 
-      final bool result = await manager.scheduleNotification(
-        id: 1,
-        title: 'Test',
-        body: 'Test body',
-        scheduledDate: DateTime.now().add(const Duration(hours: 1)),
+      expect(
+        await manager.scheduleNotification(
+          id: 1,
+          title: 'Test',
+          body: 'Test body',
+          scheduledDate: DateTime.now().add(const Duration(hours: 1)),
+        ),
+        true,
       );
-
-      expect(result, true);
       verify(() => mockLogManager.lDebug(any())).called(1);
-    });
 
-    test('scheduleNotification - no permission', () async {
+      // Test no permission case
       when(() => mockPermissionManager.checkPermission(any()))
           .thenAnswer((_) async => PermissionStatusTypes.denied);
-
-      final bool result = await manager.scheduleNotification(
-        id: 1,
-        title: 'Test',
-        body: 'Test body',
-        scheduledDate: DateTime.now().add(const Duration(hours: 1)),
+      expect(
+        await manager.scheduleNotification(
+          id: 1,
+          title: 'Test',
+          body: 'Test body',
+          scheduledDate: DateTime.now().add(const Duration(hours: 1)),
+        ),
+        false,
       );
-
-      expect(result, false);
       verify(() => mockLogManager.lError(any())).called(1);
     });
 
-    test('cancelNotification - success', () async {
-      when(() => mockPlugin.cancel(any())).thenAnswer((_) async {
-        return;
-      });
-
-      final bool result = await manager.cancelNotification(1);
-
-      expect(result, true);
+    test('cancelNotification', () async {
+      when(() => mockPlugin.cancel(any())).thenAnswer((_) async {});
+      expect(await manager.cancelNotification(1), true);
       verify(() => mockLogManager.lDebug(any())).called(1);
-    });
 
-    test('cancelNotification - error', () async {
+      // Test error case
       when(() => mockPlugin.cancel(any()))
           .thenThrow(Exception('Test exception'));
-
-      final bool result = await manager.cancelNotification(1);
-
-      expect(result, false);
+      expect(await manager.cancelNotification(1), false);
       verify(() => mockLogManager.lError(any())).called(1);
     });
 
-    test('cancelAllNotifications - success', () async {
-      when(() => mockPlugin.cancelAll()).thenAnswer((_) async {
-        return;
-      });
-
-      final bool result = await manager.cancelAllNotifications();
-
-      expect(result, true);
+    test('cancelAllNotifications', () async {
+      when(() => mockPlugin.cancelAll()).thenAnswer((_) async {});
+      expect(await manager.cancelAllNotifications(), true);
       verify(() => mockLogManager.lDebug(any())).called(1);
-    });
 
-    test('cancelAllNotifications - error', () async {
+      // Test error case
       when(() => mockPlugin.cancelAll()).thenThrow(Exception('Test exception'));
-
-      final bool result = await manager.cancelAllNotifications();
-
-      expect(result, false);
+      expect(await manager.cancelAllNotifications(), false);
       verify(() => mockLogManager.lError(any())).called(1);
     });
 
-    test('onDidReceiveLocalNotification - success', () async {
-      final bool result = await manager.onDidReceiveLocalNotification(
-        1,
-        'Test',
-        'Test body',
-        'payload',
-      );
-
-      expect(result, true);
-      verify(() => mockLogManager.lDebug(any())).called(1);
-    });
-
-    test('onDidReceiveBackgroundNotificationResponse - success', () async {
-      const CustomNotificationResponseModel response =
-          CustomNotificationResponseModel(
-        id: 1,
-        actionId: 'action',
-        input: 'input',
-        payload: 'payload',
-        responseType: CustomNotificationResponseModelType.selectedNotification,
-      );
-      final bool result =
-          await manager.onDidReceiveBackgroundNotificationResponse(response);
-
-      expect(result, true);
-      verify(() => mockLogManager.lDebug(any())).called(1);
-    });
-
-    test('onDidReceiveNotificationResponse - success', () async {
-      const CustomNotificationResponseModel response =
-          CustomNotificationResponseModel(
-        id: 1,
-        actionId: 'action',
-        input: 'input',
-        payload: 'payload',
-        responseType: CustomNotificationResponseModelType.selectedNotification,
-      );
-      final bool result =
-          await manager.onDidReceiveNotificationResponse(response);
-
-      expect(result, true);
-      verify(() => mockLogManager.lDebug(any())).called(1);
-    });
-
-    test('isEnabled - returns true', () {
-      expect(manager.isEnabled, true);
-    });
-
-    test('Callback error tests', () async {
-      final Exception backgroundException =
-          Exception('Test exception on background');
-      final Exception foregroundException =
-          Exception('Test exception on foreground');
-      final Exception foregroundResponseException =
-          Exception('Test exception on foreground response');
-      final LocalNotificationManagerImpl errorManager =
-          LocalNotificationManagerImpl(
-        localNotificationPlugin: mockPlugin,
-        logManager: mockLogManager,
-        permissionManager: mockPermissionManager,
-        receiveBackgroundNotificationResponseCallback: (
-          CustomNotificationResponseModel response,
-        ) =>
-            throw backgroundException,
-        receiveLocalNotificationCallback: (
-          int id,
-          String? title,
-          String? body,
-          String? payload,
-        ) =>
-            throw foregroundException,
-        receiveNotificationResponseCallback: (
-          CustomNotificationResponseModel response,
-        ) =>
-            throw foregroundResponseException,
-      );
-      when(
-        () => mockPlugin.initialize(
-          any(),
-          onDidReceiveNotificationResponse:
-              any(named: 'onDidReceiveNotificationResponse'),
-          onDidReceiveBackgroundNotificationResponse:
-              any(named: 'onDidReceiveBackgroundNotificationResponse'),
-        ),
-      ).thenAnswer((_) async => true);
-      when(() => mockPermissionManager.checkPermission(any()))
-          .thenAnswer((_) async => PermissionStatusTypes.granted);
-
-      await errorManager.initialize();
-
-      try {
-        await errorManager.onDidReceiveLocalNotification(
+    test('notification callbacks', () async {
+      expect(
+        await manager.onDidReceiveLocalNotification(
           1,
           'Test',
           'Test body',
           'payload',
-        );
-      } catch (e) {
-        expect(e, foregroundException);
-      }
-
-      try {
-        await errorManager.onDidReceiveBackgroundNotificationResponse(
+        ),
+        true,
+      );
+      expect(
+        await manager.onDidReceiveBackgroundNotificationResponse(
           const CustomNotificationResponseModel(
             id: 1,
             actionId: 'action',
             input: 'input',
             payload: 'payload',
             responseType:
-                CustomNotificationResponseModelType.selectedNotification,
+                CustomNotificationResponseModelType.selectedNotificationAction,
           ),
-        );
-      } catch (e) {
-        expect(e, backgroundException);
-      }
-
-      try {
-        await errorManager.onDidReceiveNotificationResponse(
+        ),
+        true,
+      );
+      expect(
+        await manager.onDidReceiveNotificationResponse(
           const CustomNotificationResponseModel(
             id: 1,
             actionId: 'action',
             input: 'input',
             payload: 'payload',
             responseType:
-                CustomNotificationResponseModelType.selectedNotification,
+                CustomNotificationResponseModelType.selectedNotificationAction,
           ),
+        ),
+        true,
+      );
+      verify(() => mockLogManager.lDebug(any())).called(3);
+    });
+
+    test('isEnabled', () {
+      expect(manager.isEnabled, true);
+    });
+
+    group('Callback error tests', () {
+      late LocalNotificationManagerImpl errorManager;
+
+      setUp(() {
+        errorManager = LocalNotificationManagerImpl(
+          localNotificationPlugin: mockPlugin,
+          logManager: mockLogManager,
+          permissionManager: mockPermissionManager,
+          receiveBackgroundNotificationResponseCallback: (_) =>
+              throw Exception('Test exception on background'),
+          receiveLocalNotificationCallback: (_, __, ___, ____) =>
+              throw Exception('Test exception on foreground'),
+          receiveNotificationResponseCallback: (_) =>
+              throw Exception('Test exception on foreground response'),
         );
-      } catch (e) {
-        expect(e, foregroundResponseException);
-      }
+      });
+
+      test('onDidReceiveLocalNotification throws', () async {
+        expect(
+          () => errorManager.onDidReceiveLocalNotification(
+            1,
+            'Test',
+            'Test body',
+            'payload',
+          ),
+          throwsException,
+        );
+      });
+
+      test('onDidReceiveBackgroundNotificationResponse throws', () async {
+        expect(
+          () => errorManager.onDidReceiveBackgroundNotificationResponse(
+            const CustomNotificationResponseModel(
+              id: 1,
+              actionId: 'action',
+              input: 'input',
+              payload: 'payload',
+              responseType:
+                  CustomNotificationResponseModelType.selectedNotification,
+            ),
+          ),
+          throwsException,
+        );
+      });
+
+      test('onDidReceiveNotificationResponse throws', () async {
+        expect(
+          () => errorManager.onDidReceiveNotificationResponse(
+            const CustomNotificationResponseModel(
+              id: 1,
+              actionId: 'action',
+              input: 'input',
+              payload: 'payload',
+              responseType:
+                  CustomNotificationResponseModelType.selectedNotification,
+            ),
+          ),
+          throwsException,
+        );
+      });
     });
 
     test('Notification response callbacks are triggered correctly', () async {
       final MockFlutterLocalNotificationsPlugin customMockPlugin =
           MockFlutterLocalNotificationsPlugin();
-      late Function(NotificationResponse) capturedForegroundCallback;
-      late Function(NotificationResponse) capturedBackgroundCallback;
+      late void Function(NotificationResponse) capturedForegroundCallback;
+      late void Function(NotificationResponse) capturedBackgroundCallback;
 
       when(
         () => customMockPlugin.initialize(
@@ -378,14 +301,16 @@ void main() {
         ),
       ).thenAnswer((Invocation invocation) {
         capturedForegroundCallback =
-            invocation.namedArguments[#onDidReceiveNotificationResponse]
-                as Function(NotificationResponse);
+            invocation.namedArguments[#onDidReceiveNotificationResponse] as void
+                Function(NotificationResponse);
         capturedBackgroundCallback = invocation
                 .namedArguments[#onDidReceiveBackgroundNotificationResponse]
-            as Function(NotificationResponse);
+            as void Function(NotificationResponse);
         return Future<bool>.value(true);
       });
       when(() => mockPermissionManager.checkPermission(any()))
+          .thenAnswer((_) async => PermissionStatusTypes.denied);
+      when(() => mockPermissionManager.requestPermission(any()))
           .thenAnswer((_) async => PermissionStatusTypes.granted);
 
       final LocalNotificationManagerImpl customManager =
@@ -393,49 +318,34 @@ void main() {
         localNotificationPlugin: customMockPlugin,
         logManager: mockLogManager,
         permissionManager: mockPermissionManager,
-        receiveBackgroundNotificationResponseCallback: (
-          CustomNotificationResponseModel response,
-        ) {
+        receiveBackgroundNotificationResponseCallback:
+            expectAsync1((CustomNotificationResponseModel response) {
+          expect(response.id, 1);
+          expect(response.actionId, 'default');
+          expect(response.input, null);
+          expect(response.payload, 'test_payload');
           return true;
-        },
-        receiveLocalNotificationCallback: (
-          int id,
-          String? title,
-          String? body,
-          String? payload,
-        ) {
+        }),
+        receiveNotificationResponseCallback:
+            expectAsync1((CustomNotificationResponseModel response) {
+          expect(response.id, 1);
+          expect(response.actionId, 'default');
+          expect(response.input, null);
+          expect(response.payload, 'test_payload');
           return true;
-        },
-        receiveNotificationResponseCallback: (
-          CustomNotificationResponseModel response,
-        ) {
-          return true;
-        },
+        }),
       );
 
       await customManager.initialize();
 
-      // Create a mock NotificationResponse
       final MockNotificationResponse mockResponse = MockNotificationResponse();
       when(() => mockResponse.id).thenReturn(1);
       when(() => mockResponse.actionId).thenReturn('default');
       when(() => mockResponse.input).thenReturn(null);
       when(() => mockResponse.payload).thenReturn('test_payload');
 
-      // Trigger the foreground callback
-      await capturedForegroundCallback(mockResponse);
-
-      // // Verify that onDidReceiveNotificationResponse was called
-      // verify(() => customManager.onDidReceiveNotificationResponse(any()))
-      //     .called(1);
-
-      // // Trigger the background callback
-      // await capturedBackgroundCallback(mockResponse);
-
-      // // Verify that onDidReceiveBackgroundNotificationResponse was called
-      // verify(
-      //   () => customManager.onDidReceiveBackgroundNotificationResponse(any()),
-      // ).called(1);
+      capturedForegroundCallback(mockResponse);
+      capturedBackgroundCallback(mockResponse);
     });
   });
 }

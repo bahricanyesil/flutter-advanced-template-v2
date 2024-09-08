@@ -22,17 +22,6 @@ abstract interface class CloudStorageManager {
   Future<(File?, String?)> downloadFile(
     String downloadUrl, {
     bool fromUrl = false,
+    String? customDownloadPath,
   });
-
-  /// Checks if a file exists at the specified storage path.
-  /// Returns true if the file exists, false otherwise.
-  Future<bool> fileExists(String path);
-
-  /// Lists all files in the specified storage path.
-  /// Returns a list of file paths.
-  Future<List<String>> listFiles(String path);
-
-  /// Gets the size of a file at the specified storage path.
-  /// Returns the file size in bytes.
-  Future<int?> getFileSize(String path);
 }

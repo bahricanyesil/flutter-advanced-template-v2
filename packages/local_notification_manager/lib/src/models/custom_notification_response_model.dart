@@ -56,7 +56,8 @@ enum CustomNotificationResponseModelType {
   /// Indicates the a user has selected a notification action.
   selectedNotificationAction;
 
-  /// Converts [NotificationResponseType] to [CustomNotificationResponseModelType].
+  /// Converts [NotificationResponseType] to
+  /// [CustomNotificationResponseModelType].
   static CustomNotificationResponseModelType fromNotificationResponseType(
     NotificationResponseType responseType,
   ) {
@@ -65,32 +66,6 @@ enum CustomNotificationResponseModelType {
         return CustomNotificationResponseModelType.selectedNotification;
       case NotificationResponseType.selectedNotificationAction:
         return CustomNotificationResponseModelType.selectedNotificationAction;
-    }
-  }
-}
-
-/// Helper extension methods for custom notification response.
-extension CustomNotificationResponseModelX on CustomNotificationResponseModel {
-  /// Converts [CustomNotificationResponseModel] to [NotificationResponse].
-  NotificationResponse get toNotificationResponse => NotificationResponse(
-        id: id,
-        actionId: actionId,
-        input: input,
-        payload: payload,
-        notificationResponseType: responseType.toNotificationResponseType,
-      );
-}
-
-/// Helper extension methods for custom notification response type.
-extension CustomNotificationResponseModelTypeX
-    on CustomNotificationResponseModelType {
-  /// Converts [CustomNotificationResponseModelType] to [NotificationResponseType].
-  NotificationResponseType get toNotificationResponseType {
-    switch (this) {
-      case CustomNotificationResponseModelType.selectedNotification:
-        return NotificationResponseType.selectedNotification;
-      case CustomNotificationResponseModelType.selectedNotificationAction:
-        return NotificationResponseType.selectedNotificationAction;
     }
   }
 }

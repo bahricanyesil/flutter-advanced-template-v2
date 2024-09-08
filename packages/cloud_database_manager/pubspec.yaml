@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Firebase Firestore
+  cloud_firestore: ^5.4.0
+
   # Logging
   log_manager:
     path: ../log_manager

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'models/data_model.dart';
 
 /// The function to convert the JSON to the required type.
-typedef FromJsonFunction<T> = T? Function(String? json);
+typedef FromJsonFunction<T> = T? Function(String json);
 
 /// The base class for the key-value storage manager.
 @immutable

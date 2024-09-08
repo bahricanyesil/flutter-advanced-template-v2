@@ -96,7 +96,10 @@ final class SharedPreferencesManager implements KeyValueStorageManager {
     if (value is DataModel) return preferences.setString(key, value.toJson());
     if (defaultToString) return preferences.setString(key, value.toString());
 
-    throw const UnsupportedTypeException(supportedTypes: _supportedTypes);
+    throw UnsupportedTypeException(
+      supportedTypes: _supportedTypes,
+      type: T,
+    );
   }
 
   Future<bool> _writeList(List<Object?> value, String key) {
@@ -116,8 +119,10 @@ final class SharedPreferencesManager implements KeyValueStorageManager {
   ) {
     final List<String>? stringList = read<List<String>>(key, tryToParse: true);
     if (stringList == null) return null;
-    final List<T> result =
-        stringList.mapToIterable<T>((String? e) => fromJson.call(e)).toList();
+    final List<T> result = stringList.mapToIterable<T>((String? e) {
+      if (e == null) return null;
+      return fromJson.call(e);
+    }).toList();
     return result;
   }
 }

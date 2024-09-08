@@ -14,14 +14,9 @@ dependencies:
   # Key-value storage
   shared_preferences: ^2.3.2
 
-  # Logging
-  log_manager:
-    path: ../log_manager
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   lint_rules:
     path: ../lint_rules
-  mocktail: ^1.0.4
 

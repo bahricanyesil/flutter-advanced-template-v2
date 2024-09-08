@@ -10,6 +10,11 @@ typedef CustomParser<R, T> = R? Function(T? source);
 
 /// Extension on [Iterable] to provide additional functionality.
 extension IterableExtensions<T> on Iterable<T?> {
+  /// Maps the elements of this iterable to a new iterable of type [R].
+  Iterable<R> mapToIterable<R>(CustomParser<R, T> customParser) =>
+      map<R?>((T? element) => element == null ? null : customParser(element))
+          .whereNotNull();
+
   /// Maps the elements of this iterable to a typed list of type [R].
   ///
   /// The [CustomFromStringParser] parameter is an optional custom parser

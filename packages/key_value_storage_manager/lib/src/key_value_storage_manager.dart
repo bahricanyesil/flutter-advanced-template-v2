@@ -2,6 +2,9 @@ import 'package:flutter/foundation.dart';
 
 import 'models/data_model.dart';
 
+/// The function to convert the JSON to the required type.
+typedef FromJsonFunction<T> = T? Function(String? json);
+
 /// The base class for the key-value storage manager.
 @immutable
 abstract interface class KeyValueStorageManager {
@@ -16,7 +19,11 @@ abstract interface class KeyValueStorageManager {
   });
 
   /// Reads the value from the storage.
-  T? read<T>(String key, {bool tryToParse = false});
+  T? read<T>(
+    String key, {
+    bool tryToParse = false,
+    FromJsonFunction<T>? fromJson,
+  });
 
   /// Deletes the value from the storage.
   Future<bool> delete({required String key});
@@ -28,5 +35,8 @@ abstract interface class KeyValueStorageManager {
   bool containsKey(String key);
 
   /// Reads the list of models from the storage.
-  List<T>? readModelList<T extends DataModel<T>>(String key);
+  List<T>? readModelList<T extends DataModel<T>>(
+    String key,
+    FromJsonFunction<T> fromJson,
+  );
 }

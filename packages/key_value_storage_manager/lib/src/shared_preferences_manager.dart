@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'exceptions/index.dart';
 import 'key_value_storage_manager.dart';
 import 'models/data_model.dart';
 
@@ -23,4 +22,10 @@ final class SharedPreferencesManager implements KeyValueStorageManager {
     DataModel,
     List,
   ];
+
+  @override
+  List<Type> get supportedTypes => _supportedTypes;
+
+  @override
+  bool containsKey(String key) => preferences.containsKey(key);
 }

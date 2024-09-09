@@ -18,7 +18,7 @@ typedef ProgressCallback = void Function(int count, int total);
 ///
 /// Implementations of this interface should provide concrete
 /// implementations for each method.
-abstract interface class NetworkManagerTyped<E, OptionsT, CancelTokenT,
+abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
     InterceptorT> {
   /// Sends a network request and returns the response.
   ///

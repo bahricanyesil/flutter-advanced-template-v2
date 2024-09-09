@@ -11,6 +11,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Models and Mappers
+  dart_mappable: ^4.2.2
+
+  # API Service Requests
+  dio: ^5.7.0
+
   # Logging
   log_manager:
     path: ../log_manager

@@ -18,6 +18,31 @@ abstract final class DataParserHelpers {
     List<bool>,
   ];
 
+  /// Gets a list of given type from the dynamic data.
+  static Iterable<R> parseIterable<R>(Iterable<Object?> dynamicData) {
+    if (dynamicData is Iterable<R>) return dynamicData;
+    return dynamicData.mapFromStringIterable<R>(
+      customFromStringParser: _customPrimitiveParser<R>(),
+    );
+  }
+
+  static CustomFromStringParser<R>? _customPrimitiveParser<R>() {
+    switch (R) {
+      case String:
+        return null;
+      case int:
+        return (String s) => int.tryParse(s) as R?;
+      case double:
+        return (String s) => double.tryParse(s) as R?;
+      case bool:
+        return (String s) => bool.tryParse(s) as R?;
+    }
+    throw UnsupportedTypeException(
+      supportedTypes: _supportedPrimitiveTypes,
+      type: R,
+    );
+  }
+
   /// Parses primitive and model types.
   static T? parsePrimitive<T>(Object e) {
     assert(isSupportedPrimitive<T>(), 'Type $T is not supported.');

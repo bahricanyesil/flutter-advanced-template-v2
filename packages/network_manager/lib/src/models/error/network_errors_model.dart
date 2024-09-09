@@ -14,6 +14,7 @@ sealed class NetworkErrorModel<T, E> extends NetworkResponseModel<T, E> {
     required Exception super.error,
     required super.errorData,
     required this.message,
+    required this.stackTrace,
     this.statusCode,
   });
 
@@ -22,4 +23,7 @@ sealed class NetworkErrorModel<T, E> extends NetworkResponseModel<T, E> {
 
   /// The error message that describes the network error.
   final String message;
+
+  /// The stack trace of the network error.
+  final StackTrace stackTrace;
 }

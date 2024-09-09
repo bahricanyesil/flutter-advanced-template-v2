@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-part 'error-models/internal_errors_model.dart';
-part 'error-models/network_errors_model.dart';
-part 'error-models/response_errors_model.dart';
+part 'error/internal_errors_model.dart';
+part 'error/network_errors_model.dart';
+part 'error/response_errors_model.dart';
 part 'network_success_model.dart';
 
 /// Represents a generic network response.

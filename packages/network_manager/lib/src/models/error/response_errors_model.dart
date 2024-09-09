@@ -22,6 +22,7 @@ final class BadRequestError<T, E> extends NetworkErrorModel<T, E> {
   const BadRequestError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Bad request error',
@@ -50,6 +51,7 @@ final class UnauthorizedError<T, E> extends NetworkErrorModel<T, E> {
   /// that describes the connection error.
   const UnauthorizedError({
     required super.error,
+    required super.stackTrace,
     super.errorData,
     String? message,
   }) : super(
@@ -73,6 +75,7 @@ final class NotFoundError<T, E> extends NetworkErrorModel<T, E> {
   const NotFoundError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Not found error',
@@ -109,6 +112,7 @@ final class ConflictError<T, E> extends NetworkErrorModel<T, E> {
   const ConflictError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Conflict error error',
@@ -139,6 +143,7 @@ final class BadCertificateError<R, E> extends NetworkErrorModel<R, E> {
   const BadCertificateError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Bad certificate error',
@@ -166,6 +171,7 @@ final class ServerError<T, E> extends NetworkErrorModel<T, E> {
   const ServerError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Internal server error',
@@ -215,6 +221,7 @@ final class GenericBadRequestError<T, E> extends NetworkErrorModel<T, E> {
   const GenericBadRequestError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     required super.statusCode,
     String? message,
   }) : super(

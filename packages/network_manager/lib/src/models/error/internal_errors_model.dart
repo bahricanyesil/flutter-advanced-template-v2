@@ -2,9 +2,9 @@
 
 part of '../network_response_model.dart';
 
-/// Represents a timeout exception that occurs during network operations.
+/// Represents a timeout error that occurs during network operations.
 ///
-/// This exception is thrown when a network operation exceeds
+/// This error is thrown when a network operation exceeds
 /// the specified timeout duration.
 /// It is a subclass of [NetworkErrorModel] and provides additional
 /// information about the error.
@@ -14,29 +14,30 @@ part of '../network_response_model.dart';
 /// try {
 ///   // Perform network operation
 /// } catch (e) {
-///   if (e is TimeOutException) {
+///   if (e is TimeOutError) {
 ///     // Handle timeout error
 ///   }
 /// }
 /// ```
 @immutable
-sealed class TimeOutException<R, E> extends NetworkErrorModel<R, E> {
-  const TimeOutException({
+sealed class TimeOutError<R, E> extends NetworkErrorModel<R, E> {
+  const TimeOutError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Time out error',
         );
 }
 
-/// Represents an exception that occurs when a connection times out.
+/// Represents an error that occurs when a connection times out.
 ///
-/// This exception is thrown when a network connection exceeds
+/// This error is thrown when a network connection exceeds
 /// the specified timeout duration
 /// and the request cannot be completed within that time.
 ///
-/// The [ConnectionTimeOutException] class extends the [TimeOutException]
+/// The [ConnectionTimeOutError] class extends the [TimeOutError]
 /// class and provides
 /// an optional [message] parameter to describe the connection error.
 ///
@@ -45,19 +46,20 @@ sealed class TimeOutException<R, E> extends NetworkErrorModel<R, E> {
 /// try {
 ///   // Perform network request
 /// } catch (e) {
-///   if (e is ConnectionTimeOutException) {
+///   if (e is ConnectionTimeOutError) {
 ///   }
 /// }
 /// ```
 @immutable
-final class ConnectionTimeOutException<R, E> extends TimeOutException<R, E> {
-  /// Creates a new instance of [ConnectionTimeOutException].
+final class ConnectionTimeOutError<R, E> extends TimeOutError<R, E> {
+  /// Creates a new instance of [ConnectionTimeOutError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const ConnectionTimeOutException({
+  const ConnectionTimeOutError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Connection time out error',
@@ -71,76 +73,80 @@ final class ConnectionTimeOutException<R, E> extends TimeOutException<R, E> {
 /// The [message] parameter can be used to provide a custom error message that
 /// describes the connection error.
 @immutable
-final class SendTimeOutException<R, E> extends TimeOutException<R, E> {
-  /// Creates a new instance of [SendTimeOutException].
+final class SendTimeOutError<R, E> extends TimeOutError<R, E> {
+  /// Creates a new instance of [SendTimeOutError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const SendTimeOutException({
+  const SendTimeOutError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Send time out error',
         );
 }
 
-/// Represents an exception that occurs when a receive timeout error is
+/// Represents an error that occurs when a receive timeout error is
 /// encountered during network communication.
 ///
-/// This exception is a subclass of [TimeOutException] and provides additional
+/// This error is a subclass of [TimeOutError] and provides additional
 /// information about the error.
 /// The [message] property can be used to retrieve the error message
-/// associated with the exception.
+/// associated with the error.
 @immutable
-final class ReceiveTimeOutException<R, E> extends TimeOutException<R, E> {
-  /// Creates a new instance of [ReceiveTimeOutException].
+final class ReceiveTimeOutError<R, E> extends TimeOutError<R, E> {
+  /// Creates a new instance of [ReceiveTimeOutError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const ReceiveTimeOutException({
+  const ReceiveTimeOutError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     super.message = 'Receive error',
   });
 }
 
-/// Represents an exception that occurs when a request is cancelled.
+/// Represents an error that occurs when a request is cancelled.
 ///
-/// This exception is thrown when a network request is cancelled before
+/// This error is thrown when a network request is cancelled before
 /// it can be completed.
 /// It extends the [NetworkErrorModel] class and provides an optional [message]
 /// parameter to describe the connection error.
 @immutable
-final class CancelledRequestException<R, E> extends NetworkErrorModel<R, E> {
-  /// Creates a new instance of [CancelledRequestException].
+final class CancelledRequestError<R, E> extends NetworkErrorModel<R, E> {
+  /// Creates a new instance of [CancelledRequestError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const CancelledRequestException({
+  const CancelledRequestError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Cancelled request error',
         );
 }
 
-/// Represents an unknown exception that occurred during a network operation.
+/// Represents an unknown error that occurred during a network operation.
 ///
-/// This exception is thrown when an unexpected error occurs
+/// This error is thrown when an unexpected error occurs
 /// during a network request.
 /// It extends the [NetworkErrorModel] class and provides an optional [message]
 /// parameter to describe the connection error.
 @immutable
-final class UnknownException<R, E> extends NetworkErrorModel<R, E> {
-  /// Creates a new instance of [UnknownException].
+final class UnknownError<R, E> extends NetworkErrorModel<R, E> {
+  /// Creates a new instance of [UnknownError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const UnknownException({
+  const UnknownError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Unknown error',
@@ -159,18 +165,19 @@ final class UnknownException<R, E> extends NetworkErrorModel<R, E> {
 ///
 /// Example usage:
 /// ```dart
-/// throw ConnectionErrorException<String>(error: '500',
+/// throw ConnectionError<String>(error: '500',
 ///   message: 'Connection timed out');
 /// ```
 @immutable
-final class ConnectionErrorException<R, E> extends NetworkErrorModel<R, E> {
-  /// Creates a new instance of [ConnectionErrorException].
+final class ConnectionError<R, E> extends NetworkErrorModel<R, E> {
+  /// Creates a new instance of [ConnectionError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const ConnectionErrorException({
+  const ConnectionError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'Connection error',
@@ -179,24 +186,26 @@ final class ConnectionErrorException<R, E> extends NetworkErrorModel<R, E> {
 
 /// Represents an error that occurs when a bad response is received.
 @immutable
-final class NoConnectionException<R, E> extends NetworkErrorModel<R, E> {
-  /// Creates a new instance of [NoConnectionException].
-  const NoConnectionException({
+final class NoConnectionError<R, E> extends NetworkErrorModel<R, E> {
+  /// Creates a new instance of [NoConnectionError].
+  const NoConnectionError({
     required super.error,
     required super.errorData,
+    required super.stackTrace,
     String? message,
   }) : super(
           message: message ?? 'No internet connection',
         );
 }
 
-/// Network parse error exception that occurs when parsing network data.
-final class NetworkParseException<R, E> extends NetworkErrorModel<R, E> {
-  /// Creates a new instance of [NetworkParseException].
-  const NetworkParseException({
+/// Network parse error that occurs when parsing network data.
+final class NetworkParseError<R, E> extends NetworkErrorModel<R, E> {
+  /// Creates a new instance of [NetworkParseError].
+  const NetworkParseError({
     required super.error,
     required this.expectedType,
     required this.value,
+    required super.stackTrace,
     super.errorData,
     String? message,
   }) : super(
@@ -211,5 +220,5 @@ final class NetworkParseException<R, E> extends NetworkErrorModel<R, E> {
 
   @override
   String toString() =>
-      '''UnsuccessfulParseException: Could not parse $value to type $expectedType.'\n$message''';
+      '''UnsuccessfulParseError: Could not parse $value to type $expectedType.'\n$message''';
 }

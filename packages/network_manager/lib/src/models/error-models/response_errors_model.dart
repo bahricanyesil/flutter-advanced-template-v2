@@ -2,24 +2,24 @@
 
 part of '../network_response_model.dart';
 
-/// Represents an exception that occurs when a bad request is made to the server
+/// Represents an error that occurs when a bad request is made to the server
 ///
-/// This exception is typically thrown when the server receives a request
+/// This error is typically thrown when the server receives a request
 /// that it cannot process due to invalid parameters or missing data.
 /// The [message] property provides a descriptive
 /// error message for the bad request.
 ///
 /// Example usage:
 /// ```dart
-/// throw BadRequestException(message: 'Invalid request');
+/// throw BadRequestError(message: 'Invalid request');
 /// ```
 @immutable
-final class BadRequestException<T, E> extends NetworkErrorModel<T, E> {
-  /// Creates a new instance of [BadRequestException].
+final class BadRequestError<T, E> extends NetworkErrorModel<T, E> {
+  /// Creates a new instance of [BadRequestError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const BadRequestException({
+  const BadRequestError({
     required super.error,
     required super.errorData,
     String? message,
@@ -29,26 +29,26 @@ final class BadRequestException<T, E> extends NetworkErrorModel<T, E> {
         );
 }
 
-/// Represents an exception that occurs when a request is unauthorized.
+/// Represents an error that occurs when a request is unauthorized.
 ///
-/// This exception is thrown when the server responds with a status
+/// This error is thrown when the server responds with a status
 /// code of 401 (Unauthorized).
 /// It extends the [NetworkErrorModel] class and provides
 /// additional information about the error.
-/// The [UnauthorizedException] class is generic, allowing you to specify
+/// The [UnauthorizedError] class is generic, allowing you to specify
 /// the type of data associated with the error.
 ///
 /// Example usage:
 /// ```dart
-/// throw UnauthorizedException<String>(error: 'Invalid token');
+/// throw UnauthorizedError<String>(error: 'Invalid token');
 /// ```
 @immutable
-final class UnauthorizedException<T, E> extends NetworkErrorModel<T, E> {
-  /// Creates a new instance of [UnauthorizedException].
+final class UnauthorizedError<T, E> extends NetworkErrorModel<T, E> {
+  /// Creates a new instance of [UnauthorizedError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const UnauthorizedException({
+  const UnauthorizedError({
     required super.error,
     super.errorData,
     String? message,
@@ -65,12 +65,12 @@ final class UnauthorizedException<T, E> extends NetworkErrorModel<T, E> {
 /// The [message] parameter can be used to provide a custom error message.
 /// The [statusCode] property is set to 404 by default.
 @immutable
-final class NotFoundException<T, E> extends NetworkErrorModel<T, E> {
-  /// Creates a new instance of [NotFoundException].
+final class NotFoundError<T, E> extends NetworkErrorModel<T, E> {
+  /// Creates a new instance of [NotFoundError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const NotFoundException({
+  const NotFoundError({
     required super.error,
     required super.errorData,
     String? message,
@@ -80,14 +80,14 @@ final class NotFoundException<T, E> extends NetworkErrorModel<T, E> {
         );
 }
 
-/// Represents a conflict exception that occurs during network communication.
+/// Represents a conflict error that occurs during network communication.
 ///
-/// This exception is thrown when there is a conflict between
+/// This error is thrown when there is a conflict between
 /// the client and the server.
 /// It extends the [NetworkErrorModel] class and provides additional
 /// functionality specific to conflict errors.
 ///
-/// The [ConflictException] class is generic, allowing you to specify the type
+/// The [ConflictError] class is generic, allowing you to specify the type
 /// of data associated with the error.
 /// The generic type parameter [T] represents the type of data associated with
 /// the error.
@@ -96,30 +96,30 @@ final class NotFoundException<T, E> extends NetworkErrorModel<T, E> {
 /// ```dart
 /// try {
 ///   // Perform network operation
-/// } on ConflictException<Data> catch (e) {
+/// } on ConflictError<Data> catch (e) {
 ///   // Handle conflict error
 /// }
 /// ```
 @immutable
-final class ConflictException<T, E> extends NetworkErrorModel<T, E> {
-  /// Creates a new instance of [ConflictException].
+final class ConflictError<T, E> extends NetworkErrorModel<T, E> {
+  /// Creates a new instance of [ConflictError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const ConflictException({
+  const ConflictError({
     required super.error,
     required super.errorData,
     String? message,
   }) : super(
-          message: message ?? 'Conflict exception error',
+          message: message ?? 'Conflict error error',
           statusCode: 409,
         );
 }
 
-/// Represents an exception that occurs when there is a bad certificate error
+/// Represents an error that occurs when there is a bad certificate error
 /// during a network request.
 ///
-/// This exception is thrown when the server's SSL certificate is invalid or
+/// This error is thrown when the server's SSL certificate is invalid or
 /// cannot be trusted.
 /// It extends the [NetworkErrorModel] class and provides
 /// additional information about the error.
@@ -131,12 +131,12 @@ final class ConflictException<T, E> extends NetworkErrorModel<T, E> {
 ///
 /// The [statusCode] property is set to 495, indicating a bad certificate error.
 @immutable
-final class BadCertificateException<R, E> extends NetworkErrorModel<R, E> {
-  /// Creates a new instance of [BadCertificateException].
+final class BadCertificateError<R, E> extends NetworkErrorModel<R, E> {
+  /// Creates a new instance of [BadCertificateError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const BadCertificateException({
+  const BadCertificateError({
     required super.error,
     required super.errorData,
     String? message,
@@ -155,15 +155,15 @@ final class BadCertificateException<R, E> extends NetworkErrorModel<R, E> {
 ///
 /// Example usage:
 /// ```dart
-/// throw ServerErrorException<String>(message: 'Failed to fetch data');
+/// throw ServerError<String>(message: 'Failed to fetch data');
 /// ```
 @immutable
-final class ServerErrorException<T, E> extends NetworkErrorModel<T, E> {
-  /// Creates a new instance of [ServerErrorException].
+final class ServerError<T, E> extends NetworkErrorModel<T, E> {
+  /// Creates a new instance of [ServerError].
   ///
   /// The [message] parameter is an optional error message
   /// that describes the connection error.
-  const ServerErrorException({
+  const ServerError({
     required super.error,
     required super.errorData,
     String? message,
@@ -173,9 +173,9 @@ final class ServerErrorException<T, E> extends NetworkErrorModel<T, E> {
         );
 }
 
-/// Represents a generic bad request exception in the network response.
+/// Represents a generic bad request error in the network response.
 ///
-/// This exception is thrown when a bad request is encountered
+/// This error is thrown when a bad request is encountered
 /// in the network response.
 /// It extends the [NetworkErrorModel] class and provides additional
 /// information such as the error message and status code.
@@ -185,16 +185,16 @@ final class ServerErrorException<T, E> extends NetworkErrorModel<T, E> {
 /// try {
 ///   // Make a network request
 /// } catch (e) {
-///   if (e is GenericBadRequestException) {
-///     // Handle the bad request exception
+///   if (e is GenericBadRequestError) {
+///     // Handle the bad request error
 ///   }
 /// }
 /// ```
 @immutable
-final class GenericBadRequestException<T, E> extends NetworkErrorModel<T, E> {
-  /// A custom exception representing a generic bad request error.
+final class GenericBadRequestError<T, E> extends NetworkErrorModel<T, E> {
+  /// A custom error representing a generic bad request error.
   ///
-  /// This exception is thrown when a bad request is made to the server.
+  /// This error is thrown when a bad request is made to the server.
   /// It extends the [NetworkErrorModel] class and provide
   ///  a default error message.
   ///
@@ -206,13 +206,13 @@ final class GenericBadRequestException<T, E> extends NetworkErrorModel<T, E> {
   /// Example usage:
   ///
   /// ```dart
-  /// throw GenericBadRequestException(
+  /// throw GenericBadRequestError(
   ///   error: 'Invalid request',
   ///   statusCode: 400,
   ///   message: 'The request made was invalid.',
   /// );
   /// ```
-  const GenericBadRequestException({
+  const GenericBadRequestError({
     required super.error,
     required super.errorData,
     required super.statusCode,

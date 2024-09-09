@@ -53,10 +53,4 @@ scripts:
 
   generate: |
     echo "Checking for build_runner availability..."
-    if dart pub global list | grep -q "build_runner"; then
-      echo "build_runner is available. Running code generation..."
-      dart run build_runner build --delete-conflicting-outputs
-    else
-      echo "Error: build_runner is not available. Please ensure it's installed in your project."
-      exit 1
-    fi
+    dart run build_runner build --delete-conflicting-outputs

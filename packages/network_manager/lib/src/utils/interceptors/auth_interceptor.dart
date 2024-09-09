@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 
 import '../../constants/network_constants.dart';
+import '../../default_network_manager.dart';
 import '../../entities/token_entity.dart';
 import '../../enums/token_types.dart';
 import '../../repositories/token_repository.dart';

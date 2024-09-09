@@ -38,3 +38,5 @@ dev_dependencies:
   lint_rules:
     path: ../lint_rules
   mocktail: ^1.0.4
+  build_runner: ^2.4.12
+  dart_mappable_builder: ^4.2.3

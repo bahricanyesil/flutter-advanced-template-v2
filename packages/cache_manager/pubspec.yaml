@@ -1,0 +1,20 @@
+name: cache_manager
+description: A platform-independent module to manage cache operations for Flutter apps.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint_rules:
+    path: ../lint_rules
+  mocktail: ^1.0.4
+

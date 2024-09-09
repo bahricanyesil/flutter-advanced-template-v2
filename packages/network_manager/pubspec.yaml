@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Collection for utilities
+  collection: ^1.18.0
+
   # Models and Mappers
   dart_mappable: ^4.2.2
 

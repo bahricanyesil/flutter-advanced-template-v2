@@ -1,0 +1,20 @@
+targets:
+  $default:
+    builders:
+      dart_mappable_builder:
+        enabled: true
+        generate_for:
+          exclude:
+            - test
+            - example
+          include:
+            - lib/**/**_model.dart
+            - lib/**/**_enum.dart
+            - lib/**/**_bloc.dart
+            - lib/**/**_cubit.dart
+            - lib/**/**_entity.dart
+            - test/integration/*
+            - test/integration/**/*
+        options:
+          explicit_to_json: true
+          include_if_null: false

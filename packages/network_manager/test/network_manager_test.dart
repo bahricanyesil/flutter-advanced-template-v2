@@ -252,10 +252,13 @@ void main() {
       when(() => mockDioAdapter.fetch(any(), any(), any()))
           .thenThrow(exception);
 
+      final dio.FormData errorFormData = dio.FormData.fromMap(<String, dynamic>{
+        'file': 'errorFormData file',
+      });
       final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
           await networkManager.uploadFile<dio.FormData, DefaultModelT>(
         '/test',
-        formData,
+        errorFormData,
       );
 
       expect(res.responseData, isNull);

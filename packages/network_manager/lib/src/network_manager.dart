@@ -87,11 +87,14 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   /// Downloads a file from the specified path with additional options.
   ///
   /// The [path] parameter specifies the path of the file to download.
-  /// The [callback] parameter is an optional callback function
-  /// that is called when progress is received.
   /// The [method] parameter specifies the HTTP method type for the request.
   /// The [requestOptions] parameter provides additional options for the request
+  /// The [queryParameters] parameter is the [Map<String, dynamic>]
   /// The [body] parameter is the request payload data.
+  /// The [cancelToken] parameter is the [CancelTokenT]
+  /// The [onSendProgress] parameter is the [ProgressCallback]
+  /// The [onReceiveProgress] parameter is the [ProgressCallback]
+  /// The [requiresAuth] parameter is the [bool]
   ///
   /// Returns a [Future] that resolves to a [NetworkResponseModel]
   /// object containing the downloaded file data.

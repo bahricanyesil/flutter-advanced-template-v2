@@ -179,6 +179,7 @@ void main() {
       final NetworkResponseModel<ListResponseModel<int>, DefaultErrorModel>
           res = await networkManager.downloadFile<DefaultModelT>(
         '/test',
+        body: data,
         onReceiveProgress: (int count, int total) => expect(count, 40),
       );
 

@@ -18,16 +18,10 @@ extension ListInterceptorExtensions on List<dio.Interceptor> {
         (dio.Interceptor oldInterceptor) => oldInterceptor.isEqual(interceptor),
       );
 
-  /// Adds the [interceptor] to the list if it does not already exist.
-  bool addIfNotExists(dio.Interceptor interceptor) {
-    final bool isExist = exists(interceptor);
-    if (!isExist) add(interceptor);
-    return !isExist;
-  }
-
   /// Inserts the [interceptor] at the given [index]
   /// if it does not already exist.
-  bool insertIfNotExists(int index, dio.Interceptor interceptor) {
+  bool insertIfNotExists(dio.Interceptor interceptor, {int? index}) {
+    index ??= length;
     if (index < 0 || index > length) return false;
     final bool isExist = exists(interceptor);
     if (!isExist) insert(index, interceptor);

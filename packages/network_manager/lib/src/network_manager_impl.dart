@@ -41,6 +41,24 @@ base class NetworkManagerImpl<E extends DataModel<E>>
         clientAdapter ?? NetworkManagerAdapter.httpClientAdapter;
   }
 
+  /// Sends a request to the specified path with the given body and method type.
+  ///
+  /// The [path] parameter is the path to send the request to.
+  /// The [body] parameter is the body of the request.
+  /// The [methodType] parameter is the method type of the request.
+  /// The [urlSuffix] parameter is the suffix of the URL.
+  /// The [queryParameters] parameter is the query parameters of the request.
+  /// The [requestOptions] parameter is the request options.
+  /// The [cacheExpiration] parameter is the cache expiration.
+  /// The [onSendProgress] parameter is the on send progress.
+  /// The [onReceiveProgress] parameter is the on receive progress.
+  /// The [cancelToken] parameter is the cancel token.
+  /// The [requiresAuth] parameter is the requires auth.
+  ///
+  /// Note: DioMixin always assures that the exception is a DioException.
+  /// Even if the exception is not a DioException, it will be converted
+  /// to a DioException. Therefore, the parseError method will always
+  /// receive a DioException.
   @override
   Future<NetworkResponseModel<R, E>>
       sendRequest<T extends DataModel<T>, R extends DataModel<R>>(
@@ -56,9 +74,9 @@ base class NetworkManagerImpl<E extends DataModel<E>>
     dio.CancelToken? cancelToken,
     bool requiresAuth = true,
   }) async {
+    requestOptions =
+        _setRequestOptions(requestOptions, requiresAuth, methodType);
     try {
-      requestOptions =
-          _setRequestOptions(requestOptions, requiresAuth, methodType);
       final dio.Response<Object?> response = await request(
         _createUrl(path, urlSuffix),
         data: body.toJson(),
@@ -71,12 +89,6 @@ base class NetworkManagerImpl<E extends DataModel<E>>
       return parseSuccess<R>(response);
     } on dio.DioException catch (err) {
       return parseError<R>(err);
-    } on Exception catch (err, stackTrace) {
-      return UnknownError<R, E>(
-        error: err,
-        errorData: null,
-        stackTrace: stackTrace,
-      );
     }
   }
 
@@ -96,9 +108,9 @@ base class NetworkManagerImpl<E extends DataModel<E>>
     dio.CancelToken? cancelToken,
     bool requiresAuth = true,
   }) async {
+    requestOptions =
+        _setRequestOptions(requestOptions, requiresAuth, methodType);
     try {
-      requestOptions =
-          _setRequestOptions(requestOptions, requiresAuth, methodType);
       final dio.Response<Object?> response = await request(
         _createUrl(path, urlSuffix),
         options: requestOptions,
@@ -110,20 +122,13 @@ base class NetworkManagerImpl<E extends DataModel<E>>
       return parseSuccess<R>(response);
     } on dio.DioException catch (err) {
       return parseError<R>(err);
-    } on Exception catch (err, stackTrace) {
-      return UnknownError<R, E>(
-        error: err,
-        errorData: null,
-        stackTrace: stackTrace,
-      );
     }
   }
 
   @override
   Future<NetworkResponseModel<ListResponseModel<int>, E>>
       downloadFile<T extends DataModel<T>>(
-    String path,
-    ProgressCallback? callback, {
+    String path, {
     T? body,
     MethodTypes? method,
     dio.Options? requestOptions,
@@ -147,17 +152,11 @@ base class NetworkManagerImpl<E extends DataModel<E>>
         queryParameters: queryParameters,
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
-        onReceiveProgress: callback,
+        onReceiveProgress: onReceiveProgress,
       );
       return parseList<int>(response);
     } on dio.DioException catch (err) {
       return parseError<ListResponseModel<int>>(err);
-    } on Exception catch (err, stackTrace) {
-      return UnknownError<ListResponseModel<int>, E>(
-        error: err,
-        errorData: null,
-        stackTrace: stackTrace,
-      );
     }
   }
 
@@ -187,13 +186,9 @@ base class NetworkManagerImpl<E extends DataModel<E>>
     dio.CancelToken? cancelToken,
     bool requiresAuth = true,
   }) async {
+    requestOptions =
+        _setRequestOptions(requestOptions, requiresAuth, MethodTypes.post);
     try {
-      requestOptions = _setRequestOptions(
-        requestOptions,
-        requiresAuth,
-        MethodTypes.post,
-      );
-
       final dio.Response<Object?> response = await post(
         path,
         data: data,
@@ -205,12 +200,6 @@ base class NetworkManagerImpl<E extends DataModel<E>>
       return parseSuccess<R>(response);
     } on dio.DioException catch (err) {
       return parseError<R>(err);
-    } on Exception catch (err, stackTrace) {
-      return UnknownError<R, E>(
-        error: err,
-        errorData: null,
-        stackTrace: stackTrace,
-      );
     }
   }
 
@@ -243,12 +232,6 @@ base class NetworkManagerImpl<E extends DataModel<E>>
       return NetworkSuccessModel<dio.Response<Object?>, E>(data: response);
     } on dio.DioException catch (err) {
       return parseError<dio.Response<Object?>>(err);
-    } on Exception catch (err, stackTrace) {
-      return UnknownError<dio.Response<Object?>, E>(
-        error: err,
-        errorData: null,
-        stackTrace: stackTrace,
-      );
     }
   }
 
@@ -270,12 +253,8 @@ base class NetworkManagerImpl<E extends DataModel<E>>
       interceptors.addAllIfNotExists(newInterceptorList);
 
   @override
-  bool addInterceptor(dio.Interceptor newInterceptor) =>
-      interceptors.addIfNotExists(newInterceptor);
-
-  @override
-  bool insertInterceptor(int index, dio.Interceptor newInterceptor) =>
-      interceptors.insertIfNotExists(index, newInterceptor);
+  bool insertInterceptor(dio.Interceptor newInterceptor, {int? index}) =>
+      interceptors.insertIfNotExists(newInterceptor, index: index);
 
   @override
   bool removeInterceptor(dio.Interceptor removedInterceptor) =>

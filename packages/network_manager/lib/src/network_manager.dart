@@ -97,8 +97,7 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   /// object containing the downloaded file data.
   Future<NetworkResponseModel<ListResponseModel<int>, E>>
       downloadFile<T extends DataModel<T>>(
-    String path,
-    ProgressCallback? callback, {
+    String path, {
     T? body,
     MethodTypes? method,
     OptionsT? requestOptions,
@@ -155,12 +154,6 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   /// Adds a list of interceptors to the network manager.
   void addAllInterceptors(List<InterceptorT> newInterceptorList);
 
-  /// Adds an interceptor to the network manager.
-  ///
-  /// The [newInterceptor] parameter is of type [InterceptorT]
-  /// and represents the interceptor to be added.
-  bool addInterceptor(InterceptorT newInterceptor);
-
   /// Inserts an interceptor at the specified index.
   /// The [index] parameter is the index at which to insert the interceptor.
   /// The [newInterceptor] parameter is the interceptor to be inserted.
@@ -169,7 +162,7 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   /// If the index is out of bounds, the interceptor is not inserted.
   /// If the interceptor already exists, it is not inserted.
   /// If the interceptor is successfully inserted, returns `true`.
-  bool insertInterceptor(int index, InterceptorT newInterceptor);
+  bool insertInterceptor(InterceptorT newInterceptor, {int? index});
 
   /// Removes the specified interceptor from the network manager.
   ///

@@ -12,6 +12,17 @@ abstract final class JsonHelpers {
   /// Returns the JSON string if successful, otherwise returns null.
   static String? safeJsonEncode(Object? data) {
     if (data == null) return null;
+
+    if (data is String) {
+      try {
+        // Check if the string is already valid JSON
+        jsonDecode(data);
+        return data; // If it's valid JSON, return it as-is
+      } catch (_) {
+        // If it's not valid JSON, proceed with encoding
+      }
+    }
+
     try {
       return jsonEncode(data);
     } catch (e) {

@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart' as dio;
+import 'package:network_manager/network_manager.init.dart';
 
 import 'constants/network_constants.dart';
 import 'enums/method_types.dart';
 import 'models/index.dart';
 import 'network_manager.dart';
+import 'utils/adapter/io_adapter.dart'
+    if (dart.library.html) 'utils/adapter/web_adapter.dart';
 import 'utils/extensions/interceptor_extensions.dart';
-import 'utils/initializer/mobile_desktop_initializer.dart'
-    if (dart.library.html) 'utils/initializer/web_initializer.dart';
 import 'utils/network_manager_helpers.dart';
 import 'utils/transformers/custom_background_transformers.dart';
 
@@ -28,11 +29,16 @@ base class NetworkManagerImpl<E extends DataModel<E>>
         NetworkManager<E, dio.Options, dio.CancelToken, dio.Interceptor> {
   /// Constructor for the [NetworkManagerImpl] class.
   /// It takes a [NetworkManagerParamsModel] object as a parameter.
-  NetworkManagerImpl({required NetworkManagerParamsModel params}) {
+  NetworkManagerImpl({
+    required NetworkManagerParamsModel params,
+    dio.HttpClientAdapter? clientAdapter,
+  }) {
+    initializeMappers();
     options = params.baseOptions;
     transformer = CustomBackgroundTransformers();
     _addCustomInterceptors(params.interceptors);
-    httpClientAdapter = NetworkManagerInitializer.httpClientAdapter;
+    httpClientAdapter =
+        clientAdapter ?? NetworkManagerAdapter.httpClientAdapter;
   }
 
   @override
@@ -172,13 +178,40 @@ base class NetworkManagerImpl<E extends DataModel<E>>
   }
 
   @override
-  Future<NetworkResponseModel<R, E>> uploadFile<FormDataT, R>(
+  Future<NetworkResponseModel<R, E>>
+      uploadFile<FormDataT, R extends DataModel<R>>(
     String path,
     FormDataT data, {
-    Map<String, dynamic>? headers,
-  }) {
-    // TODO(bahrican): implement uploadFile
-    throw UnimplementedError();
+    dio.Options? requestOptions,
+    ProgressCallback? onSendProgress,
+    dio.CancelToken? cancelToken,
+    bool requiresAuth = true,
+  }) async {
+    try {
+      requestOptions = _setRequestOptions(
+        requestOptions,
+        requiresAuth,
+        MethodTypes.post,
+      );
+
+      final dio.Response<Object?> response = await post(
+        path,
+        data: data,
+        options: requestOptions,
+        onSendProgress: onSendProgress,
+        cancelToken: cancelToken,
+      );
+
+      return parseSuccess<R>(response);
+    } on dio.DioException catch (err) {
+      return parseError<R>(err);
+    } on Exception catch (err, stackTrace) {
+      return UnknownError<R, E>(
+        error: err,
+        errorData: null,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   /// Basic dio request method.

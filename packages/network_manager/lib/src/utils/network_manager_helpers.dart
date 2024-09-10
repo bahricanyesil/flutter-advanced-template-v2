@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:key_value_storage_manager/key_value_storage_manager.dart';
 import 'package:network_manager/src/exceptions/mismatched_type_exception.dart';
@@ -92,7 +93,7 @@ mixin NetworkManagerHelpers<E extends DataModel<E>> {
   NetworkErrorModel<R, E> parseError<R>(dio.DioException err) {
     final String? m = _errorMessage(err);
     try {
-      final E? d = fromJsonHelper<E>(err.response, isError: true);
+      final E? d = fromJsonHelper<E>(err.response);
       final StackTrace s = err.stackTrace;
 
       if (err is DioConnectionError) {
@@ -170,9 +171,13 @@ mixin NetworkManagerHelpers<E extends DataModel<E>> {
   ///
   /// Returns the converted data model instance, or null if
   /// the response data is null.
-  R? fromJsonHelper<R>(dio.Response<Object?>? response,
-      {bool isError = false}) {
-    final String? responseData = JsonHelpers.safeJsonEncode(response?.data);
+  R? fromJsonHelper<R>(dio.Response<Object?>? response) {
+    final MapperBase<Object>? mapper = MapperContainer.globals.get(R);
+    Object? encodedData = response?.data;
+    if (mapper != null) {
+      encodedData = mapper.encodeValue(response?.data);
+    }
+    final String? responseData = JsonHelpers.safeJsonEncode(encodedData);
     if (responseData != null) {
       return DataMapperHelpers.safeFromJson<R>(responseData);
     } else {

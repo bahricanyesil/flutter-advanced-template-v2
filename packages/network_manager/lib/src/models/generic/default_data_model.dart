@@ -19,9 +19,9 @@ base class DefaultDataModel<T>
   /// Creates a new instance of [DefaultDataModel] with the
   /// given [resultMessage]
   const DefaultDataModel({
-    required this.resultMessage,
-    required this.resultCode,
     required this.data,
+    this.resultMessage,
+    this.resultCode,
   });
 
   /// The result messages associated with the default data.
@@ -74,22 +74,5 @@ final class DefaultDataHook extends MappingHook {
   const DefaultDataHook();
 
   @override
-  Object? beforeDecode(Object? value) {
-    if (value is Map<String, dynamic>) {
-      const String resultMessageKey = 'resultMessage';
-      const String resultCodeKey = 'resultCode';
-      Object? resultMessage = value[resultMessageKey];
-      resultMessage ??= value['message'];
-      final Object? resultCode = value[resultCodeKey];
-      final Map<String, dynamic> dataMap = Map<String, dynamic>.from(value)
-        ..remove(resultMessageKey)
-        ..remove(resultCodeKey);
-      return <String, dynamic>{
-        resultMessageKey: resultMessage,
-        resultCodeKey: resultCode,
-        'data': dataMap,
-      };
-    }
-    return value;
-  }
+  Object? beforeDecode(Object? value) => value;
 }

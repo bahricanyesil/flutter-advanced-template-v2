@@ -77,32 +77,32 @@ class DefaultDataModelMapper extends ClassMapperBase<DefaultDataModel> {
   @override
   Function get typeFactory => <T>(f) => f<DefaultDataModel<T>>();
 
-  static Map<LanguageTypes, String>? _$resultMessage(DefaultDataModel v) =>
-      v.resultMessage;
-  static const Field<DefaultDataModel, Map<LanguageTypes, String>>
-      _f$resultMessage = Field('resultMessage', _$resultMessage);
-  static String? _$resultCode(DefaultDataModel v) => v.resultCode;
-  static const Field<DefaultDataModel, String> _f$resultCode =
-      Field('resultCode', _$resultCode);
   static dynamic _$data(DefaultDataModel v) => v.data;
   static dynamic _arg$data<T>(f) => f<T>();
   static const Field<DefaultDataModel, dynamic> _f$data =
       Field('data', _$data, arg: _arg$data);
+  static Map<LanguageTypes, String>? _$resultMessage(DefaultDataModel v) =>
+      v.resultMessage;
+  static const Field<DefaultDataModel, Map<LanguageTypes, String>>
+      _f$resultMessage = Field('resultMessage', _$resultMessage, opt: true);
+  static String? _$resultCode(DefaultDataModel v) => v.resultCode;
+  static const Field<DefaultDataModel, String> _f$resultCode =
+      Field('resultCode', _$resultCode, opt: true);
 
   @override
   final MappableFields<DefaultDataModel> fields = const {
+    #data: _f$data,
     #resultMessage: _f$resultMessage,
     #resultCode: _f$resultCode,
-    #data: _f$data,
   };
 
   @override
   final MappingHook hook = const DefaultDataHook();
   static DefaultDataModel<T> _instantiate<T>(DecodingData data) {
     return DefaultDataModel(
+        data: data.dec(_f$data),
         resultMessage: data.dec(_f$resultMessage),
-        resultCode: data.dec(_f$resultCode),
-        data: data.dec(_f$data));
+        resultCode: data.dec(_f$resultCode));
   }
 
   @override
@@ -163,7 +163,7 @@ abstract class DefaultDataModelCopyWith<$R, $In extends DefaultDataModel<T>,
   MapCopyWith<$R, LanguageTypes, String, ObjectCopyWith<$R, String, String>>?
       get resultMessage;
   $R call(
-      {Map<LanguageTypes, String>? resultMessage, String? resultCode, T? data});
+      {T? data, Map<LanguageTypes, String>? resultMessage, String? resultCode});
   DefaultDataModelCopyWith<$R2, $In, $Out2, T> $chain<$R2, $Out2>(
       Then<$Out2, $R2> t);
 }
@@ -186,19 +186,19 @@ class _DefaultDataModelCopyWithImpl<$R, $Out, T>
           : null;
   @override
   $R call(
-          {Object? resultMessage = $none,
-          Object? resultCode = $none,
-          Object? data = $none}) =>
+          {Object? data = $none,
+          Object? resultMessage = $none,
+          Object? resultCode = $none}) =>
       $apply(FieldCopyWithData({
+        if (data != $none) #data: data,
         if (resultMessage != $none) #resultMessage: resultMessage,
-        if (resultCode != $none) #resultCode: resultCode,
-        if (data != $none) #data: data
+        if (resultCode != $none) #resultCode: resultCode
       }));
   @override
   DefaultDataModel<T> $make(CopyWithData data) => DefaultDataModel(
+      data: data.get(#data, or: $value.data),
       resultMessage: data.get(#resultMessage, or: $value.resultMessage),
-      resultCode: data.get(#resultCode, or: $value.resultCode),
-      data: data.get(#data, or: $value.data));
+      resultCode: data.get(#resultCode, or: $value.resultCode));
 
   @override
   DefaultDataModelCopyWith<$R2, DefaultDataModel<T>, $Out2, T>

@@ -113,16 +113,18 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   ///
   /// The [path] parameter specifies the path to upload the file.
   /// The [data] parameter is the [FormDataT]
-  /// object containing the file data.
-  /// The [headers] parameter is an optional
-  /// map of headers to include in the request.
-  ///
-  /// Returns a [Future] that resolves to a
-  /// [NetworkResponseModel] object containing the upload response.
-  Future<NetworkResponseModel<R, E>> uploadFile<FormDataT, R>(
+  /// The [requestOptions] parameter is the [OptionsT]
+  /// The [onSendProgress] parameter is the [ProgressCallback]
+  /// The [cancelToken] parameter is the [CancelTokenT]
+  /// The [requiresAuth] parameter is the [bool]
+  Future<NetworkResponseModel<R, E>>
+      uploadFile<FormDataT, R extends DataModel<R>>(
     String path,
     FormDataT data, {
-    Map<String, dynamic>? headers,
+    OptionsT? requestOptions,
+    ProgressCallback? onSendProgress,
+    CancelTokenT? cancelToken,
+    bool requiresAuth = true,
   });
 
   /// Adds a base header to be included in all requests.

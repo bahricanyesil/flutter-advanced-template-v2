@@ -38,9 +38,8 @@ final class DefaultErrorHook extends MappingHook {
   @override
   Object? beforeDecode(Object? value) {
     if (value is Map<String, dynamic>) {
-      const String resultMessageKey = 'resultMessage';
       const String resultCodeKey = 'resultCode';
-      Object? resultMessage = value[resultMessageKey];
+      Object? resultMessage = value['resultMessage'] ?? value['message'];
       resultMessage ??= value['message'];
       late final String localizedMessage;
       // TODO(bahrican): Replace with dynamically determined value

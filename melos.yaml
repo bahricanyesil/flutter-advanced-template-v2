@@ -18,10 +18,14 @@ command:
 
 scripts:
   format: |
-    dart format --set-exit-if-changed --line-length 80 .
+    melos exec --concurrency=1 --fail-fast -- "
+      dart format --set-exit-if-changed --line-length 80 .
+    "
 
   analyze: |
-    dart analyze --fatal-infos --fatal-warnings
+    melos exec --concurrency=1 --fail-fast -- "
+      dart analyze --fatal-infos --fatal-warnings .
+    "
 
   format-analyze: |
     melos run format && melos run analyze
@@ -37,20 +41,10 @@ scripts:
   test:flutter: melos exec --flutter --concurrency=1 --fail-fast --dir-exists=test -- flutter test --coverage
 
   open-coverage: |
-    original_dir=$(pwd)
-    for dir in packages/*/coverage; do \
-      if [ -f "$dir/lcov.info" ]; then \
-        parent_dir=$(dirname "$dir"); \
-        echo "Processing $parent_dir"; \
-        cd "$parent_dir"; \
-        mkdir -p coverage/html; \
-        genhtml ./coverage/lcov.info -o coverage && open coverage/index.html; \
-        cd "$original_dir"; \
-      else \
-        echo "No lcov.info found in $dir"; \
-      fi; \
-    done
+    melos exec --dir-exists=coverage -- "
+      genhtml ./coverage/lcov.info -o coverage &&
+      open coverage/index.html
+    "
 
   generate: |
-    echo "Checking for build_runner availability..."
-    dart run build_runner build --delete-conflicting-outputs
+    melos exec --depends-on=build_runner -- "dart run build_runner build -d"

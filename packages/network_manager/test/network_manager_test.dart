@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart' as dio;
@@ -5,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_manager/network_manager.dart';
 import 'package:network_manager/src/enums/method_types.dart';
+import 'package:network_manager/src/enums/token_types.dart';
+import 'package:network_manager/src/exceptions/mismatched_type_exception.dart';
 import 'package:network_manager/src/models/index.dart';
 
 import 'mocks/mock_dio_adapter.dart';
@@ -162,8 +165,27 @@ void main() {
       expect(res.responseData, isNull);
       expect(res.error, isNotNull);
       expect(res.error, exception);
+      expect(res.hasError(), isTrue);
       expect(res.errorData, errorModel);
       verify(() => mockDioAdapter.fetch(any(), any(), any())).called(1);
+    });
+
+    test('Mismatched type should throw MismatchedTypeException', () async {
+      when(() => mockDioAdapter.fetch(any(), any(), any()))
+          .thenAnswer((_) async {
+        return dio.ResponseBody.fromString('', 200);
+      });
+
+      final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
+          await networkManager.sendRequest<DefaultModelT, DefaultModelT>(
+        '/test',
+        body: data,
+        methodType: MethodTypes.get,
+      );
+
+      expect(res.responseData, isNull);
+      expect(res.error, isA<MismatchedTypeException>());
+      expect(res.errorData, isNull);
     });
 
     test('downloadFile method is called with correct parameters', () async {
@@ -191,8 +213,13 @@ void main() {
     });
 
     test('downloadFile handles DioException', () async {
-      const DefaultErrorModel errorModel = DefaultErrorModel(
-        message: 'test data',
+      final DefaultErrorModel errorModel = DefaultErrorModel(
+        message: jsonEncode(
+          <String, dynamic>{
+            'tr': 'test hata mesajı',
+            'en': 'test error message',
+          },
+        ),
         resultCode: '200',
       );
       final dio.DioException exception = dio.DioException(
@@ -215,7 +242,7 @@ void main() {
       expect(res.responseData, isNull);
       expect(res.error, isNotNull);
       expect(res.error, exception);
-      expect(res.errorData, errorModel);
+      expect(res.errorData?.message, 'test error message');
       verify(() => mockDioAdapter.fetch(any(), any(), any())).called(1);
     });
 
@@ -347,6 +374,54 @@ void main() {
 
       networkManager.removeInterceptor(interceptor);
       expect(networkManager.allInterceptors, isNot(contains(interceptor)));
+    });
+
+    test('addAllIfNotExists method works correctly', () {
+      final int interceptorLength = networkManager.allInterceptors.length;
+      final List<dio.Interceptor> interceptors = <dio.Interceptor>[
+        dio.InterceptorsWrapper(),
+        dio.InterceptorsWrapper(),
+      ];
+      networkManager.addAllInterceptors(interceptors);
+      expect(networkManager.allInterceptors.length, interceptorLength + 2);
+      expect(
+        networkManager.allInterceptors.sublist(interceptorLength),
+        equals(interceptors),
+      );
+    });
+  });
+
+  group('MethodTypeListExt', () {
+    test('find returns correct MethodType for valid name', () {
+      const List<MethodTypes> methodTypes = MethodTypes.values;
+
+      expect(methodTypes.find('get'), equals(MethodTypes.get));
+      expect(methodTypes.find('post'), equals(MethodTypes.post));
+      expect(methodTypes.find('put'), equals(MethodTypes.put));
+      expect(methodTypes.find('delete'), equals(MethodTypes.delete));
+      expect(methodTypes.find('patch'), equals(MethodTypes.patch));
+    });
+
+    test('find returns null for invalid name', () {
+      const List<MethodTypes> methodTypes = MethodTypes.values;
+
+      expect(methodTypes.find('invalid'), isNull);
+      expect(methodTypes.find(''), isNull);
+    });
+
+    test('find is case-sensitive', () {
+      const List<MethodTypes> methodTypes = MethodTypes.values;
+
+      expect(methodTypes.find('GET'), isNull);
+      expect(methodTypes.find('Post'), isNull);
+    });
+  });
+
+  group('TokenTypes', () {
+    test('isRefresh getter', () {
+      expect(TokenTypes.refreshToken.isRefresh, isTrue);
+      expect(TokenTypes.accessToken.isRefresh, isFalse);
+      expect(TokenTypes.confirmToken.isRefresh, isFalse);
     });
   });
 }

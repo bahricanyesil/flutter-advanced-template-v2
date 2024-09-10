@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -40,10 +42,14 @@ final class DefaultErrorHook extends MappingHook {
     if (value is Map<String, dynamic>) {
       const String resultCodeKey = 'resultCode';
       Object? resultMessage = value['resultMessage'] ?? value['message'];
-      resultMessage ??= value['message'];
       late final String localizedMessage;
       // TODO(bahrican): Replace with dynamically determined value
       const LanguageTypes language = LanguageTypes.en;
+      try {
+        resultMessage = jsonDecode(resultMessage.toString());
+      } catch (e) {
+        // Do nothing
+      }
       if (resultMessage is Map<String, dynamic>) {
         localizedMessage = resultMessage[language.code].toString();
       } else {

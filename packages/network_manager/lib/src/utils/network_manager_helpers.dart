@@ -175,7 +175,11 @@ mixin NetworkManagerHelpers<E extends DataModel<E>> {
     final MapperBase<Object>? mapper = MapperContainer.globals.get(R);
     Object? encodedData = response?.data;
     if (mapper != null) {
-      encodedData = mapper.encodeValue(response?.data);
+      try {
+        encodedData = mapper.encodeValue(response?.data);
+      } catch (e) {
+        // No action needed
+      }
     }
     final String? responseData = JsonHelpers.safeJsonEncode(encodedData);
     if (responseData != null) {

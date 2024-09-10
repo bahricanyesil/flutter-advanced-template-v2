@@ -8,6 +8,7 @@ import 'package:network_manager/network_manager.dart';
 import 'package:network_manager/src/enums/method_types.dart';
 import 'package:network_manager/src/enums/token_types.dart';
 import 'package:network_manager/src/exceptions/mismatched_type_exception.dart';
+import 'package:network_manager/src/exceptions/unsuccessful_parse_exception.dart';
 import 'package:network_manager/src/models/index.dart';
 
 import 'mocks/mock_dio_adapter.dart';
@@ -244,6 +245,27 @@ void main() {
       expect(res.error, exception);
       expect(res.errorData?.message, 'test error message');
       verify(() => mockDioAdapter.fetch(any(), any(), any())).called(1);
+    });
+
+    test('UnsuccessfulParseException should be thrown', () async {
+      when(() => mockDioAdapter.fetch(any(), any(), any()))
+          .thenAnswer((_) async {
+        return dio.ResponseBody.fromString(
+          jsonEncode(<String, dynamic>{
+            'data': <String>['test data'],
+          }),
+          200,
+        );
+      });
+      try {
+        await networkManager.sendRequest<DefaultModelT, DefaultModelT>(
+          '/test',
+          body: data,
+          methodType: MethodTypes.get,
+        );
+      } catch (e) {
+        expect(e, isA<UnsuccessfulParseException>());
+      }
     });
 
     test('uploadFile method is called with correct parameters', () async {

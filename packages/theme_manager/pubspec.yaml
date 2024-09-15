@@ -11,6 +11,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Bloc
+  equatable: ^2.0.5
+  flutter_bloc: ^8.1.6
+
   # Logging
   log_manager:
     path: ../log_manager

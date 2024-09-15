@@ -17,3 +17,4 @@ export 'src/output-events/custom_stream_output.dart';
 export 'src/output-events/dev_console_output.dart';
 export 'src/utils/custom_log_extensions.dart';
 export 'src/utils/custom_pretty_printer.dart';
+export 'src/utils/default_pretty_printer.dart';

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 @immutable
 abstract interface class BaseTheme {
   /// Gets the current [ThemeData].
-  ThemeData get themeData;
+  abstract final ThemeData themeData;
 
   /// Gets the floating action button theme data.
-  FloatingActionButtonThemeData get floatingActionButtonThemeData;
+  abstract final FloatingActionButtonThemeData floatingActionButtonThemeData;
 
   /// Gets the current [ColorScheme].
-  ColorScheme get colorScheme;
+  abstract final ColorScheme colorScheme;
 }

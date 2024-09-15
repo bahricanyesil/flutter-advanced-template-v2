@@ -4,16 +4,16 @@ import 'package:flutter/foundation.dart';
 /// A class that represents the configuration for initializing the application.
 ///
 /// The [ConfigManager] class provides a way to configure the initialization
-/// of the application by specifying the [BaseEnv]
+/// of the application by specifying the [T]
 /// to use based on the current environment.
 ///
-/// The [envConfig] property returns the configured [BaseEnv] instance.
+/// The [envConfig] property returns the configured [T] instance.
 /// If the [ConfigManager] is not initialized, an exception is thrown.
 @immutable
-final class ConfigManager {
+final class ConfigManager<T extends BaseEnv> {
   /// Sets up the application initialization configuration.
   ///
-  /// The [envConfig] parameter is an optional [BaseEnv] object
+  /// The [envConfig] parameter is an optional [T] object
   /// that specifies the configuration for the application.
   /// If [envConfig] is not provided, the configuration will
   /// be determined based on the current build mode.
@@ -23,9 +23,9 @@ final class ConfigManager {
   /// ConfigManager.setUp();
   /// ```
   ConfigManager({
-    required BaseEnv prodConfig,
-    BaseEnv? devConfig,
-    BaseEnv? stagingConfig,
+    required T prodConfig,
+    T? devConfig,
+    T? stagingConfig,
   }) {
     if (kDebugMode) {
       _envConfig = switch (flavor) {
@@ -38,10 +38,10 @@ final class ConfigManager {
     }
   }
 
-  late final BaseEnv _envConfig;
+  late final T _envConfig;
 
   /// Get application environment item value
-  BaseEnv get envConfig => _envConfig;
+  T get envConfig => _envConfig;
 
   /// Returns the [FlavorTypes] based on the value of the 'FLUTTER_APP_FLAVOR'
   /// environment variable.

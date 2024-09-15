@@ -1,0 +1,25 @@
+name: config_manager
+description: A package for managing app configuration and environment variables.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  envied: ^0.5.4+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint_rules:
+    path: ../lint_rules
+  mocktail: ^1.0.4
+
+  envied_generator: ^0.5.4+1
+  build_runner: ^2.4.12
+

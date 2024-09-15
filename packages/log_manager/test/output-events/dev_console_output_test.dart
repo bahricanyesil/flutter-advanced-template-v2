@@ -7,7 +7,8 @@ void main() {
   group('DevConsoleOutput', () {
     test('should log messages using the provided CustomConsoleLogger', () {
       final MockConsoleLogger mockLogger = MockConsoleLogger();
-      final DevConsoleOutput devConsoleOutput = DevConsoleOutput(mockLogger);
+      final DevConsoleOutput devConsoleOutput =
+          DevConsoleOutput(logger: mockLogger);
       const String testMessage = 'Test log message';
 
       final OutputEvent outputEvent = OutputEvent(
@@ -22,7 +23,8 @@ void main() {
 
     test('should handle multiple lines of log output', () {
       final MockConsoleLogger mockLogger = MockConsoleLogger();
-      final DevConsoleOutput devConsoleOutput = DevConsoleOutput(mockLogger);
+      final DevConsoleOutput devConsoleOutput =
+          DevConsoleOutput(logger: mockLogger);
 
       const String testMessage = 'Test log message';
       final OutputEvent outputEvent = OutputEvent(

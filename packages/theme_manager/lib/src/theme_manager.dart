@@ -14,9 +14,9 @@ abstract class ThemeManager {
   /// Set the theme mode.
   Future<void> setThemeMode(ThemeMode mode);
 
-  /// Set the theme.
-  Future<void> setTheme(ThemeModel theme);
+  /// Set the theme model.
+  Future<void> setThemeModel(ThemeModel theme);
 
   /// Toggle the theme.
-  Future<void> toggleTheme();
+  Future<void> toggleThemeMode();
 }

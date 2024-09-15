@@ -33,15 +33,18 @@ final class ThemeManagerImpl implements ThemeManager {
   }
 
   @override
-  Future<void> setTheme(ThemeModel theme) async {
+  Future<void> setThemeModel(ThemeModel theme) async {
     _currentTheme = theme;
     _logManager?.lInfo('Theme set to: ${theme.name}');
   }
 
   @override
-  Future<void> toggleTheme() async {
-    final ThemeMode newMode =
-        _currentThemeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+  Future<void> toggleThemeMode() async {
+    final ThemeMode newMode = switch (_currentThemeMode) {
+      ThemeMode.light => ThemeMode.dark,
+      ThemeMode.dark => ThemeMode.light,
+      ThemeMode.system => ThemeMode.system,
+    };
     await setThemeMode(newMode);
   }
 }

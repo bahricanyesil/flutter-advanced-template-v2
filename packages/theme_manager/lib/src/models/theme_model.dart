@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// ThemeModel is a class that holds the theme data for the app.
 @immutable
-final class ThemeModel {
+base class ThemeModel {
   /// ThemeModel is a class that holds the theme data for the app.
   const ThemeModel({
     required this.name,

@@ -381,6 +381,48 @@ Adopt consistent code quality and style guidelines using customized lint rules.
 
 - Configure in `analysis_options.yaml` at the root of the project.
 
+// ... existing content ...
+
+## 🔐 Required Permissions
+
+Depending on the modules you use, you may need to add the following permissions to your app:
+
+### Android Permissions
+
+Add these to your `android/app/src/main/AndroidManifest.xml` file:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- Internet Permission -->
+<uses-permission android:name="android.permission.INTERNET" />
+<!-- Camera Permission -->
+<uses-permission android:name="android.permission.CAMERA" />
+<!-- Storage Permissions -->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<!-- Notifications Permission -->
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+<uses-permission android:name="android.permission.VIBRATE" />
+<!-- ... other app components ... -->
+</manifest>
+```
+
+### iOS Permissions
+
+Add these to your `ios/Runner/Info.plist` file:
+
+```plist
+<dict>
+<!-- Camera Usage Description -->
+<key>NSCameraUsageDescription</key>
+<string>This app needs camera access to take photos.</string>
+<!-- Photo Library Usage Description -->
+<key>NSPhotoLibraryUsageDescription</key>
+<string>This app needs photo library access to select photos.</string>
+</dict>
+
+```
+
 ## 📚 Getting Started
 
 1. **Clone the Repository**:

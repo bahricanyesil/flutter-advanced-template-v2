@@ -1,11 +1,11 @@
-import 'package:log_manager/src/output-events/dev_console_output.dart';
+import 'package:log_manager/log_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
-final class MockConsoleLogger extends Mock implements CustomConsoleLogger {
+final class MockConsoleLogger extends Mock implements ConsoleLogger {
   final List<String> loggedMessages = <String>[];
 
   @override
-  void log(String message) {
+  void logMessage(String message) {
     loggedMessages.add(message);
   }
 }

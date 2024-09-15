@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:key_value_storage_manager/key_value_storage_manager.dart';
 import 'package:key_value_storage_manager/src/exceptions/index.dart';
 import 'package:key_value_storage_manager/src/models/data_model.dart';
-import 'package:key_value_storage_manager/src/utils/data_parser_helpers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/test_model.dart';

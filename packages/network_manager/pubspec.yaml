@@ -1,0 +1,42 @@
+name: network_manager
+description: A network manager package for Flutter applications.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Collection for utilities
+  collection: ^1.18.0
+
+  # Models and Mappers
+  dart_mappable: ^4.2.2
+
+  # API Service Requests
+  dio: ^5.7.0
+
+  # Logging
+  log_manager:
+    path: ../log_manager
+
+  # Connectivity
+  connectivity_manager:
+    path: ../connectivity_manager
+
+  # Key-Value Storage
+  key_value_storage_manager:
+    path: ../key_value_storage_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint_rules:
+    path: ../lint_rules
+  mocktail: ^1.0.4
+  build_runner: ^2.4.12
+  dart_mappable_builder: ^4.2.3

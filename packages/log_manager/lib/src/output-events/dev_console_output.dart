@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
@@ -9,8 +11,9 @@ import 'package:logger/logger.dart';
 @immutable
 final class DevConsoleOutput extends LogOutput {
   /// Constructor with an optional logger parameter
-  DevConsoleOutput(this._logger);
-  final CustomConsoleLogger _logger;
+  DevConsoleOutput({ConsoleLogger? logger})
+      : _logger = logger ?? DefaultConsoleLogger();
+  final ConsoleLogger _logger;
 
   @override
   void output(OutputEvent event) {
@@ -24,13 +27,22 @@ final class DevConsoleOutput extends LogOutput {
       }
     }
 
-    _logger.log(buffer.toString());
+    _logger.logMessage(buffer.toString());
   }
 }
 
 /// A custom console logger interface.
 // ignore: one_member_abstracts
-abstract interface class CustomConsoleLogger {
+abstract interface class ConsoleLogger {
   /// Logs the provided message.
-  void log(String message);
+  void logMessage(String message);
+}
+
+/// A custom console logger implementation that logs messages
+/// to the developer console.
+final class DefaultConsoleLogger extends ConsoleLogger {
+  @override
+  void logMessage(String message) {
+    dev.log(message);
+  }
 }

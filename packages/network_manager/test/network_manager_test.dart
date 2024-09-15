@@ -5,8 +5,6 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:network_manager/network_manager.dart';
-import 'package:network_manager/src/enums/method_types.dart';
-import 'package:network_manager/src/enums/token_types.dart';
 import 'package:network_manager/src/exceptions/mismatched_type_exception.dart';
 import 'package:network_manager/src/exceptions/unsuccessful_parse_exception.dart';
 import 'package:network_manager/src/models/index.dart';

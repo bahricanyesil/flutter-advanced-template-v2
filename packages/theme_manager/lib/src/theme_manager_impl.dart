@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:log_manager/log_manager.dart';
 
 import '../theme_manager.dart';
@@ -28,7 +29,17 @@ final class ThemeManagerImpl implements ThemeManager {
 
   @override
   Future<void> setThemeMode(ThemeMode mode) async {
+    if (_currentThemeMode == mode) return;
     _currentThemeMode = mode;
+    SystemChrome.setSystemUIOverlayStyle(
+      switch (mode) {
+        ThemeMode.light => SystemUiOverlayStyle.light,
+        ThemeMode.dark => SystemUiOverlayStyle.dark,
+        ThemeMode.system => _isSystemLight
+            ? SystemUiOverlayStyle.light
+            : SystemUiOverlayStyle.dark,
+      },
+    );
     _logManager?.lInfo('Theme mode set to: $mode');
   }
 
@@ -43,8 +54,12 @@ final class ThemeManagerImpl implements ThemeManager {
     final ThemeMode newMode = switch (_currentThemeMode) {
       ThemeMode.light => ThemeMode.dark,
       ThemeMode.dark => ThemeMode.light,
-      ThemeMode.system => ThemeMode.system,
+      ThemeMode.system => _isSystemLight ? ThemeMode.light : ThemeMode.dark,
     };
     await setThemeMode(newMode);
   }
+
+  bool get _isSystemLight =>
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+      Brightness.light;
 }

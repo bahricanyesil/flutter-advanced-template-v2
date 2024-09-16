@@ -5,3 +5,4 @@ library push_notification_manager;
 export 'src/firebase_push_notification_manager.dart';
 export 'src/push_notification_manager.dart';
 export 'src/utils/remote_message_extensions.dart';
+export 'src/utils/remote_message_helpers.dart';

@@ -7,7 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:permission_manager/permission_manager.dart';
 import 'package:push_notification_manager/push_notification_manager.dart';
-import 'package:push_notification_manager/src/firebase_push_notification_manager.dart';
 
 import 'mocks/mock_firebase_messaging.dart';
 import 'mocks/mock_log_manager.dart';

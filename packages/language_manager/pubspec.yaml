@@ -1,5 +1,5 @@
-name: theme_manager
-description: A module to manage themes for Flutter apps.
+name: language_manager
+description: A module to manage languages for Flutter apps.
 version: 0.0.1
 publish_to: none
 
@@ -11,9 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Bloc
-  equatable: ^2.0.5
-  flutter_bloc: ^8.1.6
+  collection: ^1.18.0
 
   # Logging
   log_manager:

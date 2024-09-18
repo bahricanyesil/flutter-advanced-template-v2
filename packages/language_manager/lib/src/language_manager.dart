@@ -57,9 +57,9 @@ abstract class LanguageManager {
       return false;
     }
 
-    if (newLocale == _currentLocale) return true;
-
     try {
+      await setAppLocale(newLocale);
+      if (newLocale == _currentLocale) return true;
       await _saveLocale(newLocale);
       updateCurrentLocale(newLocale);
       _logManager?.lInfo('Locale changed to: $newLocale');

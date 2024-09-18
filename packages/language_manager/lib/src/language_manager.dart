@@ -172,5 +172,5 @@ abstract class LanguageManager {
   String? get currentCountryCode => currentLocale.countryCode;
 
   /// Get the localization delegates
-  Iterable<LocalizationsDelegate<Object?>> get localizationDelegates;
+  List<LocalizationsDelegate<Object?>> get localizationDelegates;
 }

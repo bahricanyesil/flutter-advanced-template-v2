@@ -89,6 +89,7 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
         android: initializationSettingsAndroid,
         iOS: initializationSettingsDarwin,
         linux: initializationSettingsLinux,
+        macOS: initializationSettingsDarwin,
       );
 
       await localNotificationPlugin.initialize(

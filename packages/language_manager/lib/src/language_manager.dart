@@ -73,11 +73,7 @@ abstract class LanguageManager {
   /// Checks if the locale is supported.
   @protected
   bool isLocaleSupported(Locale locale) =>
-      getLocaleForLanguageCode(
-        locale.languageCode,
-        countryCode: locale.countryCode,
-      ) !=
-      null;
+      supportedLocales.any((Locale l) => isLocaleEqual(l, locale));
 
   /// Gets the locale for the given language code.
   @protected

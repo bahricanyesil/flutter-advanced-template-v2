@@ -1,30 +1,46 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:key_value_storage_manager/key_value_storage_manager.dart';
 import 'package:log_manager/log_manager.dart';
+
+import 'utils/locale_parse_utils.dart';
 
 /// The base interface for language managers.
 abstract class LanguageManager {
   /// Constructor.
-  LanguageManager({LogManager? logManager}) : _logManager = logManager {
-    _languageController = StreamController<String>.broadcast();
+  LanguageManager({
+    LogManager? logManager,
+    KeyValueStorageManager? storageManager,
+  })  : _logManager = logManager,
+        _storageManager = storageManager {
+    _localeController = StreamController<Locale>.broadcast();
   }
 
   final LogManager? _logManager;
-  late final StreamController<String> _languageController;
-  String _currentLanguageCode = 'en';
+  final KeyValueStorageManager? _storageManager;
+  late final StreamController<Locale> _localeController;
+  Locale _currentLocale = const Locale('en', 'us');
 
-  /// Gets the current language code.
-  String get currentLanguageCode => _currentLanguageCode;
+  static const String _localeStorageKey = 'app_locale_key';
 
-  /// Sets the current locale.
-  @protected
-  Future<Locale> setLocale(Locale locale);
+  /// Get the locale storage key.
+  String get localeStorageKey => _localeStorageKey;
 
-  /// Stream of the current language code.
-  Stream<String> get languageCodeStream => _languageController.stream;
+  /// Initialize the language manager
+  Future<void> initialize() async {
+    final Locale? savedLocale = _loadSavedLocale();
+    if (savedLocale != null) {
+      await setLocale(savedLocale);
+    }
+  }
+
+  /// Gets the current locale.
+  Locale get currentLocale => _currentLocale;
+
+  /// Stream of the current locale.
+  Stream<Locale> get localeStream => _localeController.stream;
 
   /// Gets the list of supported locales.
   List<Locale> get supportedLocales;
@@ -32,60 +48,37 @@ abstract class LanguageManager {
   /// Stream of the current app locale.
   Stream<Locale> get appLocaleStream;
 
-  /// Gets the current locale.
-  Locale? get currentLocale => supportedLocales
-      .firstWhereOrNull((Locale l) => l.languageCode == currentLanguageCode);
-
   /// Gets the list of supported language codes.
   List<String> get supportedLanguageCodes => supportedLocales
       .map((Locale l) => l.languageCode)
       .toList(growable: false);
 
-  /// Sets the language code.
+  /// Sets the locale.
   ///
-  /// Returns true if the language code was set successfully, false otherwise.
+  /// Returns true if the locale was set successfully, false otherwise.
   @mustCallSuper
-  Future<bool> setLanguage(String newLanguageCode) async {
-    if (newLanguageCode.isEmpty) {
-      _logManager?.lWarning('Empty language code provided');
+  Future<bool> setLocale(Locale newLocale) async {
+    if (!isLocaleSupported(newLocale)) {
+      _logManager?.lWarning('Locale not supported: $newLocale');
       return false;
     }
 
-    if (!isLanguageSupported(newLanguageCode)) {
-      _logManager?.lWarning('Language not supported: $newLanguageCode');
-      return false;
-    }
-
-    if (newLanguageCode == _currentLanguageCode) return true;
-
-    final Locale? newLocale = getLocaleForLanguageCode(newLanguageCode);
-    if (newLocale == null) {
-      _logManager?.lWarning('No matching locale found for: $newLanguageCode');
-      return false;
-    }
+    if (newLocale == _currentLocale) return true;
 
     try {
-      final Locale appLocaleResult = await setLocale(newLocale);
-      if (!isLocaleEqual(appLocaleResult, newLocale)) {
-        _logManager?.lWarning(
-          'Locale mismatch: expected $newLocale, got $appLocaleResult',
-        );
-        return false;
-      }
-
-      updateCurrentLanguage(newLanguageCode);
-      _logManager?.lInfo('Language changed to: $newLanguageCode');
+      await _saveLocale(newLocale);
+      updateCurrentLocale(newLocale);
+      _logManager?.lInfo('Locale changed to: $newLocale');
       return true;
     } catch (e, stackTrace) {
-      _logManager?.lError('Error setting language: $e', stackTrace: stackTrace);
+      _logManager?.lError('Error setting locale: $e', stackTrace: stackTrace);
       return false;
     }
   }
 
-  /// Checks if the language code is supported.
+  /// Checks if the locale is supported.
   @protected
-  bool isLanguageSupported(String languageCode) =>
-      languageCode.isNotEmpty && supportedLanguageCodes.contains(languageCode);
+  bool isLocaleSupported(Locale locale) => supportedLocales.contains(locale);
 
   /// Gets the locale for the given language code.
   @protected
@@ -101,18 +94,66 @@ abstract class LanguageManager {
       locale1.languageCode == locale2.languageCode &&
       locale1.countryCode == locale2.countryCode;
 
-  /// Updates the current language code.
+  /// Updates the current locale.
   @protected
-  void updateCurrentLanguage(String newLanguageCode) {
-    if (newLanguageCode.isNotEmpty && newLanguageCode != _currentLanguageCode) {
-      _currentLanguageCode = newLanguageCode;
-      _languageController.add(_currentLanguageCode);
+  void updateCurrentLocale(Locale newLocale) {
+    if (newLocale != _currentLocale) {
+      _currentLocale = newLocale;
+      _localeController.add(_currentLocale);
     }
+  }
+
+  /// Set the app locale
+  @protected
+  Future<Locale> setAppLocale(Locale locale);
+
+  /// Load the saved locale
+  Locale? _loadSavedLocale() {
+    try {
+      final String? storedLocale =
+          _storageManager?.read<String>(_localeStorageKey);
+      if (storedLocale == null) return null;
+      return LocaleParseUtils.parseLocale(storedLocale);
+    } catch (e, stackTrace) {
+      _logManager?.lError(
+        'Error loading saved locale: $e',
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
+  }
+
+  /// Save the locale
+  Future<void> _saveLocale(Locale locale) async {
+    try {
+      await _storageManager?.write<String>(
+        key: _localeStorageKey,
+        value: locale.languageCode,
+      );
+    } catch (e, stackTrace) {
+      _logManager?.lError(
+        'Error saving locale: $e',
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  /// Set up locale resolution
+  Locale? localeResolutionCallback(Locale? locale) {
+    if (locale == null) {
+      if (supportedLocales.isEmpty) return null;
+      return supportedLocales.first;
+    }
+    // Try to find a supported locale with the same language code
+    final Locale? supportedLocale = supportedLocales
+        .firstWhereOrNull((Locale l) => l.languageCode == locale.languageCode);
+    // If not found, return the first supported locale
+    return supportedLocale ?? supportedLocales.first;
   }
 
   /// Dispose of the language manager.
   @mustCallSuper
   void dispose() {
-    _languageController.close();
+    _localeController.close();
   }
 }

@@ -4,5 +4,5 @@
 /// language to the database and restore it when the app is opened.
 library language_manager;
 
-export 'src/base_slang_language_manager.dart';
 export 'src/language_manager.dart';
+export 'src/utils/locale_parse_utils.dart';

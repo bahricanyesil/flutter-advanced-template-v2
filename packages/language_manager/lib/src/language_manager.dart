@@ -170,4 +170,7 @@ abstract class LanguageManager {
 
   /// Get the current country code
   String? get currentCountryCode => currentLocale.countryCode;
+
+  /// Get the localization delegates
+  Iterable<LocalizationsDelegate<Object?>> get localizationDelegates;
 }

@@ -14,13 +14,10 @@ abstract class LanguageManager {
     LogManager? logManager,
     KeyValueStorageManager? storageManager,
   })  : _logManager = logManager,
-        _storageManager = storageManager {
-    _localeController = StreamController<Locale>.broadcast();
-  }
+        _storageManager = storageManager;
 
   final LogManager? _logManager;
   final KeyValueStorageManager? _storageManager;
-  late final StreamController<Locale> _localeController;
   Locale _currentLocale = const Locale('en', 'us');
 
   static const String _localeStorageKey = 'app_locale_key';
@@ -38,9 +35,6 @@ abstract class LanguageManager {
 
   /// Gets the current locale.
   Locale get currentLocale => _currentLocale;
-
-  /// Stream of the current locale.
-  Stream<Locale> get localeStream => _localeController.stream;
 
   /// Gets the list of supported locales.
   List<Locale> get supportedLocales;
@@ -82,11 +76,17 @@ abstract class LanguageManager {
 
   /// Gets the locale for the given language code.
   @protected
-  Locale? getLocaleForLanguageCode(String languageCode) => languageCode.isEmpty
-      ? null
-      : supportedLocales.firstWhereOrNull(
-          (Locale locale) => locale.languageCode == languageCode,
-        );
+  Locale? getLocaleForLanguageCode(
+    String languageCode, {
+    String? countryCode,
+  }) {
+    if (languageCode.isEmpty) return null;
+    return supportedLocales.firstWhereOrNull(
+      (Locale locale) =>
+          locale.languageCode == languageCode &&
+          locale.countryCode == countryCode,
+    );
+  }
 
   /// Checks if two locales are equal.
   @protected
@@ -99,7 +99,6 @@ abstract class LanguageManager {
   void updateCurrentLocale(Locale newLocale) {
     if (newLocale != _currentLocale) {
       _currentLocale = newLocale;
-      _localeController.add(_currentLocale);
     }
   }
 
@@ -151,9 +150,21 @@ abstract class LanguageManager {
     return supportedLocale ?? supportedLocales.first;
   }
 
-  /// Dispose of the language manager.
-  @mustCallSuper
-  void dispose() {
-    _localeController.close();
+  /// Update the language code
+  Future<void> updateLanguageCode(
+    String languageCode, {
+    String? countryCode,
+  }) async {
+    final Locale? supportedLocale =
+        getLocaleForLanguageCode(languageCode, countryCode: countryCode);
+    if (supportedLocale != null) {
+      await setLocale(supportedLocale);
+    }
   }
+
+  /// Get the current language code
+  String get currentLanguageCode => currentLocale.languageCode;
+
+  /// Get the current country code
+  String? get currentCountryCode => currentLocale.countryCode;
 }

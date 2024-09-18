@@ -151,15 +151,16 @@ abstract class LanguageManager {
   }
 
   /// Update the language code
-  Future<void> updateLanguageCode(
+  Future<bool> updateLanguageCode(
     String languageCode, {
     String? countryCode,
   }) async {
     final Locale? supportedLocale =
         getLocaleForLanguageCode(languageCode, countryCode: countryCode);
     if (supportedLocale != null) {
-      await setLocale(supportedLocale);
+      return setLocale(supportedLocale);
     }
+    return false;
   }
 
   /// Get the current language code

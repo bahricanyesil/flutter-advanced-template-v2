@@ -72,7 +72,12 @@ abstract class LanguageManager {
 
   /// Checks if the locale is supported.
   @protected
-  bool isLocaleSupported(Locale locale) => supportedLocales.contains(locale);
+  bool isLocaleSupported(Locale locale) =>
+      getLocaleForLanguageCode(
+        locale.languageCode,
+        countryCode: locale.countryCode,
+      ) !=
+      null;
 
   /// Gets the locale for the given language code.
   @protected
@@ -84,7 +89,7 @@ abstract class LanguageManager {
     return supportedLocales.firstWhereOrNull(
       (Locale locale) =>
           locale.languageCode == languageCode &&
-          locale.countryCode == countryCode,
+          locale.countryCode == (countryCode ?? locale.countryCode),
     );
   }
 
@@ -92,7 +97,8 @@ abstract class LanguageManager {
   @protected
   bool isLocaleEqual(Locale locale1, Locale locale2) =>
       locale1.languageCode == locale2.languageCode &&
-      locale1.countryCode == locale2.countryCode;
+      (locale1.countryCode ?? locale2.countryCode) ==
+          (locale2.countryCode ?? locale1.countryCode);
 
   /// Updates the current locale.
   @protected

@@ -57,6 +57,7 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     if (_onMessageOpenedAppCallback != null) {
       setOnMessageOpenedAppListener(_onMessageOpenedAppCallback);
     }
+    _logManager?.lDebug('FirebasePushNotificationManager initialized');
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(
@@ -83,14 +84,17 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     );
     _hasPermission = statusType?.isGranted ?? false;
 
-    _logManager?.lDebug('Permission status updated: $_hasPermission');
+    _logManager?.lDebug(
+      '''FirebasePushNotificationManager permission status updated: $_hasPermission''',
+    );
     return _hasPermission;
   }
 
   @override
   Future<String?> getToken() async {
     final String? token = await _firebaseMessaging.getToken();
-    _logManager?.lDebug('FirebaseMessaging token: $token');
+    _logManager
+        ?.lDebug('FirebasePushNotificationManager token retrieved: $token');
     return token;
   }
 
@@ -98,7 +102,9 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   Future<bool> subscribeToTopic(String topic) async {
     if (_hasPermission) {
       await _firebaseMessaging.subscribeToTopic(topic);
-      _logManager?.lDebug('Subscribed to topic: $topic');
+      _logManager?.lDebug(
+        'FirebasePushNotificationManager subscribed to topic: $topic',
+      );
       return true;
     } else {
       _logManager?.lWarning('No permission to subscribe to topic: $topic');
@@ -110,7 +116,9 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   Future<bool> unsubscribeFromTopic(String topic) async {
     if (_hasPermission) {
       await _firebaseMessaging.unsubscribeFromTopic(topic);
-      _logManager?.lDebug('Unsubscribed from topic: $topic');
+      _logManager?.lDebug(
+        'FirebasePushNotificationManager unsubscribed from topic: $topic',
+      );
       return true;
     } else {
       _logManager?.lDebug('No permission to unsubscribe from topic: $topic');
@@ -126,7 +134,9 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
         settings.authorizationStatus == AuthorizationStatus.authorized ||
             settings.authorizationStatus == AuthorizationStatus.provisional;
 
-    _logManager?.lDebug('Permission status checked: $_hasPermission');
+    _logManager?.lDebug(
+      '''FirebasePushNotificationManager permission status checked: $_hasPermission''',
+    );
     return _hasPermission;
   }
 
@@ -134,7 +144,7 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   void setOnMessageListener(OnMessageCallback callback) {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _logManager?.lDebug(
-        '''Message received in foreground: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
+        '''FirebasePushNotificationManager message received in foreground: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
       );
       callback(message.toCompleteMap);
     });
@@ -144,7 +154,7 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   void setOnMessageOpenedAppListener(OnMessageCallback callback) {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       _logManager?.lDebug(
-        '''Message opened by user: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
+        '''FirebasePushNotificationManager message opened by user: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
       );
       callback(message.toCompleteMap);
     });

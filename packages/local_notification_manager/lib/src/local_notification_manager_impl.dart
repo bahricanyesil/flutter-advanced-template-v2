@@ -115,6 +115,7 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
         CustomNotificationResponseModel.fromNotificationResponse(message),
       );
 
+  // ignore: use_setters_to_change_properties
   static void _setOnBackgroundMessageListener(
     ReceivedNotificationResponseCallback? newHandler,
   ) =>

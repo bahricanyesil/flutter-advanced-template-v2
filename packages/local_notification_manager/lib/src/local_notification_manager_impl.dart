@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:local_notification_manager/src/models/custom_notification_response_model.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
+import 'package:timezone/data/latest.dart' as tzl;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'local_notification_manager.dart';
@@ -65,6 +67,7 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
   @override
   Future<bool> initialize() async {
     try {
+      await _initTimezone();
       final AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings(_settings.icon);
       final DarwinInitializationSettings initializationSettingsDarwin =
@@ -266,4 +269,12 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
   /// This is a placeholder implementation.
   /// You can customize this implementation.
   bool get isEnabled => true;
+
+  Future<void> _initTimezone() async {
+    final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
+    tzl.initializeTimeZones();
+    final tz.Location foundLocation = tz.getLocation(currentTimeZone);
+    tz.setLocalLocation(foundLocation);
+    _logManager?.lDebug('Timezone initialized to $currentTimeZone');
+  }
 }

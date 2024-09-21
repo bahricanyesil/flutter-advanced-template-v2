@@ -59,7 +59,7 @@ void main() {
       rethrowExceptions: false,
       customSettings: _customSettings,
       receiveLocalNotificationCallback: (_, __, ___, ____) => true,
-      receiveBackgroundNotificationResponseCallback: (_) => true,
+      onBackgroundNotificationCallback: (_) => true,
       receiveNotificationResponseCallback: (_) => true,
     );
   });
@@ -191,19 +191,6 @@ void main() {
         true,
       );
       expect(
-        await manager.onDidReceiveBackgroundNotificationResponse(
-          const CustomNotificationResponseModel(
-            id: 1,
-            actionId: 'action',
-            input: 'input',
-            payload: 'payload',
-            responseType:
-                CustomNotificationResponseModelType.selectedNotificationAction,
-          ),
-        ),
-        true,
-      );
-      expect(
         await manager.onDidReceiveNotificationResponse(
           const CustomNotificationResponseModel(
             id: 1,
@@ -231,7 +218,7 @@ void main() {
           localNotificationPlugin: mockPlugin,
           logManager: mockLogManager,
           permissionManager: mockPermissionManager,
-          receiveBackgroundNotificationResponseCallback: (_) =>
+          onBackgroundNotificationCallback: (_) =>
               throw Exception('Test exception on background'),
           receiveLocalNotificationCallback: (_, __, ___, ____) =>
               throw Exception('Test exception on foreground'),
@@ -247,22 +234,6 @@ void main() {
             'Test',
             'Test body',
             'payload',
-          ),
-          throwsException,
-        );
-      });
-
-      test('onDidReceiveBackgroundNotificationResponse throws', () async {
-        expect(
-          () => errorManager.onDidReceiveBackgroundNotificationResponse(
-            const CustomNotificationResponseModel(
-              id: 1,
-              actionId: 'action',
-              input: 'input',
-              payload: 'payload',
-              responseType:
-                  CustomNotificationResponseModelType.selectedNotification,
-            ),
           ),
           throwsException,
         );
@@ -318,14 +289,6 @@ void main() {
         localNotificationPlugin: customMockPlugin,
         logManager: mockLogManager,
         permissionManager: mockPermissionManager,
-        receiveBackgroundNotificationResponseCallback:
-            expectAsync1((CustomNotificationResponseModel response) {
-          expect(response.id, 1);
-          expect(response.actionId, 'default');
-          expect(response.input, null);
-          expect(response.payload, 'test_payload');
-          return true;
-        }),
         receiveNotificationResponseCallback:
             expectAsync1((CustomNotificationResponseModel response) {
           expect(response.id, 1);

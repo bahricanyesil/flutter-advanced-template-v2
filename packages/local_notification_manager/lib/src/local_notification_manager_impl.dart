@@ -10,20 +10,6 @@ import 'package:timezone/timezone.dart' as tz;
 import 'local_notification_manager.dart';
 import 'models/custom_local_notification_settings.dart';
 
-/// The callback for receiving a local notification.
-typedef ReceivedLocalNotificationCallback = FutureOr<void> Function(
-  int id,
-  String? title,
-  String? body,
-  String? payload,
-);
-
-/// The callback for receiving a notification response.
-///
-typedef ReceivedNotificationResponseCallback = FutureOr<bool> Function(
-  CustomNotificationResponseModel response,
-);
-
 /// Implementation of the local notification manager.
 ///
 /// This class is used to manage local notifications in the app.
@@ -33,19 +19,23 @@ typedef ReceivedNotificationResponseCallback = FutureOr<bool> Function(
 @immutable
 base class LocalNotificationManagerImpl implements LocalNotificationManager {
   /// Constructs a local notification manager.
-  const LocalNotificationManagerImpl({
+  LocalNotificationManagerImpl({
     required this.localNotificationPlugin,
     LogManager? logManager,
     PermissionManager? permissionManager,
     this.receiveLocalNotificationCallback,
     this.receiveNotificationResponseCallback,
-    this.receiveBackgroundNotificationResponseCallback,
     CustomLocalNotificationSettings customSettings =
         const CustomLocalNotificationSettings(),
     this.rethrowExceptions = true,
+    ReceivedNotificationResponseCallback? onBackgroundNotificationCallback,
   })  : _logManager = logManager,
         _permissionManager = permissionManager,
-        _settings = customSettings;
+        _settings = customSettings {
+    if (onBackgroundNotificationCallback != null) {
+      _setOnBackgroundMessageListener(onBackgroundNotificationCallback);
+    }
+  }
 
   /// The log manager.
   final LogManager? _logManager;
@@ -63,15 +53,14 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
   final ReceivedNotificationResponseCallback?
       receiveNotificationResponseCallback;
 
-  /// The callback for receiving a background notification response.
-  final ReceivedNotificationResponseCallback?
-      receiveBackgroundNotificationResponseCallback;
-
   /// The custom local notification settings.
   final CustomLocalNotificationSettings _settings;
 
   /// Whether to rethrow exceptions.
   final bool rethrowExceptions;
+
+  /// Static field to hold the background message handler
+  static ReceivedNotificationResponseCallback? _backgroundMessageHandler;
 
   @override
   Future<bool> initialize() async {
@@ -98,10 +87,8 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
             onDidReceiveNotificationResponse.call(
           CustomNotificationResponseModel.fromNotificationResponse(r),
         ),
-        onDidReceiveBackgroundNotificationResponse: (NotificationResponse r) =>
-            onDidReceiveBackgroundNotificationResponse.call(
-          CustomNotificationResponseModel.fromNotificationResponse(r),
-        ),
+        onDidReceiveBackgroundNotificationResponse:
+            _localNotificationBackgroundHandler,
       );
 
       final PermissionStatusTypes? statusType = await _permissionManager
@@ -120,6 +107,18 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
       return false;
     }
   }
+
+  static Future<void> _localNotificationBackgroundHandler(
+    NotificationResponse message,
+  ) async =>
+      await _backgroundMessageHandler?.call(
+        CustomNotificationResponseModel.fromNotificationResponse(message),
+      );
+
+  static void _setOnBackgroundMessageListener(
+    ReceivedNotificationResponseCallback? newHandler,
+  ) =>
+      _backgroundMessageHandler = newHandler;
 
   @override
   Future<bool> showNotification({
@@ -240,25 +239,6 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
       return true;
     } catch (e) {
       _logManager?.lError('Failed to receive local notification: $e');
-      if (rethrowExceptions) rethrow;
-      return false;
-    }
-  }
-
-  @override
-  Future<bool> onDidReceiveBackgroundNotificationResponse(
-    CustomNotificationResponseModel response,
-  ) async {
-    try {
-      _logManager?.lDebug(
-        '''Background notification response received: {id: ${response.id}, actionId: ${response.actionId}, input: ${response.input}, payload: ${response.payload}}''',
-      );
-      return await receiveBackgroundNotificationResponseCallback
-              ?.call(response) ??
-          false;
-    } catch (e) {
-      _logManager
-          ?.lError('Failed to receive background notification response: $e');
       if (rethrowExceptions) rethrow;
       return false;
     }

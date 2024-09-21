@@ -14,13 +14,18 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     required FirebaseMessaging firebaseMessaging,
     OnMessageCallback? onMessageCallback,
     OnMessageCallback? onMessageOpenedAppCallback,
+    OnMessageCallback? onBackgroundMessageCallback,
     PermissionManager? permissionManager,
     LogManager? logManager,
   })  : _firebaseMessaging = firebaseMessaging,
         _permissionManager = permissionManager,
         _logManager = logManager,
         _onMessageCallback = onMessageCallback,
-        _onMessageOpenedAppCallback = onMessageOpenedAppCallback;
+        _onMessageOpenedAppCallback = onMessageOpenedAppCallback {
+    if (onBackgroundMessageCallback != null) {
+      setOnBackgroundMessageListener(onBackgroundMessageCallback);
+    }
+  }
 
   final FirebaseMessaging _firebaseMessaging;
   final LogManager? _logManager;
@@ -57,7 +62,7 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   static Future<void> _firebaseMessagingBackgroundHandler(
     RemoteMessage message,
   ) async =>
-      _backgroundMessageHandler?.call(message.toCompleteMap);
+      await _backgroundMessageHandler?.call(message.toCompleteMap);
 
   @override
   Future<bool> requestPermission() async {

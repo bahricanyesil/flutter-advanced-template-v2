@@ -200,7 +200,10 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
               ?.checkPermission(PermissionTypes.notification);
       if (permissionStatusType?.isGranted == false) {
         _logManager?.lError('No permission to schedule notification');
-        throw Exception('No permission to schedule notification');
+        Error.throwWithStackTrace(
+          Exception('No permission to schedule notification'),
+          StackTrace.current,
+        );
       }
 
       if (_isPlatformAndroid) {
@@ -209,7 +212,12 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
                 ?.checkAndRequestPermission(PermissionTypes.scheduleExactAlarm);
         if (exactAlarmPermissionStatus?.isGranted == false) {
           _logManager?.lError('No permission to schedule exact alarm');
-          throw Exception('No permission to schedule exact alarm');
+          Error.throwWithStackTrace(
+            Exception(
+              '''No permission to schedule notification while scheduling exact alarm''',
+            ),
+            StackTrace.current,
+          );
         }
       }
 

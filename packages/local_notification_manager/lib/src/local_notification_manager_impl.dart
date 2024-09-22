@@ -195,11 +195,20 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
       return false;
     }
     try {
-      final PermissionStatusTypes? statusType = await _permissionManager
-          ?.checkPermission(PermissionTypes.notification);
-      if (statusType?.isGranted == false) {
+      final PermissionStatusTypes? permissionStatusType =
+          await _permissionManager
+              ?.checkPermission(PermissionTypes.notification);
+      if (permissionStatusType?.isGranted == false) {
         _logManager?.lError('No permission to schedule notification');
         throw Exception('No permission to schedule notification');
+      }
+
+      final PermissionStatusTypes? exactAlarmPermissionStatus =
+          await _permissionManager
+              ?.checkAndRequestPermission(PermissionTypes.scheduleExactAlarm);
+      if (exactAlarmPermissionStatus?.isGranted == false) {
+        _logManager?.lError('No permission to schedule exact alarm');
+        throw Exception('No permission to schedule exact alarm');
       }
 
       final tz.TZDateTime timezonedDate =

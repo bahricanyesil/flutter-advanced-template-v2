@@ -37,6 +37,7 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
     if (onBackgroundNotificationCallback != null) {
       _setOnBackgroundMessageListener(onBackgroundNotificationCallback);
     }
+    _logManager?.lDebug('LocalNotificationManagerImpl constructed');
   }
 
   /// The log manager.
@@ -66,8 +67,11 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
 
   @override
   Future<bool> initialize() async {
+    _logManager?.lDebug('Initializing local notification manager');
     try {
       await _initTimezone();
+      _logManager?.lDebug('Timezone initialized');
+
       final AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings(_settings.icon);
       final DarwinInitializationSettings initializationSettingsDarwin =
@@ -93,15 +97,22 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
         onDidReceiveBackgroundNotificationResponse:
             _localNotificationBackgroundHandler,
       );
+      _logManager?.lDebug('Local notification plugin initialized');
 
       final PermissionStatusTypes? statusType = await _permissionManager
           ?.checkPermission(PermissionTypes.notification);
       if (statusType?.isGranted == false) {
+        _logManager?.lDebug(
+          'Notification permission not granted, requesting permission',
+        );
         await _permissionManager
             ?.requestPermission(PermissionTypes.notification);
+      } else {
+        _logManager?.lDebug('Notification permission already granted');
       }
 
-      _logManager?.lDebug('Local notification manager initialized');
+      _logManager
+          ?.lDebug('Local notification manager initialized successfully');
       return true;
     } catch (e) {
       _logManager
@@ -113,16 +124,18 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
 
   static Future<void> _localNotificationBackgroundHandler(
     NotificationResponse message,
-  ) async =>
-      await _backgroundMessageHandler?.call(
-        CustomNotificationResponseModel.fromNotificationResponse(message),
-      );
+  ) async {
+    await _backgroundMessageHandler?.call(
+      CustomNotificationResponseModel.fromNotificationResponse(message),
+    );
+  }
 
   // ignore: use_setters_to_change_properties
   static void _setOnBackgroundMessageListener(
     ReceivedNotificationResponseCallback? newHandler,
-  ) =>
-      _backgroundMessageHandler = newHandler;
+  ) {
+    _backgroundMessageHandler = newHandler;
+  }
 
   @override
   Future<bool> showNotification({
@@ -132,11 +145,18 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
     String? payload,
     CustomLocalNotificationSettings? settings,
   }) async {
-    if (!isEnabled) return false;
+    _logManager?.lDebug(
+      'Attempting to show notification: {id: $id, title: $title, body: $body}',
+    );
+    if (!isEnabled) {
+      _logManager?.lDebug('Notification manager is disabled');
+      return false;
+    }
     try {
       final PermissionStatusTypes? statusType = await _permissionManager
           ?.checkPermission(PermissionTypes.notification);
       if (statusType?.isGranted == false) {
+        _logManager?.lError('No permission to show notification');
         throw Exception('No permission to show notification');
       }
       await localNotificationPlugin.show(
@@ -167,11 +187,18 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
     String? payload,
     CustomLocalNotificationSettings? settings,
   }) async {
-    if (!isEnabled) return false;
+    _logManager?.lDebug(
+      '''Attempting to schedule notification: {id: $id, title: $title, body: $body, scheduledDate: $scheduledDate}''',
+    );
+    if (!isEnabled) {
+      _logManager?.lDebug('Notification manager is disabled');
+      return false;
+    }
     try {
       final PermissionStatusTypes? statusType = await _permissionManager
           ?.checkPermission(PermissionTypes.notification);
       if (statusType?.isGranted == false) {
+        _logManager?.lError('No permission to schedule notification');
         throw Exception('No permission to schedule notification');
       }
 
@@ -204,6 +231,7 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
 
   @override
   Future<bool> cancelNotification(int id) async {
+    _logManager?.lDebug('Attempting to cancel notification: id $id');
     try {
       await localNotificationPlugin.cancel(id);
       _logManager?.lDebug('Notification canceled: id $id');
@@ -217,6 +245,7 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
 
   @override
   Future<bool> cancelAllNotifications() async {
+    _logManager?.lDebug('Attempting to cancel all notifications');
     try {
       await localNotificationPlugin.cancelAll();
       _logManager?.lDebug('All notifications canceled');
@@ -235,10 +264,10 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
     String? body,
     String? payload,
   ) async {
+    _logManager?.lDebug(
+      '''Local notification received: {id: $id, title: $title, body: $body, payload: $payload}''',
+    );
     try {
-      _logManager?.lDebug(
-        '''Notification received: {id: $id, title: $title, body: $body, payload: $payload}''',
-      );
       await receiveLocalNotificationCallback?.call(id, title, body, payload);
       return true;
     } catch (e) {
@@ -252,10 +281,10 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
   Future<bool> onDidReceiveNotificationResponse(
     CustomNotificationResponseModel response,
   ) async {
+    _logManager?.lDebug(
+      '''Notification response received: {id: ${response.id}, actionId: ${response.actionId}, input: ${response.input}, payload: ${response.payload}}''',
+    );
     try {
-      _logManager?.lDebug(
-        '''Notification response received: {id: ${response.id}, actionId: ${response.actionId}, input: ${response.input}, payload: ${response.payload}}''',
-      );
       return await receiveNotificationResponseCallback?.call(response) ?? false;
     } catch (e) {
       _logManager?.lError('Failed to receive notification response: $e');
@@ -271,6 +300,7 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
   bool get isEnabled => true;
 
   Future<void> _initTimezone() async {
+    _logManager?.lDebug('Initializing timezone');
     final String currentTimeZone = await FlutterTimezone.getLocalTimezone();
     tzl.initializeTimeZones();
     final tz.Location foundLocation = tz.getLocation(currentTimeZone);

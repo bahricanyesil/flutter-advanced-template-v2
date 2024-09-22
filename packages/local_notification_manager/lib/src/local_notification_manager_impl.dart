@@ -203,12 +203,14 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
         throw Exception('No permission to schedule notification');
       }
 
-      final PermissionStatusTypes? exactAlarmPermissionStatus =
-          await _permissionManager
-              ?.checkAndRequestPermission(PermissionTypes.scheduleExactAlarm);
-      if (exactAlarmPermissionStatus?.isGranted == false) {
-        _logManager?.lError('No permission to schedule exact alarm');
-        throw Exception('No permission to schedule exact alarm');
+      if (_isPlatformAndroid) {
+        final PermissionStatusTypes? exactAlarmPermissionStatus =
+            await _permissionManager
+                ?.checkAndRequestPermission(PermissionTypes.scheduleExactAlarm);
+        if (exactAlarmPermissionStatus?.isGranted == false) {
+          _logManager?.lError('No permission to schedule exact alarm');
+          throw Exception('No permission to schedule exact alarm');
+        }
       }
 
       final tz.TZDateTime timezonedDate =
@@ -316,4 +318,7 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
     tz.setLocalLocation(foundLocation);
     _logManager?.lDebug('Timezone initialized to $currentTimeZone');
   }
+
+  bool get _isPlatformAndroid =>
+      !kIsWeb && TargetPlatform.android == defaultTargetPlatform;
 }

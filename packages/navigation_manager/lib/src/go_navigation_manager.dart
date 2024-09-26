@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:log_manager/log_manager.dart';
 
 import 'models/navigation_state.dart';
 import 'models/route_config.dart';
@@ -16,7 +17,11 @@ class GoNavigationManager implements NavigationManager {
     required String initialLocation,
     String? restorationScopeId,
     NavigationErrorBuilder? errorBuilder,
-  }) {
+    LogManager? logManager,
+  }) : _logManager = logManager {
+    _logManager?.lInfo(
+      '''Initializing GoNavigationManager with initial location: $initialLocation''',
+    );
     _router = GoRouter(
       routes: _convertRoutes(routes),
       initialLocation: initialLocation,
@@ -24,12 +29,15 @@ class GoNavigationManager implements NavigationManager {
       restorationScopeId: restorationScopeId,
       debugLogDiagnostics: true,
       redirect: _globalRedirect,
-      errorBuilder: (BuildContext context, GoRouterState state) =>
-          (errorBuilder ?? defaultNavigationErrorBuilder)
-              .call(context, state.error),
+      errorBuilder: (BuildContext context, GoRouterState state) {
+        _logManager?.lInfo('Error occurred: ${state.error}');
+        return (errorBuilder ?? defaultNavigationErrorBuilder)
+            .call(context, state.error);
+      },
     );
   }
 
+  final LogManager? _logManager;
   late final GoRouter _router;
 
   /// The GoRouter instance used by this manager.
@@ -72,6 +80,9 @@ class GoNavigationManager implements NavigationManager {
     Map<String, dynamic> queryParams = const <String, dynamic>{},
     Object? extra,
   }) {
+    _logManager?.lInfo(
+      '''Navigating to named route: $name with params: $params and queryParams: $queryParams''',
+    );
     return _router.pushNamed<T>(
       name,
       pathParameters: params,
@@ -82,6 +93,7 @@ class GoNavigationManager implements NavigationManager {
 
   @override
   Future<T?> navigateTo<T extends Object?>(String path, {Object? extra}) {
+    _logManager?.lInfo('Navigating to path: $path');
     return _router.push<T>(path, extra: extra);
   }
 
@@ -92,6 +104,7 @@ class GoNavigationManager implements NavigationManager {
     Map<String, dynamic> queryParams = const <String, dynamic>{},
     Object? extra,
   }) async {
+    _logManager?.lInfo('Replacing with named route: $name');
     return _router.pushReplacementNamed<T>(
       name,
       pathParameters: params,
@@ -110,6 +123,7 @@ class GoNavigationManager implements NavigationManager {
 
   @override
   void pop<T extends Object?>([T? result]) {
+    _logManager?.lInfo('Popping route with result: $result');
     _router.pop(result);
   }
 
@@ -124,6 +138,7 @@ class GoNavigationManager implements NavigationManager {
   /// Navigates to the given path and pushes it to the stack.
   @override
   void replaceAllAndGo(String path, {Object? extra}) {
+    _logManager?.lInfo('Replacing all and going to path: $path');
     _router.go(path, extra: extra);
   }
 
@@ -151,6 +166,7 @@ class GoNavigationManager implements NavigationManager {
     bool pushIfNotExists = true,
     bool avoidLastPop = true,
   }) {
+    _logManager?.lInfo('Popping until condition met with name: $name');
     bool defaultPredicate(Route<Object?> route) {
       if (route.isFirst) {
         if (pushIfNotExists && name != null) {
@@ -173,6 +189,7 @@ class GoNavigationManager implements NavigationManager {
     Object? extra,
     NavigationPredicateCallback? predicate,
   }) async {
+    _logManager?.lInfo('Pushing named and removing until path: $path');
     await _rootNavigatorKey.currentState?.pushNamedAndRemoveUntil(
       path,
       predicate ?? (Route<Object?> route) => false,
@@ -181,7 +198,9 @@ class GoNavigationManager implements NavigationManager {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    _logManager?.lInfo('Disposing GoNavigationManager');
+  }
 
   /// Sets the default navigation error builder.
   @override

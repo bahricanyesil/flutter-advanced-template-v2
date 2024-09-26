@@ -251,10 +251,14 @@ class GoNavigationManager implements NavigationManager {
     bool defaultPredicate(Route<Object?> route) {
       if (route.isFirst) {
         if (pushIfNotExists && name != null) {
+          _logManager?.lInfo('Pushing named route: $name');
           replaceWithNamed(name);
           return true;
         }
-        if (avoidLastPop) return true;
+        if (avoidLastPop) {
+          _logManager?.lInfo('Avoiding last pop');
+          return true;
+        }
       }
       return route.settings.name?.toLowerCase() == name?.toLowerCase();
     }

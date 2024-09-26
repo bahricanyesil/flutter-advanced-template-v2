@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:log_manager/log_manager.dart';
@@ -7,6 +9,21 @@ import 'package:log_manager/log_manager.dart';
 import 'models/navigation_state.dart';
 import 'models/route_config.dart';
 import 'navigation_manager.dart';
+
+/// A custom exception handler that takes a [BuildContext], [NavigationState],
+/// and [RouterConfig] as arguments.
+typedef CustomExceptionHandler = void Function(
+  BuildContext context,
+  NavigationState state,
+  RouterConfig<Diagnosticable> router,
+);
+
+/// A custom error page builder that takes a [BuildContext] and
+/// [NavigationState] as arguments.
+typedef CustomErrorPageBuilder = Page<Object?> Function(
+  BuildContext context,
+  NavigationState state,
+);
 
 /// A navigation manager that uses the GoRouter package.
 class GoNavigationManager implements NavigationManager {
@@ -17,24 +34,61 @@ class GoNavigationManager implements NavigationManager {
     required String initialLocation,
     String? restorationScopeId,
     NavigationErrorBuilder? errorBuilder,
+    CustomRedirectCallback? redirect,
+    bool requestFocus = true,
+    CustomExceptionHandler? exceptionHandler,
+    bool debugLogDiagnostics = true,
+    List<NavigatorObserver> observers = const <NavigatorObserver>[],
+    Object? initialExtra,
+    bool routerNeglect = false,
+    int maxRedirects = 5,
+    Codec<Object?, Object?>? extraCodec,
+    Listenable? refreshListenable,
+    bool overridePlatformDefaultLocation = false,
+    CustomErrorPageBuilder? errorPageBuilder,
     LogManager? logManager,
   }) : _logManager = logManager {
     _logManager?.lInfo(
       '''Initializing GoNavigationManager with initial location: $initialLocation''',
     );
-    _router = GoRouter(
+    final GoRouter goRouter = GoRouter(
       routes: _convertRoutes(routes),
       initialLocation: initialLocation,
       navigatorKey: _rootNavigatorKey,
       restorationScopeId: restorationScopeId,
-      debugLogDiagnostics: true,
-      redirect: _globalRedirect,
+      debugLogDiagnostics: debugLogDiagnostics,
+      requestFocus: requestFocus,
+      initialExtra: initialExtra,
+      redirectLimit: maxRedirects,
+      extraCodec: extraCodec,
+      refreshListenable: refreshListenable,
+      overridePlatformDefaultLocation: overridePlatformDefaultLocation,
+      routerNeglect: routerNeglect,
+      errorPageBuilder: errorPageBuilder == null
+          ? null
+          : (BuildContext context, GoRouterState state) {
+              _logManager?.lInfo('Error occurred: ${state.error}');
+              return errorPageBuilder.call(
+                context,
+                NavigationState.fromGoState(state),
+              );
+            },
+      onException: (BuildContext c, GoRouterState s, GoRouter r) {
+        _logManager?.lInfo('Exception occurred: ${s.error}');
+        return exceptionHandler?.call(c, NavigationState.fromGoState(s), r);
+      },
+      observers: observers,
+      redirect: (BuildContext context, GoRouterState state) {
+        _logManager?.lInfo('Redirecting to: $state');
+        return redirect?.call(context, NavigationState.fromGoState(state));
+      },
       errorBuilder: (BuildContext context, GoRouterState state) {
         _logManager?.lInfo('Error occurred: ${state.error}');
         return (errorBuilder ?? defaultNavigationErrorBuilder)
             .call(context, state.error);
       },
     );
+    _router = goRouter;
   }
 
   final LogManager? _logManager;
@@ -48,21 +102,33 @@ class GoNavigationManager implements NavigationManager {
       GlobalKey<NavigatorState>();
 
   List<RouteBase> _convertRoutes(List<RouteConfig> routes) {
-    return routes
-        .map(
-          (RouteConfig config) => GoRoute(
-            path: config.path,
-            name: config.name,
-            builder: (BuildContext context, GoRouterState state) =>
-                config.builder(context, NavigationState.fromGoState(state)),
-          ),
-        )
-        .toList();
-  }
-
-  FutureOr<String?> _globalRedirect(BuildContext context, GoRouterState state) {
-    // Implement global redirect logic here
-    return null;
+    return routes.map(
+      (RouteConfig config) {
+        final CustomPageBuilder? customPageBuilder = config.pageBuilder;
+        final CustomOnExitCallback? onExit = config.onExit;
+        final CustomRedirectCallback? redirect = config.redirect;
+        return GoRoute(
+          path: config.path,
+          name: config.name,
+          pageBuilder: customPageBuilder == null
+              ? null
+              : (BuildContext context, GoRouterState state) => customPageBuilder
+                  .call(context, NavigationState.fromGoState(state)),
+          onExit: onExit == null
+              ? null
+              : (BuildContext context, GoRouterState state) =>
+                  onExit.call(context, NavigationState.fromGoState(state)),
+          parentNavigatorKey: config.parentNavigatorKey,
+          redirect: redirect == null
+              ? null
+              : (BuildContext context, GoRouterState state) =>
+                  redirect.call(context, NavigationState.fromGoState(state)),
+          routes: _convertRoutes(config.routes),
+          builder: (BuildContext context, GoRouterState state) =>
+              config.builder(context, NavigationState.fromGoState(state)),
+        );
+      },
+    ).toList();
   }
 
   @override
@@ -71,6 +137,7 @@ class GoNavigationManager implements NavigationManager {
     final RouteBase lastRoute = c.routes.last;
     final String? currentName = lastRoute is GoRoute ? lastRoute.name : null;
     if (currentName == null) return;
+    _logManager?.lInfo('Refreshing route: $currentName');
     await replaceWithNamed((c.routes.last as GoRoute).name ?? '');
   }
 
@@ -119,6 +186,7 @@ class GoNavigationManager implements NavigationManager {
     String path, {
     Object? extra,
   }) async {
+    _logManager?.lInfo('Replacing with path: $path');
     return _router.pushReplacement<T>(path, extra: extra);
   }
 
@@ -130,7 +198,10 @@ class GoNavigationManager implements NavigationManager {
 
   @override
   bool canPop() {
-    return _router.canPop();
+    _logManager?.lInfo('Checking if can pop');
+    final bool canPopRes = _router.canPop();
+    _logManager?.lInfo('Can pop: $canPopRes');
+    return canPopRes;
   }
 
   @override
@@ -151,6 +222,7 @@ class GoNavigationManager implements NavigationManager {
     Map<String, dynamic> queryParams = const <String, dynamic>{},
     Object? extra,
   }) {
+    _logManager?.lInfo('Replacing all and going to named route: $name');
     _router.goNamed(
       name,
       pathParameters: params,

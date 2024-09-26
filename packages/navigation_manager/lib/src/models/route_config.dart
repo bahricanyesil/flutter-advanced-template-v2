@@ -1,7 +1,33 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import '../../navigation_manager.dart';
+
+/// A function that builds a page for a route.
+typedef CustomPageBuilder = Page<Object?> Function(
+  BuildContext context,
+  NavigationState state,
+);
+
+/// Route builder function.
+typedef CustomRouteBuilder = Widget Function(
+  BuildContext context,
+  NavigationState state,
+);
+
+/// Redirect callback function.
+typedef CustomRedirectCallback = FutureOr<String?> Function(
+  BuildContext context,
+  NavigationState state,
+);
+
+/// Exit route callback function.
+typedef CustomOnExitCallback = FutureOr<bool> Function(
+  BuildContext context,
+  NavigationState state,
+);
 
 /// Configuration for a single route
 ///
@@ -16,6 +42,11 @@ base class RouteConfig extends Equatable {
     required this.path,
     required this.builder,
     this.name,
+    this.pageBuilder,
+    this.onExit,
+    this.parentNavigatorKey,
+    this.redirect,
+    this.routes = const <RouteConfig>[],
   });
 
   /// The path of the route.
@@ -32,7 +63,37 @@ base class RouteConfig extends Equatable {
   ///
   /// This function takes a [BuildContext] and a map of string parameters,
   /// and returns a [Widget] for the route.
-  final Widget Function(BuildContext, NavigationState) builder;
+  final CustomRouteBuilder builder;
+
+  /// The page builder function for the route.
+  ///
+  /// This function takes a [BuildContext] and a [NavigationState],
+  /// and returns a [Page] for the route.
+  final CustomPageBuilder? pageBuilder;
+
+  /// The parent navigator key for the route.
+  ///
+  /// This is an optional parameter and can be used to specify
+  /// a parent navigator for the route.
+  final GlobalKey<NavigatorState>? parentNavigatorKey;
+
+  /// The redirect callback for the route.
+  ///
+  /// This is an optional parameter and can be used to specify a redirect
+  /// callback for the route.
+  final CustomRedirectCallback? redirect;
+
+  /// The onEnter callback for the route.
+  ///
+  /// This is an optional parameter and can be used to specify an onEnter
+  /// callback for the route.
+  final CustomOnExitCallback? onExit;
+
+  /// The onExit callback for the route.
+  ///
+  /// This is an optional parameter and can be used to specify an onExit
+  /// callback for the route.
+  final List<RouteConfig> routes;
 
   @override
   List<Object?> get props => <Object?>[path, name, builder];

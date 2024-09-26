@@ -65,12 +65,11 @@ class GoNavigationManager implements NavigationManager {
     return null;
   }
 
-  final StreamController<void> _refreshStreamController =
-      StreamController<void>.broadcast();
-
   @override
-  void refresh() {
-    _refreshStreamController.add(null);
+  Future<void> refresh() async {
+    final String currentPath =
+        _router.routerDelegate.currentConfiguration.uri.path;
+    await replaceWith(currentPath);
   }
 
   @override

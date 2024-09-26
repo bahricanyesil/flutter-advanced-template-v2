@@ -43,7 +43,7 @@ abstract interface class NavigationManager {
   RouteInformation get currentRoute;
 
   /// Refresh the current route
-  void refresh();
+  Future<void> refresh();
 
   /// Navigates to the path. It's difference from the [navigateTo] method:
   /// it doesn't push the route to the navigation stack. It's like a redirect.

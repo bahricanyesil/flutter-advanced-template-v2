@@ -67,9 +67,11 @@ class GoNavigationManager implements NavigationManager {
 
   @override
   Future<void> refresh() async {
-    final String currentPath =
-        _router.routerDelegate.currentConfiguration.uri.path;
-    await replaceWith(currentPath);
+    final RouteMatchList c = _router.routerDelegate.currentConfiguration;
+    final RouteBase lastRoute = c.routes.last;
+    final String? currentName = lastRoute is GoRoute ? lastRoute.name : null;
+    if (currentName == null) return;
+    await replaceWithNamed((c.routes.last as GoRoute).name ?? '');
   }
 
   @override

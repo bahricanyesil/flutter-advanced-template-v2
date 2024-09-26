@@ -73,20 +73,27 @@ class GoNavigationManager implements NavigationManager {
                 NavigationState.fromGoState(state),
               );
             },
-      onException: (BuildContext c, GoRouterState s, GoRouter r) {
-        _logManager?.lInfo('Exception occurred: ${s.error}');
-        return exceptionHandler?.call(c, NavigationState.fromGoState(s), r);
-      },
+      onException: exceptionHandler == null
+          ? null
+          : (BuildContext c, GoRouterState s, GoRouter r) {
+              _logManager?.lInfo('Exception occurred: ${s.error}');
+              final NavigationState navigationS =
+                  NavigationState.fromGoState(s);
+              return exceptionHandler.call(c, navigationS, r);
+            },
       observers: observers,
-      redirect: (BuildContext context, GoRouterState state) {
-        _logManager?.lInfo('Redirecting to: $state');
-        return redirect?.call(context, NavigationState.fromGoState(state));
-      },
-      errorBuilder: (BuildContext context, GoRouterState state) {
-        _logManager?.lInfo('Error occurred: ${state.error}');
-        return (errorBuilder ?? defaultNavigationErrorBuilder)
-            .call(context, state.error);
-      },
+      redirect: redirect == null
+          ? null
+          : (BuildContext context, GoRouterState state) {
+              _logManager?.lInfo('Redirecting to: $state');
+              return redirect.call(context, NavigationState.fromGoState(state));
+            },
+      errorBuilder: errorBuilder == null
+          ? null
+          : (BuildContext context, GoRouterState state) {
+              _logManager?.lInfo('Error occurred: ${state.error}');
+              return errorBuilder.call(context, state.error);
+            },
     );
     _router = goRouter;
   }
@@ -273,19 +280,5 @@ class GoNavigationManager implements NavigationManager {
   @override
   void dispose() {
     _logManager?.lInfo('Disposing GoNavigationManager');
-  }
-
-  /// Sets the default navigation error builder.
-  @override
-  Widget defaultNavigationErrorBuilder(
-    BuildContext context,
-    Exception? exception,
-  ) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Error')),
-      body: Center(
-        child: Text(exception?.toString() ?? 'An unknown error occurred.'),
-      ),
-    );
   }
 }

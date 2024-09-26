@@ -79,12 +79,6 @@ abstract interface class NavigationManager {
   /// Dispose of the NavigationService
   void dispose();
 
-  /// Sets the default navigation error builder.
-  Widget defaultNavigationErrorBuilder(
-    BuildContext context,
-    Exception? exception,
-  );
-
   /// The router configuration for the navigation manager.
   RouterConfig<Object>? get router;
 }

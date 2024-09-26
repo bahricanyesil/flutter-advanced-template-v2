@@ -11,6 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Models
+  equatable: ^2.0.5
+
   # Go router
   go_router: ^14.2.8
 

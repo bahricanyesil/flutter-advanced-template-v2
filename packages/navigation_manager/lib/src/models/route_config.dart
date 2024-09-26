@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:tuna_lojistik/core/managers/navigation_manager/models/navigation_state.dart';
+
+import '../../navigation_manager.dart';
 
 /// Configuration for a single route
 ///

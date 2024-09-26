@@ -246,6 +246,7 @@ class GoNavigationManager implements NavigationManager {
     bool pushIfNotExists = true,
     bool avoidLastPop = true,
   }) {
+    assert(name != null || predicate != null, 'Name or predicate must be set');
     _logManager?.lInfo('Popping until condition met with name: $name');
     bool defaultPredicate(Route<Object?> route) {
       if (route.isFirst) {

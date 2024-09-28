@@ -4,10 +4,6 @@ import 'package:connectivity_manager/connectivity_manager.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:log_manager/log_manager.dart';
 import 'package:network_manager/network_manager.dart';
-import 'package:network_manager/src/models/index.dart';
-
-import 'utils/interceptors/connectivity_interceptor.dart';
-import 'utils/interceptors/custom_log_interceptor.dart';
 
 /// A type definition for the base network manager class.
 typedef INetworkManager = NetworkManager<DefaultErrorModel, dio.Options,

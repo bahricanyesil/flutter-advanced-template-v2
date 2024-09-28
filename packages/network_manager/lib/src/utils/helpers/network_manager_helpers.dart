@@ -6,9 +6,9 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:key_value_storage_manager/key_value_storage_manager.dart';
 import 'package:network_manager/src/exceptions/mismatched_type_exception.dart';
-import 'package:network_manager/src/utils/status_code_helpers.dart';
+import 'package:network_manager/src/utils/helpers/status_code_helpers.dart';
 
-import '../models/index.dart';
+import '../../models/index.dart';
 import 'data_mapper_helpers.dart';
 import 'json_helpers.dart';
 

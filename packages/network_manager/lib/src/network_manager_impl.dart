@@ -8,7 +8,7 @@ import 'network_manager.dart';
 import 'utils/adapter/io_adapter.dart'
     if (dart.library.html) 'utils/adapter/web_adapter.dart';
 import 'utils/extensions/interceptor_extensions.dart';
-import 'utils/network_manager_helpers.dart';
+import 'utils/helpers/network_manager_helpers.dart';
 import 'utils/transformers/custom_background_transformers.dart';
 
 /// A class that manages network requests using the Dio library.

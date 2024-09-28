@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../models/data_model.dart';
+import '../../models/data_model.dart';
 import 'network_manager_helpers.dart';
 
 /// Extension on `int` to provide utility methods for

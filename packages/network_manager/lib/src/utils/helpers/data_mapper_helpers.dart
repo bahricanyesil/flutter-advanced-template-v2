@@ -1,7 +1,7 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:log_manager/log_manager.dart';
 
-import '../exceptions/unsuccessful_parse_exception.dart';
+import '../../exceptions/unsuccessful_parse_exception.dart';
 import 'json_helpers.dart';
 
 /// This class provides helper methods for data mapping.

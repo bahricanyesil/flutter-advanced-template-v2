@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  device_info_plus: ^9.1.2
-  package_info_plus: ^5.0.1
+  device_info_plus: ^10.1.2
+  package_info_plus: ^8.0.2
 
 dev_dependencies:
   flutter_test:

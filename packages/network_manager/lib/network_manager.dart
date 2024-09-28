@@ -7,6 +7,7 @@ library network_manager;
 
 import 'package:dart_mappable/dart_mappable.dart';
 
+export 'src/default_network_manager.dart';
 export 'src/entities/token_entity.dart';
 export 'src/enums/method_types.dart';
 export 'src/enums/token_types.dart';

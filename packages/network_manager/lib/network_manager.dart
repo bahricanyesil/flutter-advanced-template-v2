@@ -16,4 +16,5 @@ export 'src/enums/token_types.dart';
 export 'src/models/index.dart';
 export 'src/network_manager.dart';
 export 'src/network_manager_impl.dart';
+export 'src/repositories/token_repository.dart';
 export 'src/utils/index.dart';

@@ -33,11 +33,11 @@ final class ThemeManagerImpl implements ThemeManager {
     _currentThemeMode = mode;
     SystemChrome.setSystemUIOverlayStyle(
       switch (mode) {
-        ThemeMode.light => SystemUiOverlayStyle.light,
-        ThemeMode.dark => SystemUiOverlayStyle.dark,
+        ThemeMode.light => SystemUiOverlayStyle.dark,
+        ThemeMode.dark => SystemUiOverlayStyle.light,
         ThemeMode.system => _isSystemLight
-            ? SystemUiOverlayStyle.light
-            : SystemUiOverlayStyle.dark,
+            ? SystemUiOverlayStyle.dark
+            : SystemUiOverlayStyle.light,
       },
     );
     _logManager?.lInfo('Theme mode set to: $mode');

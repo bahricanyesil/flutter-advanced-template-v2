@@ -54,7 +54,7 @@ final class ThemeManagerImpl implements ThemeManager {
     final ThemeMode newMode = switch (_currentThemeMode) {
       ThemeMode.light => ThemeMode.dark,
       ThemeMode.dark => ThemeMode.light,
-      ThemeMode.system => _isSystemLight ? ThemeMode.light : ThemeMode.dark,
+      ThemeMode.system => _isSystemLight ? ThemeMode.dark : ThemeMode.light,
     };
     await setThemeMode(newMode);
   }

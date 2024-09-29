@@ -7,7 +7,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:network_manager/network_manager.dart';
 import 'package:network_manager/src/exceptions/mismatched_type_exception.dart';
 import 'package:network_manager/src/exceptions/unsuccessful_parse_exception.dart';
-import 'package:network_manager/src/models/index.dart';
 
 import 'mocks/mock_dio_adapter.dart';
 

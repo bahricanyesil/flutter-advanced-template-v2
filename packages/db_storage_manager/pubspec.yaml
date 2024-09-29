@@ -1,0 +1,30 @@
+name: db_storage_manager
+description: A Dart package for managing database storage.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Db related packages
+  drift: ^2.20.3
+  drift_flutter: ^0.2.0
+
+  # Manages logging related things
+  log_manager:
+    path: ../log_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lint_rules:
+    path: ../lint_rules
+
+  # Code generation
+  drift_dev: ^2.20.3
+  build_runner: ^2.4.12

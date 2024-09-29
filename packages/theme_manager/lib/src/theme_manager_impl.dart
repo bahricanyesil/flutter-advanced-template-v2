@@ -12,9 +12,9 @@ final class ThemeManagerImpl implements ThemeManager {
   /// It is used to manage the themes for the app.
   ThemeManagerImpl({
     required ThemeModel initialTheme,
-    required KeyValueStorageManager storageManager,
     ThemeMode initialMode = ThemeMode.system,
     LogManager? logManager,
+    KeyValueStorageManager? storageManager,
   })  : _currentTheme = initialTheme,
         _storageManager = storageManager,
         _currentThemeMode = initialMode,
@@ -24,7 +24,7 @@ final class ThemeManagerImpl implements ThemeManager {
   static const String _themeModeKey = 'theme_mode';
 
   final LogManager? _logManager;
-  final KeyValueStorageManager _storageManager;
+  final KeyValueStorageManager? _storageManager;
   ThemeModel _currentTheme;
   ThemeMode _currentThemeMode;
 
@@ -35,7 +35,7 @@ final class ThemeManagerImpl implements ThemeManager {
   ThemeModel get currentTheme => _currentTheme;
 
   Future<void> _initializeThemeMode(ThemeMode initialMode) async {
-    final String? storedMode = _storageManager.read<String>(_themeModeKey);
+    final String? storedMode = _storageManager?.read<String>(_themeModeKey);
     if (storedMode != null) {
       _currentThemeMode = ThemeMode.values.firstWhere(
         (ThemeMode mode) => mode.name == storedMode,
@@ -50,7 +50,7 @@ final class ThemeManagerImpl implements ThemeManager {
   Future<void> setThemeMode(ThemeMode mode) async {
     if (_currentThemeMode == mode) return;
     _currentThemeMode = mode;
-    await _storageManager.write<String>(key: _themeModeKey, value: mode.name);
+    await _storageManager?.write<String>(key: _themeModeKey, value: mode.name);
     SystemChrome.setSystemUIOverlayStyle(
       switch (mode) {
         ThemeMode.light => SystemUiOverlayStyle.dark,

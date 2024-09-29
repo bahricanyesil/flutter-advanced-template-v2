@@ -44,6 +44,7 @@ final class ThemeManagerImpl implements ThemeManager {
     } else {
       _currentThemeMode = initialMode;
     }
+    await setThemeMode(_currentThemeMode);
   }
 
   @override

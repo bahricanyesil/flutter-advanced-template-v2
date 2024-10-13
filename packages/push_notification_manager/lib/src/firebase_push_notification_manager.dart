@@ -67,27 +67,34 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
 
   @override
   Future<bool> requestPermission() async {
-    final NotificationSettings permissionRes =
-        await _firebaseMessaging.requestPermission();
-    await _firebaseMessaging.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    final AuthorizationStatus initStatus = permissionRes.authorizationStatus;
-    _hasPermission = initStatus == AuthorizationStatus.authorized ||
-        initStatus == AuthorizationStatus.provisional;
+    try {
+      final NotificationSettings permissionRes =
+          await _firebaseMessaging.requestPermission();
+      await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      final AuthorizationStatus initStatus = permissionRes.authorizationStatus;
+      _hasPermission = initStatus == AuthorizationStatus.authorized ||
+          initStatus == AuthorizationStatus.provisional;
 
-    final PermissionStatusTypes? statusType =
-        await _permissionManager?.checkAndRequestPermission(
-      PermissionTypes.notification,
-    );
-    _hasPermission = statusType?.isGranted ?? false;
+      final PermissionStatusTypes? statusType =
+          await _permissionManager?.checkAndRequestPermission(
+        PermissionTypes.notification,
+      );
+      _hasPermission = statusType?.isGranted ?? false;
 
-    _logManager?.lDebug(
-      '''FirebasePushNotificationManager permission status updated: $_hasPermission''',
-    );
-    return _hasPermission;
+      _logManager?.lDebug(
+        '''FirebasePushNotificationManager permission status updated: $_hasPermission''',
+      );
+      return _hasPermission;
+    } catch (e) {
+      _logManager?.lError(
+        'FirebasePushNotificationManager permission request failed: $e',
+      );
+      return _hasPermission;
+    }
   }
 
   @override

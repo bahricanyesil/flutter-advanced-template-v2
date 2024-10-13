@@ -103,12 +103,12 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
           ?.checkPermission(PermissionTypes.notification);
       if (statusType?.isGranted == false) {
         _logManager?.lDebug(
-          'Notification permission not granted, requesting permission',
+          'Local notification permission not granted, requesting permission',
         );
         await _permissionManager
             ?.requestPermission(PermissionTypes.notification);
       } else {
-        _logManager?.lDebug('Notification permission already granted');
+        _logManager?.lDebug('Local notification permission already granted');
       }
 
       _logManager

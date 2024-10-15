@@ -10,7 +10,7 @@ import 'package:local_notification_manager/src/models/custom_local_notification_
 import 'package:local_notification_manager/src/models/custom_notification_response_model.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:permission_manager/permission_manager.dart';
-import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart';
 
 import 'mocks/mock_flutter_local_notifications_plugin.dart';

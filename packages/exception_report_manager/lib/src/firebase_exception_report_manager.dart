@@ -20,6 +20,7 @@ base class FirebaseExceptionReportManager extends ExceptionReportManager {
   FirebaseExceptionReportManager({
     required FirebaseCrashlytics crashlytics,
     LogManager? logManager,
+    super.maxReportsPerMinute,
   })  : _crashlytics = crashlytics,
         super(logManager);
 

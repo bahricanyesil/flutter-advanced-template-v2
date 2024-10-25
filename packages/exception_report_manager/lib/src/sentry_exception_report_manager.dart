@@ -18,6 +18,7 @@ base class SentryExceptionReportManager extends ExceptionReportManager {
     required this.sentryDSN,
     required this.sentryEnvironment,
     this.sampleRate = 0.2,
+    super.maxReportsPerMinute,
     LogManager? logManager,
   }) : super(logManager);
 

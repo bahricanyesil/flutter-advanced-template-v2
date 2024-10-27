@@ -6,7 +6,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:local_notification_manager/src/models/custom_notification_response_model.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
-import 'package:timezone/data/latest.dart' as tzl;
+import 'package:timezone/data/latest_all.dart' as tzl;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'local_notification_manager.dart';
@@ -103,12 +103,12 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
           ?.checkPermission(PermissionTypes.notification);
       if (statusType?.isGranted == false) {
         _logManager?.lDebug(
-          'Notification permission not granted, requesting permission',
+          'Local notification permission not granted, requesting permission',
         );
         await _permissionManager
             ?.requestPermission(PermissionTypes.notification);
       } else {
-        _logManager?.lDebug('Notification permission already granted');
+        _logManager?.lDebug('Local notification permission already granted');
       }
 
       _logManager

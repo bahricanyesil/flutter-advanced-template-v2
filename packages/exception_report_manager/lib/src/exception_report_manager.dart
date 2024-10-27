@@ -6,7 +6,7 @@ import 'package:log_manager/log_manager.dart';
 /// Represents an interface for managing exception reports.
 abstract class ExceptionReportManager {
   /// Creates an instance of [ExceptionReportManager].
-  ExceptionReportManager(this.logManager);
+  ExceptionReportManager(this.logManager, {this.maxReportsPerMinute = 10});
 
   /// The logger manager instance.
   final LogManager? logManager;
@@ -17,7 +17,7 @@ abstract class ExceptionReportManager {
   bool Function(Object? error)? errorFilter;
 
   /// Rate limiting: max reports per minute
-  int maxReportsPerMinute = 10;
+  int maxReportsPerMinute;
   int _reportCount = 0;
   DateTime? _lastReportTime;
 

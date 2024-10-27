@@ -198,9 +198,11 @@ class GoNavigationManager implements NavigationManager {
   }
 
   @override
-  void pop<T extends Object?>([T? result]) {
+  bool pop<T extends Object?>([T? result]) {
+    if (!canPop()) return false;
     _logManager?.lInfo('Popping route with result: $result');
     _router.pop(result);
+    return true;
   }
 
   @override

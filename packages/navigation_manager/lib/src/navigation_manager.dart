@@ -34,7 +34,7 @@ abstract interface class NavigationManager {
   Future<T?> replaceWith<T extends Object?>(String path, {Object? extra});
 
   /// Pop the current route off the navigation stack.
-  void pop<T extends Object?>([T? result]);
+  bool pop<T extends Object?>([T? result]);
 
   /// Check if it's possible to pop the current route.
   bool canPop();

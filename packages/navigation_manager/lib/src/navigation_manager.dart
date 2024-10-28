@@ -76,6 +76,26 @@ abstract interface class NavigationManager {
     NavigationPredicateCallback? predicate,
   });
 
+  /// Checks whether the current name exists in the stack as the previous name.
+  /// If it is, it pops the stack.
+  /// If it is not, it pushes the name to the stack.
+  Future<void> popOnceOrPushNamed(
+    String name, {
+    Map<String, String> params = const <String, String>{},
+    Map<String, dynamic> queryParams = const <String, dynamic>{},
+    Object? extra,
+  });
+
+  /// Checks whether the current name is in the stack.
+  /// If it is, it pops the stack until the name is reached.
+  /// If it is not, it pushes the name to the stack.
+  Future<void> popUntilOrPushNamed(
+    String name, {
+    Map<String, String> params = const <String, String>{},
+    Map<String, dynamic> queryParams = const <String, dynamic>{},
+    Object? extra,
+  });
+
   /// Dispose of the NavigationService
   void dispose();
 

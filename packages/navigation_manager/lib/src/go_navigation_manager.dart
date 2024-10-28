@@ -285,6 +285,81 @@ class GoNavigationManager implements NavigationManager {
   }
 
   @override
+  Future<void> popOnceOrPushNamed(
+    String name, {
+    Map<String, String> params = const <String, String>{},
+    Map<String, dynamic> queryParams = const <String, dynamic>{},
+    Object? extra,
+  }) async {
+    _logManager?.lInfo('Checking if previous route matches: $name');
+    bool routeMatches = false;
+
+    // Check if the previous route matches the given route name
+    final List<Page<Object?>>? routes =
+        _rootNavigatorKey.currentState?.widget.pages;
+    if (routes != null && routes.length > 1) {
+      final Page<Object?> previousRoute = routes[routes.length - 2];
+      if (previousRoute.name?.toLowerCase() == name.toLowerCase()) {
+        routeMatches = true;
+      }
+    }
+
+    if (routeMatches) {
+      _logManager
+          ?.lInfo('Previous route matches, popping once to route: $name');
+      pop();
+    } else {
+      _logManager
+          ?.lInfo('Previous route does not match, pushing new route: $name');
+      await navigateToNamed(
+        name,
+        params: params,
+        queryParams: queryParams,
+        extra: extra,
+      );
+    }
+  }
+
+  @override
+  Future<void> popUntilOrPushNamed(
+    String name, {
+    Map<String, String> params = const <String, String>{},
+    Map<String, dynamic> queryParams = const <String, dynamic>{},
+    Object? extra,
+  }) async {
+    _logManager?.lInfo('Checking if route exists: $name');
+    bool routeExists = false;
+
+    // Check if the route exists in the stack without popping
+    final List<Page<Object?>>? routes =
+        _rootNavigatorKey.currentState?.widget.pages;
+    if (routes != null) {
+      for (final Page<Object?> route in routes) {
+        if (route.name?.toLowerCase() == name.toLowerCase()) {
+          routeExists = true;
+          break;
+        }
+      }
+    }
+
+    if (routeExists) {
+      _logManager?.lInfo('Route found in stack, popping until route: $name');
+      _rootNavigatorKey.currentState?.popUntil((Route<Object?> route) {
+        return route.settings.name?.toLowerCase() == name.toLowerCase();
+      });
+      popUntil(name: name);
+    } else {
+      _logManager?.lInfo('Route not found in stack, pushing new route: $name');
+      await navigateToNamed(
+        name,
+        params: params,
+        queryParams: queryParams,
+        extra: extra,
+      );
+    }
+  }
+
+  @override
   void dispose() {
     _logManager?.lInfo('Disposing GoNavigationManager');
   }

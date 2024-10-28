@@ -279,6 +279,7 @@ class GoNavigationManager implements NavigationManager {
   }) async {
     _logManager?.lInfo('Pushing named and removing until path: $path');
     bool defaultPredicate(Route<Object?> route) =>
+        route.isFirst ||
         route.settings.name?.toLowerCase() == untilScreenName?.toLowerCase();
     await _rootNavigatorKey.currentState?.pushNamedAndRemoveUntil(
       path,

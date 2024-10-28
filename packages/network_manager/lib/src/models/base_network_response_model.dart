@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'generic/default_error_model.dart';
+
 part 'base_network_success_model.dart';
 part 'error/internal_errors_model.dart';
 part 'error/network_errors_model.dart';
@@ -32,4 +34,12 @@ class BaseNetworkResponseModel<R, E> {
   /// Returns true if the network response has an error, false otherwise.
   bool hasError({bool requiresData = true}) =>
       error != null || (requiresData && responseData == null);
+
+  /// Returns the error message from the error data or the error itself.
+  String? get errorMessage {
+    if (errorData is DefaultErrorModel) {
+      return (errorData! as DefaultErrorModel).message ?? error?.toString();
+    }
+    return error?.toString();
+  }
 }

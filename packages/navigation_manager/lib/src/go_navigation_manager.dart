@@ -280,11 +280,10 @@ class GoNavigationManager implements NavigationManager {
     _logManager?.lInfo('Pushing named and removing until name: $name');
     popUntil(
       name: untilScreenName,
-      predicate: predicate,
+      predicate: predicate ?? (Route<Object?> route) => route.isFirst,
       pushIfNotExists: false,
-      avoidLastPop: false,
     );
-    await navigateToNamed(name, extra: extra);
+    await replaceWithNamed(name, extra: extra);
   }
 
   @override

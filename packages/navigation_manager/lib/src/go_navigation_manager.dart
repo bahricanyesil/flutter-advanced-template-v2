@@ -273,13 +273,16 @@ class GoNavigationManager implements NavigationManager {
   @override
   Future<void> pushNamedAndRemoveUntil(
     String path, {
+    String? untilScreenName,
     Object? extra,
     NavigationPredicateCallback? predicate,
   }) async {
     _logManager?.lInfo('Pushing named and removing until path: $path');
+    bool defaultPredicate(Route<Object?> route) =>
+        route.settings.name?.toLowerCase() == untilScreenName?.toLowerCase();
     await _rootNavigatorKey.currentState?.pushNamedAndRemoveUntil(
       path,
-      predicate ?? (Route<Object?> route) => false,
+      predicate ?? defaultPredicate,
       arguments: extra,
     );
   }

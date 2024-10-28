@@ -71,7 +71,7 @@ abstract interface class NavigationManager {
   /// Navigates to the given path and pushes it to the stack and removes all
   /// the routes until the predicate returns true.
   Future<void> pushNamedAndRemoveUntil(
-    String path, {
+    String name, {
     Object? extra,
     NavigationPredicateCallback? predicate,
   });

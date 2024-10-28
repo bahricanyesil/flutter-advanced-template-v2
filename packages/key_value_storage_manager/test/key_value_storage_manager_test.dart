@@ -22,7 +22,7 @@ void main() {
     test('supportedTypes returns correct list', () {
       expect(
         manager.supportedTypes,
-        <Type>[String, int, double, bool, DataModel, List],
+        <Type>[String, int, double, bool, BaseDataModel, List],
       );
     });
 
@@ -159,7 +159,7 @@ void main() {
         );
       });
 
-      test('uses fromJson function for DataModel types', () async {
+      test('uses fromJson function for BaseDataModel types', () async {
         await mockPreferences.setString(
           'modelKey',
           '{"id": 1, "name": "Test"}',
@@ -214,7 +214,7 @@ void main() {
         expect(mockPreferences.getStringList('listKey'), <String>['a', 'b']);
       });
 
-      test('writes List<DataModel> value', () async {
+      test('writes List<BaseDataModel> value', () async {
         final List<TestModel> models = <TestModel>[
           TestModel(id: 1, name: 'Test1'),
           TestModel(id: 2, name: 'Test2'),
@@ -240,7 +240,7 @@ void main() {
         );
       });
 
-      test('writes DataModel value', () async {
+      test('writes BaseDataModel value', () async {
         final TestModel model = TestModel(id: 1, name: 'Test');
         expect(
           await manager.write(key: 'modelKey', value: model),
@@ -277,7 +277,7 @@ void main() {
           expect(e, isA<UnsupportedTypeException>());
           expect(
             e.toString(),
-            '''UnsupportedTypeException: Type Map<String, dynamic> is not supported. Supported types are [String, int, double, bool, DataModel<dynamic>, List<dynamic>]''',
+            '''UnsupportedTypeException: Type Map<String, dynamic> is not supported. Supported types are [String, int, double, bool, BaseDataModel<dynamic>, List<dynamic>]''',
           );
         }
       });

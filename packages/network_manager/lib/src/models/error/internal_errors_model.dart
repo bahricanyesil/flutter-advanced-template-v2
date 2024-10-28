@@ -1,6 +1,6 @@
 // ignore_for_file: prefer-match-file-name
 
-part of '../network_response_model.dart';
+part of '../base_network_response_model.dart';
 
 /// Represents a timeout error that occurs during network operations.
 ///

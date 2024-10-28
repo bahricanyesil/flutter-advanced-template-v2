@@ -13,15 +13,16 @@ import 'data_mapper_helpers.dart';
 import 'json_helpers.dart';
 
 /// A mixin that provides helper methods for network managers.
-mixin NetworkManagerHelpers<E extends DataModel<E>> {
+mixin NetworkManagerHelpers<E extends BaseDataModel<E>> {
   /// Parses the success response from the network and
-  /// returns a [NetworkSuccessModel] object.
+  /// returns a [BaseNetworkSuccessModel] object.
   ///
   /// The [response] parameter is the response received from the network.
   /// It is used to parse the response data into the desired model.
   ///
-  /// Returns a [NetworkSuccessModel] object with the parsed data.
-  NetworkResponseModel<R, E> parseSuccess<R>(dio.Response<Object?> response) {
+  /// Returns a [BaseNetworkSuccessModel] object with the parsed data.
+  BaseNetworkResponseModel<R, E> parseSuccess<R>(
+      dio.Response<Object?> response) {
     if (isSuccessStatusCode(response.statusCode ?? HttpStatus.notFound)) {
       R? parseRes = fromJsonHelper<R>(response);
       if (R is dio.Response) parseRes = response as R;
@@ -33,7 +34,7 @@ mixin NetworkManagerHelpers<E extends DataModel<E>> {
           stackTrace: StackTrace.current,
         );
       }
-      return NetworkSuccessModel<R, E>(data: parseRes);
+      return BaseNetworkSuccessModel<R, E>(data: parseRes);
     } else {
       return _genericError<R>(
         dio.DioException(
@@ -44,19 +45,19 @@ mixin NetworkManagerHelpers<E extends DataModel<E>> {
     }
   }
 
-  /// Parses the response data into a [NetworkSuccessModel] containing
+  /// Parses the response data into a [BaseNetworkSuccessModel] containing
   /// a [ListResponseModel] of type [R].
   ///
   /// The [response] parameter is the response received from the
   /// network request.
   ///
-  /// Returns a [NetworkSuccessModel] with a [ListResponseModel] containing
+  /// Returns a [BaseNetworkSuccessModel] with a [ListResponseModel] containing
   /// the parsed list data.
   ///
   /// Returns an [Exception] if the response data is not a list.
   /// Returns a [dio.DioException] if the response status code is not
   /// a success status code.
-  NetworkResponseModel<ListResponseModel<R>, E> parseList<R>(
+  BaseNetworkResponseModel<ListResponseModel<R>, E> parseList<R>(
       dio.Response<Object?> response) {
     final List<Object?>? listData = _checkList(response);
     if (listData == null) {
@@ -71,7 +72,7 @@ mixin NetworkManagerHelpers<E extends DataModel<E>> {
       final List<R> parsedList =
           DataParserHelpers.parseIterable<R>(listData).toList();
       if (isSuccessStatusCode(response.statusCode ?? HttpStatus.notFound)) {
-        return NetworkSuccessModel<ListResponseModel<R>, E>(
+        return BaseNetworkSuccessModel<ListResponseModel<R>, E>(
             data: ListResponseModel<R>(dataList: parsedList));
       } else {
         return _genericError<ListResponseModel<R>>(

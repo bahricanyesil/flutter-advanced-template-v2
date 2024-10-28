@@ -22,7 +22,7 @@ final class SharedPreferencesManager implements KeyValueStorageManager {
     int,
     double,
     bool,
-    DataModel,
+    BaseDataModel,
     List,
   ];
 
@@ -93,7 +93,8 @@ final class SharedPreferencesManager implements KeyValueStorageManager {
     }
 
     if (value is List) return _writeList(value, key);
-    if (value is DataModel) return preferences.setString(key, value.toJson());
+    if (value is BaseDataModel)
+      return preferences.setString(key, value.toJson());
     if (defaultToString) return preferences.setString(key, value.toString());
 
     throw UnsupportedTypeException(
@@ -104,8 +105,8 @@ final class SharedPreferencesManager implements KeyValueStorageManager {
 
   Future<bool> _writeList(List<Object?> value, String key) {
     late final List<String> stringList;
-    if (value is List<DataModel<Object?>>) {
-      stringList = value.map((DataModel<Object?> e) => e.toJson()).toList();
+    if (value is List<BaseDataModel<Object?>>) {
+      stringList = value.map((BaseDataModel<Object?> e) => e.toJson()).toList();
     } else {
       stringList = value.mapFromStringIterable<String>().toList();
     }
@@ -113,7 +114,7 @@ final class SharedPreferencesManager implements KeyValueStorageManager {
   }
 
   @override
-  List<T>? readModelList<T extends DataModel<T>>(
+  List<T>? readModelList<T extends BaseDataModel<T>>(
     String key,
     FromJsonFunction<T> fromJson,
   ) {

@@ -1,7 +1,7 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/foundation.dart';
 
-import '../data_model.dart';
+import '../base_data_model.dart';
 
 part 'default_data_model.mapper.dart';
 
@@ -15,7 +15,7 @@ typedef WD<T> = DefaultDataModel<T>;
 @immutable
 base class DefaultDataModel<T>
     with DefaultDataModelMappable<T>
-    implements DataModel<DefaultDataModel<T>> {
+    implements BaseDataModel<DefaultDataModel<T>> {
   /// Creates a new instance of [DefaultDataModel] with the
   /// given [resultMessage]
   const DefaultDataModel({

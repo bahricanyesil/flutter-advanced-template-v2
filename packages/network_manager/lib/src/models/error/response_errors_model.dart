@@ -1,6 +1,6 @@
 // ignore_for_file: prefer-match-file-name
 
-part of '../network_response_model.dart';
+part of '../base_network_response_model.dart';
 
 /// Represents an error that occurs when a bad request is made to the server
 ///

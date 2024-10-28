@@ -73,7 +73,7 @@ void main() {
           .thenAnswer((_) async {
         return dio.ResponseBody.fromString(data.toJson(), 200);
       });
-      final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
           await networkManager.sendRequest<DefaultModelT, DefaultModelT>(
         '/test',
         body: data,
@@ -100,7 +100,7 @@ void main() {
       when(() => mockDioAdapter.fetch(any(), any(), any()))
           .thenThrow(exception);
 
-      final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
           await networkManager.sendRequest<DefaultModelT, DefaultModelT>(
         '/test',
         body: const DefaultModelT(
@@ -126,7 +126,7 @@ void main() {
           .thenAnswer((_) async {
         return dio.ResponseBody.fromString(data.toJson(), 200);
       });
-      final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
           await networkManager.requestWithoutBody<DefaultModelT>(
         '/test',
         methodType: MethodTypes.get,
@@ -154,7 +154,7 @@ void main() {
       when(() => mockDioAdapter.fetch(any(), any(), any()))
           .thenThrow(exception);
 
-      final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
           await networkManager.requestWithoutBody<DefaultModelT>(
         '/test',
         methodType: MethodTypes.get,
@@ -174,7 +174,7 @@ void main() {
         return dio.ResponseBody.fromString('', 200);
       });
 
-      final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
           await networkManager.sendRequest<DefaultModelT, DefaultModelT>(
         '/test',
         body: data,
@@ -196,7 +196,7 @@ void main() {
         return dio.ResponseBody.fromBytes(fileBytes, 200);
       });
 
-      final NetworkResponseModel<ListResponseModel<int>, DefaultErrorModel>
+      final BaseNetworkResponseModel<ListResponseModel<int>, DefaultErrorModel>
           res = await networkManager.downloadFile<DefaultModelT>(
         '/test',
         body: data,
@@ -231,7 +231,7 @@ void main() {
       when(() => mockDioAdapter.fetch(any(), any(), any()))
           .thenThrow(exception);
 
-      final NetworkResponseModel<ListResponseModel<int>, DefaultErrorModel>
+      final BaseNetworkResponseModel<ListResponseModel<int>, DefaultErrorModel>
           res = await networkManager.downloadFile<DefaultModelT>(
         '/test',
         onReceiveProgress: (int count, int total) => expect(count, 40),
@@ -271,7 +271,7 @@ void main() {
         return dio.ResponseBody.fromString(data.toJson(), 200);
       });
 
-      final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
           await networkManager.uploadFile<dio.FormData, DefaultModelT>(
         '/test',
         formData,
@@ -302,7 +302,7 @@ void main() {
       final dio.FormData errorFormData = dio.FormData.fromMap(<String, dynamic>{
         'file': 'errorFormData file',
       });
-      final NetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<DefaultModelT, DefaultErrorModel> res =
           await networkManager.uploadFile<dio.FormData, DefaultModelT>(
         '/test',
         errorFormData,
@@ -321,7 +321,8 @@ void main() {
         return dio.ResponseBody.fromString(data.toJson(), 200);
       });
 
-      final NetworkResponseModel<dio.Response<Object?>, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<dio.Response<Object?>, DefaultErrorModel>
+          res =
           await networkManager.dioRequest('/test', methodType: MethodTypes.get);
 
       expect(res.responseData, isNotNull);
@@ -347,7 +348,8 @@ void main() {
       when(() => mockDioAdapter.fetch(any(), any(), any()))
           .thenThrow(exception);
 
-      final NetworkResponseModel<dio.Response<Object?>, DefaultErrorModel> res =
+      final BaseNetworkResponseModel<dio.Response<Object?>, DefaultErrorModel>
+          res =
           await networkManager.dioRequest('/test', methodType: MethodTypes.get);
 
       expect(res.responseData, isNull);

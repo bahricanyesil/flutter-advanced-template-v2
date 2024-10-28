@@ -35,7 +35,7 @@ abstract interface class KeyValueStorageManager {
   bool containsKey(String key);
 
   /// Reads the list of models from the storage.
-  List<T>? readModelList<T extends DataModel<T>>(
+  List<T>? readModelList<T extends BaseDataModel<T>>(
     String key,
     FromJsonFunction<T> fromJson,
   );

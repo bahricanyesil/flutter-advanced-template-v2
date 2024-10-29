@@ -332,9 +332,11 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
       enableLights: channel.enableLights,
       groupId: channel.groupId,
       showBadge: channel.showBadge,
-      sound: RawResourceAndroidNotificationSound(
-        channel.sound,
-      ), // Only supports raw android sounds for now.
+      sound: channel.sound == null
+          ? null
+          : RawResourceAndroidNotificationSound(
+              channel.sound,
+            ), // Only supports raw android sounds for now.
     );
 
     await localNotificationPlugin

@@ -185,6 +185,7 @@ extension CustomLocalNotificationSettingsExtension
         android: _androidDetails,
         iOS: _iOSDetails,
         linux: _linuxDetails,
+        macOS: _iOSDetails,
       );
 
   local.AndroidNotificationDetails get _androidDetails =>
@@ -210,6 +211,7 @@ extension CustomLocalNotificationSettingsExtension
         onlyAlertOnce: onlyAlertOnce,
         showWhen: showWhen,
         usesChronometer: usesChronometer,
+        icon: icon,
       );
 
   local.DarwinNotificationDetails get _iOSDetails =>
@@ -238,6 +240,8 @@ extension CustomLocalNotificationSettingsExtension
         resident: resident,
         suppressSound: suppressSound,
         transient: transient,
+        // TODO(bahrican): Fix
+        // icon: AssetsLinuxIcon(icon),
         actions: actions
             .map(
               (Map<String, String> action) => local.LinuxNotificationAction(

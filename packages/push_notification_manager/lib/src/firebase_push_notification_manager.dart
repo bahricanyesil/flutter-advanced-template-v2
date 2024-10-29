@@ -46,6 +46,18 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   @override
   bool get hasPermission => _hasPermission;
 
+  StreamSubscription<Map<String, dynamic>>? _onMessageSubscription;
+
+  /// On message subscription getter.
+  StreamSubscription<Map<String, dynamic>>? get onMessageSubscription =>
+      _onMessageSubscription;
+
+  StreamSubscription<Map<String, dynamic>>? _onMessageOpenedAppSubscription;
+
+  /// On message app opened subscription getter.
+  StreamSubscription<Map<String, dynamic>>?
+      get onMessageOpenedAppSubscription => _onMessageOpenedAppSubscription;
+
   @override
   Future<void> initialize({
     bool waitForPermissions = false,
@@ -65,12 +77,20 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     }
 
     if (_onMessageCallback != null) {
-      setOnMessageListener(_onMessageCallback);
+      await setOnMessageListener(_onMessageCallback);
     }
     if (_onMessageOpenedAppCallback != null) {
-      setOnMessageOpenedAppListener(_onMessageOpenedAppCallback);
+      await setOnMessageOpenedAppListener(_onMessageOpenedAppCallback);
     }
     _logManager?.lDebug('FirebasePushNotificationManager initialized');
+  }
+
+  /// Disposes the [FirebasePushNotificationManager] by releasing the resources.
+  @override
+  Future<void> dispose() async {
+    await _onMessageSubscription?.cancel();
+    await _onMessageOpenedAppSubscription?.cancel();
+    _logManager?.lDebug('FirebasePushNotificationManager closed');
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(
@@ -156,23 +176,36 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   }
 
   @override
-  void setOnMessageListener(OnMessageCallback callback) {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  Future<StreamSubscription<Map<String, dynamic>>> setOnMessageListener(
+    OnMessageCallback callback,
+  ) async {
+    await _onMessageSubscription?.cancel();
+    _onMessageSubscription = FirebaseMessaging.onMessage
+        .map((RemoteMessage message) => message.toCompleteMap)
+        .listen((Map<String, dynamic> message) {
       _logManager?.lDebug(
-        '''FirebasePushNotificationManager message received in foreground: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
+        '''FirebasePushNotificationManager message received in foreground: $message''',
       );
-      callback(message.toCompleteMap);
+      callback(message);
     });
+    return _onMessageSubscription!;
   }
 
   @override
-  void setOnMessageOpenedAppListener(OnMessageCallback callback) {
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+  Future<StreamSubscription<Map<String, dynamic>>>
+      setOnMessageOpenedAppListener(
+    OnMessageCallback callback,
+  ) async {
+    await _onMessageOpenedAppSubscription?.cancel();
+    _onMessageOpenedAppSubscription = FirebaseMessaging.onMessageOpenedApp
+        .map((RemoteMessage message) => message.toCompleteMap)
+        .listen((Map<String, dynamic> message) {
       _logManager?.lDebug(
-        '''FirebasePushNotificationManager message opened by user: ${message.data}, Title: ${message.notification?.title}, Body: ${message.notification?.body}''',
+        '''FirebasePushNotificationManager message opened by user received in foreground: $message''',
       );
-      callback(message.toCompleteMap);
+      callback(message);
     });
+    return _onMessageOpenedAppSubscription!;
   }
 
   @override

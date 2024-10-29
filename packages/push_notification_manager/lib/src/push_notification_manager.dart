@@ -8,6 +8,9 @@ abstract interface class PushNotificationManager {
   /// Initialize the push notification service
   Future<void> initialize();
 
+  /// Dispose the push notification service
+  Future<void> dispose();
+
   /// Request notification permissions
   Future<bool> requestPermission();
 
@@ -30,10 +33,13 @@ abstract interface class PushNotificationManager {
   void setOnBackgroundMessageListener(OnMessageCallback callback);
 
   /// Callback for handling messages. You should set this to react to messages.
-  void setOnMessageListener(OnMessageCallback callback);
+  Future<StreamSubscription<Map<String, dynamic>>> setOnMessageListener(
+    OnMessageCallback callback,
+  );
 
   /// Callback for handling messages when the app is opened from a notification.
   /// You should set this to react to messages when the app is opened from a
   /// notification.
-  void setOnMessageOpenedAppListener(OnMessageCallback callback);
+  Future<StreamSubscription<Map<String, dynamic>>>
+      setOnMessageOpenedAppListener(OnMessageCallback callback);
 }

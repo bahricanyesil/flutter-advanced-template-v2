@@ -47,7 +47,15 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   bool get hasPermission => _hasPermission;
 
   @override
-  Future<void> initialize({bool waitForPermissions = false}) async {
+  Future<void> initialize({
+    bool waitForPermissions = false,
+    bool notificationOnForeground = true,
+  }) async {
+    await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+      alert: notificationOnForeground,
+      badge: notificationOnForeground,
+      sound: notificationOnForeground,
+    );
     if (waitForPermissions) {
       await checkAndUpdatePermissionStatus();
       await requestPermission();
@@ -75,11 +83,6 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     try {
       final NotificationSettings permissionRes =
           await _firebaseMessaging.requestPermission();
-      await _firebaseMessaging.setForegroundNotificationPresentationOptions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
       final AuthorizationStatus initStatus = permissionRes.authorizationStatus;
       _hasPermission = initStatus == AuthorizationStatus.authorized ||
           initStatus == AuthorizationStatus.provisional;

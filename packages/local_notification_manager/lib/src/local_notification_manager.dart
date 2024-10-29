@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'models/custom_local_notification_settings.dart';
-import 'models/custom_notification_response_model.dart';
+import 'package:local_notification_manager/local_notification_manager.dart';
 
 /// The callback for receiving a local notification.
 typedef ReceivedLocalNotificationCallback = FutureOr<void> Function(
@@ -59,4 +58,18 @@ abstract interface class LocalNotificationManager {
   Future<bool> onDidReceiveNotificationResponse(
     CustomNotificationResponseModel response,
   );
+
+  /// Creates a notification channel.
+  /// This method is only available on Android.
+  /// On iOS, this method does nothing.
+  /// [channelId] The unique identifier for the channel.
+  /// [channelName] The name of the channel.
+  /// [channelDescription] The description of the channel.
+  /// [importance] The importance of the channel.
+  Future<void> createNotificationChannel({
+    required String channelId,
+    required String channelName,
+    String? channelDescription,
+    NotificationImportance importance = NotificationImportance.max,
+  });
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:local_notification_manager/src/enums/notification_importance.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
 import 'package:timezone/data/latest_all.dart' as tzl;
@@ -310,6 +311,27 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
       if (rethrowExceptions) rethrow;
       return false;
     }
+  }
+
+  /// Creates a local notification channel.
+  @override
+  Future<void> createNotificationChannel({
+    required String channelId,
+    required String channelName,
+    String? channelDescription,
+    NotificationImportance importance = NotificationImportance.max,
+  }) async {
+    final AndroidNotificationChannel channel = AndroidNotificationChannel(
+      channelId,
+      channelName,
+      description: channelDescription,
+      importance: importance.toLocalImportance,
+    );
+
+    await localNotificationPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
 
   /// Whether the local notification manager is enabled.

@@ -62,14 +62,5 @@ abstract interface class LocalNotificationManager {
   /// Creates a notification channel.
   /// This method is only available on Android.
   /// On iOS, this method does nothing.
-  /// [channelId] The unique identifier for the channel.
-  /// [channelName] The name of the channel.
-  /// [channelDescription] The description of the channel.
-  /// [importance] The importance of the channel.
-  Future<void> createNotificationChannel({
-    required String channelId,
-    required String channelName,
-    String? channelDescription,
-    NotificationImportance importance = NotificationImportance.max,
-  });
+  Future<void> createNotificationChannel(BaseNotificationChannel channel);
 }

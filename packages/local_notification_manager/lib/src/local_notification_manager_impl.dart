@@ -10,6 +10,7 @@ import 'package:timezone/data/latest_all.dart' as tzl;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'local_notification_manager.dart';
+import 'models/base_notification_channel.dart';
 import 'models/custom_local_notification_settings.dart';
 import 'models/custom_notification_response_model.dart';
 
@@ -315,23 +316,31 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
 
   /// Creates a local notification channel.
   @override
-  Future<void> createNotificationChannel({
-    required String channelId,
-    required String channelName,
-    String? channelDescription,
-    NotificationImportance importance = NotificationImportance.max,
-  }) async {
-    final AndroidNotificationChannel channel = AndroidNotificationChannel(
-      channelId,
-      channelName,
-      description: channelDescription,
-      importance: importance.toLocalImportance,
+  Future<void> createNotificationChannel(
+    BaseNotificationChannel channel,
+  ) async {
+    final AndroidNotificationChannel createdAndroidChannel =
+        AndroidNotificationChannel(
+      channel.channelId,
+      channel.channelName,
+      description: channel.channelDescription,
+      importance: channel.importance.toLocalImportance,
+      playSound: channel.playSound,
+      enableVibration: channel.enableVibration,
+      vibrationPattern: channel.vibrationPattern,
+      ledColor: channel.ledColor,
+      enableLights: channel.enableLights,
+      groupId: channel.groupId,
+      showBadge: channel.showBadge,
+      sound: RawResourceAndroidNotificationSound(
+        channel.sound,
+      ), // Only supports raw android sounds for now.
     );
 
     await localNotificationPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+        ?.createNotificationChannel(createdAndroidChannel);
   }
 
   /// Whether the local notification manager is enabled.

@@ -47,9 +47,14 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   bool get hasPermission => _hasPermission;
 
   @override
-  Future<void> initialize() async {
-    await checkAndUpdatePermissionStatus();
-    await requestPermission();
+  Future<void> initialize({bool waitForPermissions = false}) async {
+    if (waitForPermissions) {
+      await checkAndUpdatePermissionStatus();
+      await requestPermission();
+    } else {
+      unawaited(checkAndUpdatePermissionStatus());
+      unawaited(requestPermission());
+    }
 
     if (_onMessageCallback != null) {
       setOnMessageListener(_onMessageCallback);

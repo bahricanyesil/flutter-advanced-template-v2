@@ -34,7 +34,7 @@ abstract interface class NavigationManager {
   Future<T?> replaceWith<T extends Object?>(String path, {Object? extra});
 
   /// Pop the current route off the navigation stack.
-  void pop<T extends Object?>([T? result]);
+  bool pop<T extends Object?>([T? result]);
 
   /// Check if it's possible to pop the current route.
   bool canPop();
@@ -71,9 +71,29 @@ abstract interface class NavigationManager {
   /// Navigates to the given path and pushes it to the stack and removes all
   /// the routes until the predicate returns true.
   Future<void> pushNamedAndRemoveUntil(
-    String path, {
+    String name, {
     Object? extra,
     NavigationPredicateCallback? predicate,
+  });
+
+  /// Checks whether the current name exists in the stack as the previous name.
+  /// If it is, it pops the stack.
+  /// If it is not, it pushes the name to the stack.
+  Future<void> popOnceOrPushNamed(
+    String name, {
+    Map<String, String> params = const <String, String>{},
+    Map<String, dynamic> queryParams = const <String, dynamic>{},
+    Object? extra,
+  });
+
+  /// Checks whether the current name is in the stack.
+  /// If it is, it pops the stack until the name is reached.
+  /// If it is not, it pushes the name to the stack.
+  Future<void> popUntilOrPushNamed(
+    String name, {
+    Map<String, String> params = const <String, String>{},
+    Map<String, dynamic> queryParams = const <String, dynamic>{},
+    Object? extra,
   });
 
   /// Dispose of the NavigationService

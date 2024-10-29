@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import '../../models/data_model.dart';
+import '../../models/base_data_model.dart';
 import 'network_manager_helpers.dart';
 
 /// Extension on `int` to provide utility methods for
 /// working with HTTP status codes.
-extension StatusCodeHelpers<E extends DataModel<E>>
+extension StatusCodeHelpers<E extends BaseDataModel<E>>
     on NetworkManagerHelpers<E> {
   /// Returns a boolean value indicating whether the status code
   /// is a success status code.

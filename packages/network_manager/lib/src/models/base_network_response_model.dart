@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 
+import 'generic/default_error_model.dart';
+
+part 'base_network_success_model.dart';
 part 'error/internal_errors_model.dart';
 part 'error/network_errors_model.dart';
 part 'error/response_errors_model.dart';
-part 'network_success_model.dart';
 
 /// Represents a generic network response.
 ///
@@ -12,9 +14,9 @@ part 'network_success_model.dart';
 /// The `responseData` property holds the response responseData of type `T`.
 /// The `error` property holds any error occurred during the network request.
 @immutable
-sealed class NetworkResponseModel<R, E> {
+class BaseNetworkResponseModel<R, E> {
   /// Constructor for network response.
-  const NetworkResponseModel({
+  const BaseNetworkResponseModel({
     this.responseData,
     this.error,
     this.errorData,
@@ -32,4 +34,12 @@ sealed class NetworkResponseModel<R, E> {
   /// Returns true if the network response has an error, false otherwise.
   bool hasError({bool requiresData = true}) =>
       error != null || (requiresData && responseData == null);
+
+  /// Returns the error message from the error data or the error itself.
+  String? get errorMessage {
+    if (errorData is DefaultErrorModel) {
+      return (errorData! as DefaultErrorModel).message ?? error?.toString();
+    }
+    return error?.toString();
+  }
 }

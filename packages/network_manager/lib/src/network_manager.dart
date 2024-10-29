@@ -36,10 +36,10 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   /// The [cancelToken] parameter is an optional token that
   /// can be used to cancel the request.
   ///
-  /// Returns a [Future] that resolves to an [NetworkResponseModel]
+  /// Returns a [Future] that resolves to an [BaseNetworkResponseModel]
   /// object containing the response data.
-  Future<NetworkResponseModel<R, E>>
-      sendRequest<T extends DataModel<T>, R extends DataModel<R>>(
+  Future<BaseNetworkResponseModel<R, E>>
+      sendRequest<T extends BaseDataModel<T>, R extends BaseDataModel<R>>(
     String path, {
     required T body,
     required MethodTypes methodType,
@@ -68,10 +68,11 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   /// for receiving progress updates.
   /// The [cancelToken] parameter specifies a token for canceling the request.
   ///
-  /// Returns a [Future] that resolves to an [NetworkResponseModel]
+  /// Returns a [Future] that resolves to an [BaseNetworkResponseModel]
   /// containing the response data. The type parameter [R] specifies the type
-  /// of the response data, which should implement [DataModel].
-  Future<NetworkResponseModel<R, E>> requestWithoutBody<R extends DataModel<R>>(
+  /// of the response data, which should implement [BaseDataModel].
+  Future<BaseNetworkResponseModel<R, E>>
+      requestWithoutBody<R extends BaseDataModel<R>>(
     String path, {
     required MethodTypes methodType,
     String? urlSuffix,
@@ -96,10 +97,10 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   /// The [onReceiveProgress] parameter is the [ProgressCallback]
   /// The [requiresAuth] parameter is the [bool]
   ///
-  /// Returns a [Future] that resolves to a [NetworkResponseModel]
+  /// Returns a [Future] that resolves to a [BaseNetworkResponseModel]
   /// object containing the downloaded file data.
-  Future<NetworkResponseModel<ListResponseModel<int>, E>>
-      downloadFile<T extends DataModel<T>>(
+  Future<BaseNetworkResponseModel<ListResponseModel<int>, E>>
+      downloadFile<T extends BaseDataModel<T>>(
     String path, {
     T? body,
     MethodTypes? method,
@@ -119,8 +120,8 @@ abstract interface class NetworkManager<E, OptionsT, CancelTokenT,
   /// The [onSendProgress] parameter is the [ProgressCallback]
   /// The [cancelToken] parameter is the [CancelTokenT]
   /// The [requiresAuth] parameter is the [bool]
-  Future<NetworkResponseModel<R, E>>
-      uploadFile<FormDataT, R extends DataModel<R>>(
+  Future<BaseNetworkResponseModel<R, E>>
+      uploadFile<FormDataT, R extends BaseDataModel<R>>(
     String path,
     FormDataT data, {
     OptionsT? requestOptions,

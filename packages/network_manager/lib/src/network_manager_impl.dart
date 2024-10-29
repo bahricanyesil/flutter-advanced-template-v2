@@ -23,7 +23,7 @@ import 'utils/transformers/custom_background_transformers.dart';
 /// final networkManagerImpl = NetworkManagerImpl(options: dio.BaseOptions(baseUrl: 'https://api.example.com'));
 /// final response = await networkManagerImpl.send('/users', requestModel: UserRequestModel(name: 'John Doe'), methodType: MethodTypes.post);
 /// ```
-base class NetworkManagerImpl<E extends DataModel<E>>
+base class NetworkManagerImpl<E extends BaseDataModel<E>>
     with dio.DioMixin, NetworkManagerHelpers<E>
     implements
         NetworkManager<E, dio.Options, dio.CancelToken, dio.Interceptor> {
@@ -60,8 +60,8 @@ base class NetworkManagerImpl<E extends DataModel<E>>
   /// to a DioException. Therefore, the parseError method will always
   /// receive a DioException.
   @override
-  Future<NetworkResponseModel<R, E>>
-      sendRequest<T extends DataModel<T>, R extends DataModel<R>>(
+  Future<BaseNetworkResponseModel<R, E>>
+      sendRequest<T extends BaseDataModel<T>, R extends BaseDataModel<R>>(
     String path, {
     required T body,
     required MethodTypes methodType,
@@ -96,7 +96,8 @@ base class NetworkManagerImpl<E extends DataModel<E>>
       path + (urlSuffix == null ? '' : '/$urlSuffix');
 
   @override
-  Future<NetworkResponseModel<R, E>> requestWithoutBody<R extends DataModel<R>>(
+  Future<BaseNetworkResponseModel<R, E>>
+      requestWithoutBody<R extends BaseDataModel<R>>(
     String path, {
     required MethodTypes methodType,
     String? urlSuffix,
@@ -126,8 +127,8 @@ base class NetworkManagerImpl<E extends DataModel<E>>
   }
 
   @override
-  Future<NetworkResponseModel<ListResponseModel<int>, E>>
-      downloadFile<T extends DataModel<T>>(
+  Future<BaseNetworkResponseModel<ListResponseModel<int>, E>>
+      downloadFile<T extends BaseDataModel<T>>(
     String path, {
     T? body,
     MethodTypes? method,
@@ -177,8 +178,8 @@ base class NetworkManagerImpl<E extends DataModel<E>>
   }
 
   @override
-  Future<NetworkResponseModel<R, E>>
-      uploadFile<FormDataT, R extends DataModel<R>>(
+  Future<BaseNetworkResponseModel<R, E>>
+      uploadFile<FormDataT, R extends BaseDataModel<R>>(
     String path,
     FormDataT data, {
     dio.Options? requestOptions,
@@ -204,7 +205,7 @@ base class NetworkManagerImpl<E extends DataModel<E>>
   }
 
   /// Basic dio request method.
-  Future<NetworkResponseModel<dio.Response<Object?>, E>> dioRequest(
+  Future<BaseNetworkResponseModel<dio.Response<Object?>, E>> dioRequest(
     String path, {
     required MethodTypes methodType,
     Object? data,
@@ -229,7 +230,7 @@ base class NetworkManagerImpl<E extends DataModel<E>>
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
-      return NetworkSuccessModel<dio.Response<Object?>, E>(data: response);
+      return BaseNetworkSuccessModel<dio.Response<Object?>, E>(data: response);
     } on dio.DioException catch (err) {
       return parseError<dio.Response<Object?>>(err);
     }

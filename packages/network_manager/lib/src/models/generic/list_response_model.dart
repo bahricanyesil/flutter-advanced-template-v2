@@ -1,6 +1,6 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:network_manager/src/models/data_model.dart';
+import 'package:network_manager/src/models/base_data_model.dart';
 
 part 'list_response_model.mapper.dart';
 
@@ -8,14 +8,14 @@ part 'list_response_model.mapper.dart';
 ///
 /// This model is used to deserialize a JSON response into a list
 /// of objects of type [T].
-/// It implements the [DataModel] interface and uses the
+/// It implements the [BaseDataModel] interface and uses the
 /// [ListResponseModelMappable] mixin
 /// for mapping the JSON data to the model.
 @MappableClass()
 @immutable
 final class ListResponseModel<T>
     with ListResponseModelMappable<T>
-    implements DataModel<ListResponseModel<T>> {
+    implements BaseDataModel<ListResponseModel<T>> {
   /// Creates a new instance of [ListResponseModel] with the given [dataList].
   const ListResponseModel({required this.dataList});
 

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/foundation.dart';
 
-import '../data_model.dart';
+import '../base_data_model.dart';
 import 'default_data_model.dart';
 
 part 'default_error_model.mapper.dart';
@@ -11,12 +11,12 @@ part 'default_error_model.mapper.dart';
 /// Represents a default error model.
 ///
 /// This model is used to represent errors in the network response.
-/// It implements the [DataModel] interface.
+/// It implements the [BaseDataModel] interface.
 @MappableClass(hook: DefaultErrorHook())
 @immutable
 final class DefaultErrorModel
     with DefaultErrorModelMappable
-    implements DataModel<DefaultErrorModel> {
+    implements BaseDataModel<DefaultErrorModel> {
   /// Creates a new instance of [DefaultErrorModel] with the given [message],
   /// and [resultCode].
   const DefaultErrorModel({this.message, this.resultCode});

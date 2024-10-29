@@ -1,6 +1,6 @@
 // ignore_for_file: prefer-match-file-name
 
-part of '../network_response_model.dart';
+part of '../base_network_response_model.dart';
 
 /// Represents an abstract class for network response errors.
 ///
@@ -8,7 +8,7 @@ part of '../network_response_model.dart';
 /// It contains an [Exception] object that represents the error occurred
 /// during the network request.
 @immutable
-sealed class NetworkErrorModel<T, E> extends NetworkResponseModel<T, E> {
+sealed class NetworkErrorModel<T, E> extends BaseNetworkResponseModel<T, E> {
   /// Constructor for network response errors.
   const NetworkErrorModel({
     required Exception super.error,

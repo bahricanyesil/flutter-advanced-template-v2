@@ -69,9 +69,19 @@ void main() {
 
       logManager.logFlutterError(flutterError);
 
+      final TextTreeRenderer renderer = TextTreeRenderer(
+        wrapWidthProperties: 100,
+        maxDescendentsTruncatableNode: 5,
+      );
+      final String message = renderer
+          .render(
+            flutterError.toDiagnosticsNode(style: DiagnosticsTreeStyle.error),
+          )
+          .trimRight();
+
       verify(
         () => logManager.lError(
-          'Flutter Error: ${flutterError.exceptionAsString()}',
+          'Flutter Error: $message',
           stackTrace: flutterError.stack,
           fatal: true,
           error: flutterError.exception,

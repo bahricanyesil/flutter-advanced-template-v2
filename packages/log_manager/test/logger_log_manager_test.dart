@@ -90,9 +90,21 @@ void main() {
       final FlutterExceptionHandler? originalOnError = FlutterError.onError;
       FlutterError.onError!(flutterErrorDetails);
 
+      final TextTreeRenderer renderer = TextTreeRenderer(
+        wrapWidthProperties: 100,
+        maxDescendentsTruncatableNode: 5,
+      );
+      final String message = renderer
+          .render(
+            flutterErrorDetails.toDiagnosticsNode(
+              style: DiagnosticsTreeStyle.error,
+            ),
+          )
+          .trimRight();
+
       verify(
         () => mockLogger.e(
-          'Flutter Error: ${flutterErrorDetails.exception}',
+          'Flutter Error: $message',
           error: flutterErrorDetails.exception,
           stackTrace: flutterErrorDetails.stack,
         ),

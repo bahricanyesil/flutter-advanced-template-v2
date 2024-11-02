@@ -22,6 +22,8 @@ final class LoggerLogManager extends LogManager {
     LoggerBuildMode? buildMode,
     bool setErrorHandlers = true,
     BaseLogOptionsModel options = const BaseLogOptionsModel(),
+    super.wrapWidthProperties,
+    super.maxDescendentsTruncatableNode,
   }) {
     _loggerOutputWrapper = outputWrapper ?? LoggerOutputWrapperImpl();
     _logger = logger;

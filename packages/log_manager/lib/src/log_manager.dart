@@ -14,7 +14,16 @@ import 'package:log_manager/src/models/base_log_message_model.dart';
 /// for handling and storing log messages.
 abstract class LogManager {
   /// Creates an instance of [LogManager].
-  LogManager();
+  LogManager({
+    this.wrapWidthProperties = 100,
+    this.maxDescendentsTruncatableNode = 5,
+  });
+
+  /// The wrap width properties for the flutter error log messages.
+  final int wrapWidthProperties;
+
+  /// The max descendents truncatable node for the flutter error log messages.
+  final int maxDescendentsTruncatableNode;
 
   /// Logs a trace message.
   void lTrace(Object message);
@@ -62,6 +71,16 @@ abstract class LogManager {
   /// log messages in real-time.
   Stream<BaseLogMessageModel> get logStream;
 
+  String _renderFlutterError(FlutterErrorDetails details) {
+    final TextTreeRenderer renderer = TextTreeRenderer(
+      wrapWidthProperties: 100,
+      maxDescendentsTruncatableNode: 5,
+    );
+    return renderer
+        .render(details.toDiagnosticsNode(style: DiagnosticsTreeStyle.error))
+        .trimRight();
+  }
+
   /// Logs a Flutter error.
   ///
   /// This method logs the given [details] of a Flutter error.
@@ -76,7 +95,7 @@ abstract class LogManager {
   @mustCallSuper
   Future<void> logFlutterError(FlutterErrorDetails details) async {
     if (details.silent) return;
-    final String description = details.exceptionAsString();
+    final String description = _renderFlutterError(details);
     final String message = 'Flutter Error: $description';
     lError(
       message,

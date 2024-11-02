@@ -3,8 +3,6 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
-import 'package:log_manager/src/logger_build_mode.dart';
-import 'package:log_manager/src/logger_output_wrapper.dart';
 import 'package:log_manager/src/utils/string_log_extensions.dart';
 
 /// The [LogManager] class is used to manage logger.
@@ -22,12 +20,18 @@ final class LoggerLogManager extends LogManager {
     CustomStreamOutput? streamOutput,
     LoggerOutputWrapper? outputWrapper,
     LoggerBuildMode? buildMode,
+    bool setErrorHandlers = true,
   }) {
     _loggerOutputWrapper = outputWrapper ?? LoggerOutputWrapperImpl();
     _logger = logger;
     _buildMode = buildMode ?? LoggerBuildModeImpl();
     _streamOutput = streamOutput ?? CustomStreamOutput();
     enableLogging();
+
+    /// Sets the error handlers.
+    if (setErrorHandlers) {
+      setFlutterErrorHandlers(dispatcher: PlatformDispatcher.instance);
+    }
   }
 
   late final Logger _logger;

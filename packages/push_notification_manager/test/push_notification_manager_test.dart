@@ -163,7 +163,8 @@ void main() {
         notification: remoteNotification,
       );
 
-      pushNotificationManager.setOnMessageListener((Map<String, dynamic> msg) {
+      await pushNotificationManager
+          .setOnMessageListener((Map<String, dynamic> msg) {
         expect(msg, dataToListenedMessage(messageData, remoteNotification));
       });
 
@@ -187,7 +188,7 @@ void main() {
         notification: remoteNotification,
       );
 
-      pushNotificationManager
+      await pushNotificationManager
           .setOnMessageOpenedAppListener((Map<String, dynamic> msg) {
         expect(msg, dataToListenedMessage(messageData, remoteNotification));
       });

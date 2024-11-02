@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'exceptions/index.dart';
 import 'key_value_storage_manager.dart';
-import 'models/data_model.dart';
+import 'models/base_data_model.dart';
 import 'utils/data_parser_helpers.dart';
 import 'utils/extensions/iterable_extensions.dart';
 
@@ -93,8 +93,9 @@ final class SharedPreferencesManager implements KeyValueStorageManager {
     }
 
     if (value is List) return _writeList(value, key);
-    if (value is BaseDataModel)
+    if (value is BaseDataModel) {
       return preferences.setString(key, value.toJson());
+    }
     if (defaultToString) return preferences.setString(key, value.toString());
 
     throw UnsupportedTypeException(

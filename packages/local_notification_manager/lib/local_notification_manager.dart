@@ -9,5 +9,6 @@ export 'src/enums/notification_interruption_level.dart';
 export 'src/enums/notification_priority.dart';
 export 'src/local_notification_manager.dart';
 export 'src/local_notification_manager_impl.dart';
+export 'src/models/base_notification_channel.dart';
 export 'src/models/custom_local_notification_settings.dart';
 export 'src/models/custom_notification_response_model.dart';

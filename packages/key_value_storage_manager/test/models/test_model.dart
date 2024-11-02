@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:key_value_storage_manager/src/models/data_model.dart';
+import 'package:key_value_storage_manager/src/models/base_data_model.dart';
 
 final class TestModel implements BaseDataModel<TestModel> {
   TestModel({required this.id, required this.name});

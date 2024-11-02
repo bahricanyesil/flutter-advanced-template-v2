@@ -3,14 +3,16 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:local_notification_manager/src/models/custom_notification_response_model.dart';
+import 'package:local_notification_manager/src/enums/notification_importance.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
 import 'package:timezone/data/latest_all.dart' as tzl;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'local_notification_manager.dart';
+import 'models/base_notification_channel.dart';
 import 'models/custom_local_notification_settings.dart';
+import 'models/custom_notification_response_model.dart';
 
 /// Implementation of the local notification manager.
 ///
@@ -310,6 +312,37 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
       if (rethrowExceptions) rethrow;
       return false;
     }
+  }
+
+  /// Creates a local notification channel.
+  @override
+  Future<void> createNotificationChannel(
+    BaseNotificationChannel channel,
+  ) async {
+    final AndroidNotificationChannel createdAndroidChannel =
+        AndroidNotificationChannel(
+      channel.channelId,
+      channel.channelName,
+      description: channel.channelDescription,
+      importance: channel.importance.toLocalImportance,
+      playSound: channel.playSound,
+      enableVibration: channel.enableVibration,
+      vibrationPattern: channel.vibrationPattern,
+      ledColor: channel.ledColor,
+      enableLights: channel.enableLights,
+      groupId: channel.groupId,
+      showBadge: channel.showBadge,
+      sound: channel.sound == null
+          ? null
+          : RawResourceAndroidNotificationSound(
+              channel.sound,
+            ), // Only supports raw android sounds for now.
+    );
+
+    await localNotificationPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(createdAndroidChannel);
   }
 
   /// Whether the local notification manager is enabled.

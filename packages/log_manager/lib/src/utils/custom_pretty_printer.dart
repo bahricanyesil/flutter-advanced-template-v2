@@ -115,12 +115,16 @@ class CustomPrettyPrinter extends LogPrinter {
     final String? timeStr = printTime && _startTime != null
         ? event.time.sinceDate(_startTime!)
         : null;
+
+    final bool hasError =
+        event.error != null || event.level.value <= LogLevels.error.value;
+    final bool showStackTrace = !onlyErrorStackTrace || hasError;
     return _formatAndPrint(
       event.level.logLevel,
       messageStr,
       timeStr,
       errorStr,
-      onlyErrorStackTrace ? null : stackTraceStr,
+      showStackTrace ? stackTraceStr : null,
     );
   }
 

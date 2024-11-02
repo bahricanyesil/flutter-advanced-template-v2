@@ -3,9 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/src/models/base_log_message_model.dart';
 
-/// A callback function for setting up the logger manager.
-typedef LoggerSetupCallback<L> = L Function(LogManager logManager);
-
 /// A base class for managing logging functionality.
 ///
 /// This abstract class provides methods for logging fatal errors, errors,

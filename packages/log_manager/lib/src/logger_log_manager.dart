@@ -21,6 +21,7 @@ final class LoggerLogManager extends LogManager {
     LoggerOutputWrapper? outputWrapper,
     LoggerBuildMode? buildMode,
     bool setErrorHandlers = true,
+    BaseLogOptionsModel options = const BaseLogOptionsModel(),
   }) {
     _loggerOutputWrapper = outputWrapper ?? LoggerOutputWrapperImpl();
     _logger = logger;
@@ -28,7 +29,11 @@ final class LoggerLogManager extends LogManager {
     _streamOutput = streamOutput ?? CustomStreamOutput();
     enableLogging();
 
-    /// Sets the error handlers.
+    if (_buildMode.isReleaseMode && !options.logInRelease) {
+      disableLogging();
+    } else {
+      enableLogging();
+    }
     if (setErrorHandlers) {
       setFlutterErrorHandlers(dispatcher: PlatformDispatcher.instance);
     }
@@ -102,19 +107,6 @@ final class LoggerLogManager extends LogManager {
 
   @override
   Stream<BaseLogMessageModel> get logStream => _streamOutput.stream;
-
-  @override
-  L setUp<L>(
-    LoggerSetupCallback<L> fn, [
-    BaseLogOptionsModel options = const BaseLogOptionsModel(),
-  ]) {
-    if (_buildMode.isReleaseMode && !options.logInRelease) {
-      disableLogging();
-      return fn(this);
-    }
-    enableLogging();
-    return fn(this);
-  }
 
   @override
   Future<void> close() async {

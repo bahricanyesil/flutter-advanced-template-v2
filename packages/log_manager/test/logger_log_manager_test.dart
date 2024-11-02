@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:log_manager/log_manager.dart';
-import 'package:log_manager/src/logger_build_mode.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'mocks/mock_build_mode.dart';
@@ -115,10 +114,8 @@ void main() {
       when(() => mockBuildMode.isReleaseMode).thenReturn(false);
       const BaseLogOptionsModel options = BaseLogOptionsModel(showTime: false);
 
-      final LoggerLogManager newLogManager = logManager.setUp<LoggerLogManager>(
-        (LogManager logManager) => LoggerLogManager(logger: mockLogger),
-        options,
-      );
+      final LoggerLogManager newLogManager =
+          LoggerLogManager(logger: mockLogger, options: options);
 
       verifyNever(() => mockLogger.t(any));
       expect(newLogManager.loggingEnabled, isTrue);
@@ -158,7 +155,7 @@ setUp disables logging in release mode
       when(() => mockBuildMode.isReleaseMode).thenReturn(true);
 
       final LoggerLogManager newLogManager =
-          logManager.setUp<LoggerLogManager>((_) => logManager);
+          LoggerLogManager(logger: mockLogger);
 
       // Verify disableLogging was called
       expect(newLogManager.loggingEnabled, false);
@@ -170,7 +167,7 @@ setUp enables logging if not in
       when(() => mockBuildMode.isReleaseMode).thenReturn(false);
 
       final LoggerLogManager newLogManager =
-          logManager.setUp<LoggerLogManager>((_) => logManager);
+          LoggerLogManager(logger: mockLogger);
 
       // Verify disableLogging was called
       expect(newLogManager.loggingEnabled, true);

@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/src/models/base_log_message_model.dart';
 
-import 'models/base_log_options_model.dart';
-
 /// A callback function for setting up the logger manager.
 typedef LoggerSetupCallback<L> = L Function(LogManager logManager);
 
@@ -43,24 +41,6 @@ abstract class LogManager {
 
   /// Logs a fatal error message.
   void lFatal(Object message, {Object? error, StackTrace? stackTrace});
-
-  /// Sets up the logger manager with the provided function and options.
-  ///
-  /// The [fn] parameter is a function that returns an instance of the
-  /// logger manager.
-  /// The [options] parameter is an optional parameter of type
-  /// [BaseLogOptionsModel] that specifies the options for the logger manager.
-  /// If no [options] parameter is provided, the default options will be used.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// LogManager logManager = setUp<LogManager>(() =>
-  ///   LogManager(), BaseLogOptionsModel());
-  /// ```
-  L setUp<L>(
-    LoggerSetupCallback<L> fn, [
-    BaseLogOptionsModel options = const BaseLogOptionsModel(),
-  ]);
 
   /// Closes the logger manager.
   ///

@@ -9,7 +9,9 @@ export 'package:logger/logger.dart';
 
 export 'src/enums/log_levels.dart';
 export 'src/log_manager.dart';
+export 'src/logger_build_mode.dart';
 export 'src/logger_log_manager.dart';
+export 'src/logger_output_wrapper.dart';
 export 'src/models/base_log_message_model.dart';
 export 'src/models/base_log_options_model.dart';
 export 'src/output-events/base_log_output.dart';

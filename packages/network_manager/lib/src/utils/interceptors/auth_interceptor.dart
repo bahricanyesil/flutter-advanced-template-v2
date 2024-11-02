@@ -89,7 +89,7 @@ final class AuthInterceptor extends QueuedInterceptor {
         await _tokenRepository.refreshAccessToken();
     if (accessToken == null) {
       await _logout();
-      _logger?.lInfo('Token refresh failed');
+      _logger?.lDebug('Token refresh failed');
     } else {
       _logger?.lInfo('Token refreshed successfully, new token: $accessToken');
     }

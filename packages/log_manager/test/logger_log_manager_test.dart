@@ -28,7 +28,7 @@ void main() {
         logger: mockLogger,
         streamOutput: mockStreamOutput,
         outputWrapper: mockLoggerWrapper,
-        buildMode: mockBuildMode,
+        buildMode: LoggerBuildModeImpl(),
       );
     });
 
@@ -155,7 +155,7 @@ setUp disables logging in release mode
       when(() => mockBuildMode.isReleaseMode).thenReturn(true);
 
       final LoggerLogManager newLogManager =
-          LoggerLogManager(logger: mockLogger);
+          LoggerLogManager(logger: mockLogger, buildMode: mockBuildMode);
 
       // Verify disableLogging was called
       expect(newLogManager.loggingEnabled, false);
@@ -167,7 +167,7 @@ setUp enables logging if not in
       when(() => mockBuildMode.isReleaseMode).thenReturn(false);
 
       final LoggerLogManager newLogManager =
-          LoggerLogManager(logger: mockLogger);
+          LoggerLogManager(logger: mockLogger, buildMode: mockBuildMode);
 
       // Verify disableLogging was called
       expect(newLogManager.loggingEnabled, true);

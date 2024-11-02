@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
@@ -120,20 +119,16 @@ final class LoggerLogManager extends LogManager {
   /// for Flutter errors and platform dispatcher errors.
   @override
   void setFlutterErrorHandlers({required PlatformDispatcher dispatcher}) {
-    final FlutterExceptionHandler? originalOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails errorDetails) async {
       final String exceptionText = errorDetails.exceptionAsString();
       if (_ignoredFlutterErrors.any(exceptionText.containsIgnoreCase)) return;
       await logFlutterError(errorDetails);
-      originalOnError?.call(errorDetails);
     };
-    final ErrorCallback? originalOnErrorWithDetails = dispatcher.onError;
     dispatcher.onError = (Object error, StackTrace stackTrace) {
       if (_ignoredFlutterErrors.any(error.toString().containsIgnoreCase)) {
         return true;
       }
       final bool val = logPlatformDispatcherError(error, stackTrace);
-      originalOnErrorWithDetails?.call(error, stackTrace);
       return val;
     };
   }

@@ -8,6 +8,7 @@ import 'package:log_manager/log_manager.dart';
 
 import 'models/navigation_state.dart';
 import 'models/route_config.dart';
+import 'models/shell_route_config.dart';
 import 'navigation_manager.dart';
 
 /// A custom exception handler that takes a [BuildContext], [NavigationState],
@@ -23,6 +24,13 @@ typedef CustomExceptionHandler = void Function(
 typedef CustomErrorPageBuilder = Page<Object?> Function(
   BuildContext context,
   NavigationState state,
+);
+
+/// A callback function that builds a page for a route.
+typedef PageBuilderCallback = Page<Object?> Function(
+  BuildContext context,
+  GoRouterState state,
+  Widget child,
 );
 
 /// A navigation manager that uses the GoRouter package.
@@ -111,9 +119,41 @@ class GoNavigationManager implements NavigationManager {
   List<RouteBase> _convertRoutes(List<RouteConfig> routes) {
     return routes.map(
       (RouteConfig config) {
+        final CustomRedirectCallback? redirect = config.redirect;
+        final FutureOr<String?> Function(BuildContext, GoRouterState)?
+            redirectCallback = redirect == null
+                ? null
+                : (BuildContext context, GoRouterState state) =>
+                    redirect.call(context, NavigationState.fromGoState(state));
+
         final CustomPageBuilder? customPageBuilder = config.pageBuilder;
         final CustomOnExitCallback? onExit = config.onExit;
-        final CustomRedirectCallback? redirect = config.redirect;
+
+        if (config is ShellRouteConfig) {
+          final PageBuilderCallback? pageBuilder = customPageBuilder == null
+              ? null
+              : (BuildContext context, GoRouterState state, Widget child) =>
+                  customPageBuilder.call(
+                    context,
+                    NavigationState.fromGoState(state),
+                    child: child,
+                  );
+          return ShellRoute(
+            builder: (BuildContext context, GoRouterState state, Widget child) {
+              return config.builder(
+                context,
+                NavigationState.fromGoState(state),
+                child: child,
+              );
+            },
+            routes: _convertRoutes(config.routes),
+            parentNavigatorKey: config.parentNavigatorKey,
+            observers: config.observers,
+            redirect: redirectCallback,
+            pageBuilder: pageBuilder,
+          );
+        }
+
         return GoRoute(
           path: config.path,
           name: config.name,
@@ -126,10 +166,7 @@ class GoNavigationManager implements NavigationManager {
               : (BuildContext context, GoRouterState state) =>
                   onExit.call(context, NavigationState.fromGoState(state)),
           parentNavigatorKey: config.parentNavigatorKey,
-          redirect: redirect == null
-              ? null
-              : (BuildContext context, GoRouterState state) =>
-                  redirect.call(context, NavigationState.fromGoState(state)),
+          redirect: redirectCallback,
           routes: _convertRoutes(config.routes),
           builder: (BuildContext context, GoRouterState state) =>
               config.builder(context, NavigationState.fromGoState(state)),

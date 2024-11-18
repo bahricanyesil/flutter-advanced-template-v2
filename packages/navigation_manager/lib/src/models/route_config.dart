@@ -8,14 +8,16 @@ import '../../navigation_manager.dart';
 /// A function that builds a page for a route.
 typedef CustomPageBuilder = Page<Object?> Function(
   BuildContext context,
-  NavigationState state,
-);
+  NavigationState state, {
+  Widget? child,
+});
 
 /// Route builder function.
 typedef CustomRouteBuilder = Widget Function(
   BuildContext context,
-  NavigationState state,
-);
+  NavigationState state, {
+  Widget? child,
+});
 
 /// Redirect callback function.
 typedef CustomRedirectCallback = FutureOr<String?> Function(
@@ -47,6 +49,7 @@ base class RouteConfig extends Equatable {
     this.parentNavigatorKey,
     this.redirect,
     this.routes = const <RouteConfig>[],
+    this.observers,
   });
 
   /// The path of the route.
@@ -95,6 +98,22 @@ base class RouteConfig extends Equatable {
   /// callback for the route.
   final List<RouteConfig> routes;
 
+  /// The observers for the route.
+  ///
+  /// This is an optional parameter and can be used to specify observers
+  /// for the route.
+  final List<NavigatorObserver>? observers;
+
   @override
-  List<Object?> get props => <Object?>[path, name, builder];
+  List<Object?> get props => <Object?>[
+        path,
+        name,
+        builder,
+        routes,
+        parentNavigatorKey,
+        redirect,
+        onExit,
+        pageBuilder,
+        observers,
+      ];
 }

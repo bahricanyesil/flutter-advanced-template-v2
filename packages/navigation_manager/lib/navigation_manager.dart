@@ -4,6 +4,5 @@
 library navigation_manager;
 
 export 'src/go_navigation_manager.dart';
-export 'src/models/navigation_state.dart';
-export 'src/models/route_config.dart';
+export 'src/models/navigation_manager_models.dart';
 export 'src/navigation_manager.dart';

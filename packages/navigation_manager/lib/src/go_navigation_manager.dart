@@ -1,50 +1,47 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:log_manager/log_manager.dart';
 
-import 'models/navigation_state.dart';
-import 'models/route_config.dart';
-import 'models/shell_route_config.dart';
 import 'navigation_manager.dart';
 
-/// A custom exception handler that takes a [BuildContext], [NavigationState],
-/// and [RouterConfig] as arguments.
-typedef CustomExceptionHandler = void Function(
-  BuildContext context,
-  NavigationState state,
-  RouterConfig<Diagnosticable> router,
-);
+// /// A custom exception handler that takes a [BuildContext], [NavigationState],
+// /// and [RouterConfig] as arguments.
+// typedef CustomExceptionHandler = void Function(
+//   BuildContext context,
+//   NavigationState state,
+//   RouterConfig<Diagnosticable> router,
+// );
 
-/// A custom error page builder that takes a [BuildContext] and
-/// [NavigationState] as arguments.
-typedef CustomErrorPageBuilder = Page<Object?> Function(
-  BuildContext context,
-  NavigationState state,
-);
+// /// A custom error page builder that takes a [BuildContext] and
+// /// [NavigationState] as arguments.
+// typedef CustomErrorPageBuilder = Page<Object?> Function(
+//   BuildContext context,
+//   NavigationState state,
+// );
 
-/// A callback function that builds a page for a route.
-typedef PageBuilderCallback = Page<Object?> Function(
-  BuildContext context,
-  GoRouterState state,
-  Widget child,
-);
+// /// A callback function that builds a page for a route.
+// typedef PageBuilderCallback = Page<Object?> Function(
+//   BuildContext context,
+//   GoRouterState state,
+//   Widget child,
+// );
 
 /// A navigation manager that uses the GoRouter package.
 class GoNavigationManager implements NavigationManager {
   /// Constructs a new navigation manager
   /// with the given routes and initial location.
   GoNavigationManager({
-    required List<RouteConfig> routes,
+    // required List<RouteConfig> routes,
+    required List<RouteBase> routes,
     required String initialLocation,
     String? restorationScopeId,
     NavigationErrorBuilder? errorBuilder,
-    CustomRedirectCallback? redirect,
+    GoRouterRedirect? redirect,
     bool requestFocus = true,
-    CustomExceptionHandler? exceptionHandler,
+    GoExceptionHandler? exceptionHandler,
     bool debugLogDiagnostics = true,
     List<NavigatorObserver> observers = const <NavigatorObserver>[],
     Object? initialExtra,
@@ -53,14 +50,15 @@ class GoNavigationManager implements NavigationManager {
     Codec<Object?, Object?>? extraCodec,
     Listenable? refreshListenable,
     bool overridePlatformDefaultLocation = false,
-    CustomErrorPageBuilder? errorPageBuilder,
+    GoRouterPageBuilder? errorPageBuilder,
     LogManager? logManager,
   }) : _logManager = logManager {
     _logManager?.lInfo(
       '''Initializing GoNavigationManager with initial location: $initialLocation''',
     );
     final GoRouter goRouter = GoRouter(
-      routes: _convertRoutes(routes),
+      // routes: _convertRoutes(routes),
+      routes: routes,
       initialLocation: initialLocation,
       navigatorKey: _rootNavigatorKey,
       restorationScopeId: restorationScopeId,
@@ -72,36 +70,40 @@ class GoNavigationManager implements NavigationManager {
       refreshListenable: refreshListenable,
       overridePlatformDefaultLocation: overridePlatformDefaultLocation,
       routerNeglect: routerNeglect,
-      errorPageBuilder: errorPageBuilder == null
-          ? null
-          : (BuildContext context, GoRouterState state) {
-              _logManager?.lInfo('Error occurred: ${state.error}');
-              return errorPageBuilder.call(
-                context,
-                NavigationState.fromGoState(state),
-              );
-            },
-      onException: exceptionHandler == null
-          ? null
-          : (BuildContext c, GoRouterState s, GoRouter r) {
-              _logManager?.lInfo('Exception occurred: ${s.error}');
-              final NavigationState navigationS =
-                  NavigationState.fromGoState(s);
-              return exceptionHandler.call(c, navigationS, r);
-            },
       observers: observers,
-      redirect: redirect == null
-          ? null
-          : (BuildContext context, GoRouterState state) {
-              _logManager?.lInfo('Redirecting to: $state');
-              return redirect.call(context, NavigationState.fromGoState(state));
-            },
+      redirect: redirect,
+      onException: exceptionHandler,
+      errorPageBuilder: errorPageBuilder,
       errorBuilder: errorBuilder == null
           ? null
           : (BuildContext context, GoRouterState state) {
               _logManager?.lInfo('Error occurred: ${state.error}');
               return errorBuilder.call(context, state.error);
             },
+      // errorPageBuilder: errorPageBuilder == null
+      //     ? null
+      //     : (BuildContext context, GoRouterState state) {
+      //         _logManager?.lInfo('Error occurred: ${state.error}');
+      //         return errorPageBuilder.call(
+      //           context,
+      //           NavigationState.fromGoState(state),
+      //         );
+      //       },
+      // onException: exceptionHandler == null
+      //     ? null
+      //     : (BuildContext c, GoRouterState s, GoRouter r) {
+      //         _logManager?.lInfo('Exception occurred: ${s.error}');
+      //         final NavigationState navigationS =
+      //             NavigationState.fromGoState(s);
+      //         return exceptionHandler.call(c, navigationS, r);
+      //       },
+      // redirect: redirect == null
+      //     ? null
+      //     : (BuildContext context, GoRouterState state) {
+      //         _logManager?.lInfo('Redirecting to: $state');
+      //         return redirect.call(context,
+      //             NavigationState.fromGoState(state));
+      //       },
     );
     _router = goRouter;
   }
@@ -116,64 +118,67 @@ class GoNavigationManager implements NavigationManager {
   final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
 
-  List<RouteBase> _convertRoutes(List<RouteConfig> routes) {
-    return routes.map(
-      (RouteConfig config) {
-        final CustomRedirectCallback? redirect = config.redirect;
-        final FutureOr<String?> Function(BuildContext, GoRouterState)?
-            redirectCallback = redirect == null
-                ? null
-                : (BuildContext context, GoRouterState state) =>
-                    redirect.call(context, NavigationState.fromGoState(state));
+  // List<RouteBase> _convertRoutes(List<RouteConfig> routes) {
+  //   return routes.map(
+  //     (RouteConfig config) {
+  //       final CustomRedirectCallback? redirect = config.redirect;
+  //       final FutureOr<String?> Function(BuildContext, GoRouterState)?
+  //           redirectCallback = redirect == null
+  //               ? null
+  //               : (BuildContext context, GoRouterState state) =>
+  //                   redirect.call(context,
+  //                    NavigationState.fromGoState(state));
 
-        final CustomPageBuilder? customPageBuilder = config.pageBuilder;
-        final CustomOnExitCallback? onExit = config.onExit;
+  //       final CustomPageBuilder? customPageBuilder = config.pageBuilder;
+  //       final CustomOnExitCallback? onExit = config.onExit;
 
-        if (config is ShellRouteConfig) {
-          final PageBuilderCallback? pageBuilder = customPageBuilder == null
-              ? null
-              : (BuildContext context, GoRouterState state, Widget child) =>
-                  customPageBuilder.call(
-                    context,
-                    NavigationState.fromGoState(state),
-                    child: child,
-                  );
-          return ShellRoute(
-            builder: (BuildContext context, GoRouterState state, Widget child) {
-              return config.builder(
-                context,
-                NavigationState.fromGoState(state),
-                child: child,
-              );
-            },
-            routes: _convertRoutes(config.routes),
-            parentNavigatorKey: config.parentNavigatorKey,
-            observers: config.observers,
-            redirect: redirectCallback,
-            pageBuilder: pageBuilder,
-          );
-        }
+  //       if (config is ShellRouteConfig) {
+  //         final PageBuilderCallback? pageBuilder = customPageBuilder == null
+  //             ? null
+  //             : (BuildContext context, GoRouterState state, Widget child) =>
+  //                 customPageBuilder.call(
+  //                   context,
+  //                   NavigationState.fromGoState(state),
+  //                   child: child,
+  //                 );
+  //         return ShellRoute(
+  //           builder: (BuildContext context, GoRouterState state,
+  //                 Widget child) {
+  //             return config.builder(
+  //               context,
+  //               NavigationState.fromGoState(state),
+  //               child: child,
+  //             );
+  //           },
+  //           routes: _convertRoutes(config.routes),
+  //           parentNavigatorKey: config.parentNavigatorKey,
+  //           observers: config.observers,
+  //           redirect: redirectCallback,
+  //           pageBuilder: pageBuilder,
+  //         );
+  //       }
 
-        return GoRoute(
-          path: config.path,
-          name: config.name,
-          pageBuilder: customPageBuilder == null
-              ? null
-              : (BuildContext context, GoRouterState state) => customPageBuilder
-                  .call(context, NavigationState.fromGoState(state)),
-          onExit: onExit == null
-              ? null
-              : (BuildContext context, GoRouterState state) =>
-                  onExit.call(context, NavigationState.fromGoState(state)),
-          parentNavigatorKey: config.parentNavigatorKey,
-          redirect: redirectCallback,
-          routes: _convertRoutes(config.routes),
-          builder: (BuildContext context, GoRouterState state) =>
-              config.builder(context, NavigationState.fromGoState(state)),
-        );
-      },
-    ).toList();
-  }
+  //       return GoRoute(
+  //         path: config.path,
+  //         name: config.name,
+  //         pageBuilder: customPageBuilder == null
+  //             ? null
+  //             : (BuildContext context, GoRouterState state) =>
+  //                  customPageBuilder
+  //                 .call(context, NavigationState.fromGoState(state)),
+  //         onExit: onExit == null
+  //             ? null
+  //             : (BuildContext context, GoRouterState state) =>
+  //                 onExit.call(context, NavigationState.fromGoState(state)),
+  //         parentNavigatorKey: config.parentNavigatorKey,
+  //         redirect: redirectCallback,
+  //         routes: _convertRoutes(config.routes),
+  //         builder: (BuildContext context, GoRouterState state) =>
+  //             config.builder(context, NavigationState.fromGoState(state)),
+  //       );
+  //     },
+  //   ).toList();
+  // }
 
   @override
   Future<void> refresh() async {

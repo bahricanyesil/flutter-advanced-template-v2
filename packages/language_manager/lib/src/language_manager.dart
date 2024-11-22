@@ -91,7 +91,7 @@ abstract class LanguageManager {
 
   /// Checks if two locales are equal.
   @protected
-  bool isLocaleEqual(Locale locale1, Locale locale2) =>
+  static bool isLocaleEqual(Locale locale1, Locale locale2) =>
       locale1.languageCode == locale2.languageCode &&
       (locale1.countryCode ?? locale2.countryCode) ==
           (locale2.countryCode ?? locale1.countryCode);

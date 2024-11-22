@@ -19,7 +19,5 @@ final class MockAnalyticsManager extends AnalyticsManager {
   Future<void> disableAnalytics() async {}
 
   @override
-  Future<bool> isAnalyticsEnabled() async {
-    return true;
-  }
+  bool isAnalyticsEnabled() => true;
 }

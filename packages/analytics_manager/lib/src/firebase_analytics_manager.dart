@@ -85,7 +85,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   /// Checks if analytics is enabled by checking the key value storage
   /// and the platform support.
   @override
-  Future<bool> isAnalyticsEnabled() async {
+  bool isAnalyticsEnabled() {
     try {
       final bool isEnabled =
           _keyValueStorageManager?.read<bool>(_analyticsEnabledKey) ?? true;
@@ -93,13 +93,6 @@ class FirebaseAnalyticsManager extends AnalyticsManager
         logManager?.lInfo('Analytics is disabled via storage');
         return false;
       }
-
-      final bool isSupported = await _analytics.isSupported();
-      if (!isSupported) {
-        logManager?.lInfo('Analytics is not supported on this platform');
-        return false;
-      }
-
       return true;
     } catch (e) {
       logManager?.lError('Failed to check analytics status: $e');
@@ -110,6 +103,13 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   @override
   Future<void> enableAnalytics() async {
     try {
+      final bool isSupported = await _analytics.isSupported();
+      if (!isSupported) {
+        logManager?.lInfo('Analytics is not supported on this platform');
+        await disableAnalytics();
+        return;
+      }
+
       await _keyValueStorageManager?.write<bool>(
         key: _analyticsEnabledKey,
         value: true,
@@ -314,7 +314,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     required Future<void> Function() operation,
   }) async {
     try {
-      final bool isEnabled = await isAnalyticsEnabled();
+      final bool isEnabled = isAnalyticsEnabled();
       if (!isEnabled) {
         logManager?.lInfo('Analytics is disabled, skipping $operationName');
         return;

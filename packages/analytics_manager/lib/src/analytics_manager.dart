@@ -184,5 +184,5 @@ abstract class AnalyticsManager {
 
   /// Checks if analytics is enabled by checking the key value storage
   /// and the platform support.
-  Future<bool> isAnalyticsEnabled();
+  bool isAnalyticsEnabled();
 }

@@ -181,4 +181,8 @@ abstract class AnalyticsManager {
   ///
   /// This method should be implemented to disable analytics reporting.
   Future<void> disableAnalytics();
+
+  /// Checks if analytics is enabled by checking the key value storage
+  /// and the platform support.
+  Future<bool> isAnalyticsEnabled();
 }

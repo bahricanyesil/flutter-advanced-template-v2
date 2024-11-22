@@ -84,6 +84,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
 
   /// Checks if analytics is enabled by checking the key value storage
   /// and the platform support.
+  @override
   Future<bool> isAnalyticsEnabled() async {
     try {
       final bool isEnabled =

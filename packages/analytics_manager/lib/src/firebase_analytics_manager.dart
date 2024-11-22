@@ -33,21 +33,29 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     FirebaseAnalytics analyticsParam, {
     LogManager? logManager,
     KeyValueStorageManager? keyValueStorageManager,
+    bool isAnalyticsEnabled = true,
   }) async {
     final FirebaseAnalyticsManager instance = FirebaseAnalyticsManager._(
       analyticsParam,
       logManager,
       keyValueStorageManager,
     );
-    await instance.init();
+    await instance.init(isAnalyticsEnabled: isAnalyticsEnabled);
     return instance;
   }
 
   /// Initializes the analytics by logging the app open event
   /// and adding the observer to [WidgetsBinding].
   @override
-  Future<void> init() async {
-    await enableAnalytics();
+  Future<void> init({bool isAnalyticsEnabled = true}) async {
+    final bool isEnabledFinal =
+        _keyValueStorageManager?.read<bool>(_analyticsEnabledKey) ??
+            isAnalyticsEnabled;
+    if (isEnabledFinal) {
+      await enableAnalytics();
+    } else {
+      await disableAnalytics();
+    }
     await logAppOpen();
     _bindLifecycleListener();
     logManager?.lInfo('Firebase Analytics Manager initialized');

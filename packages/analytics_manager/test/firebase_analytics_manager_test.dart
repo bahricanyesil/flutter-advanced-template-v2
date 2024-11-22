@@ -10,7 +10,6 @@ void main() {
   late FirebaseAnalyticsManager analyticsManager;
   late MockFirebaseAnalytics mockFirebaseAnalytics;
   late MockLogManager mockLogManager;
-
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -26,7 +25,7 @@ void main() {
     });
     analyticsManager = await FirebaseAnalyticsManager.create(
       mockFirebaseAnalytics,
-      mockLogManager,
+      logManager: mockLogManager,
     );
   });
 

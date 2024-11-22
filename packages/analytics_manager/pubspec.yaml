@@ -18,6 +18,10 @@ dependencies:
   log_manager:
     path: ../log_manager
 
+  # Key Value Storage
+  key_value_storage_manager:
+    path: ../key_value_storage_manager
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

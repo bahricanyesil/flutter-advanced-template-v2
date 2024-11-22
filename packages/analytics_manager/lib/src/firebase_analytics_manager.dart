@@ -82,7 +82,9 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     }
   }
 
-  Future<bool> _isAnalyticsEnabled() async {
+  /// Checks if analytics is enabled by checking the key value storage
+  /// and the platform support.
+  Future<bool> isAnalyticsEnabled() async {
     try {
       final bool isEnabled =
           _keyValueStorageManager?.read<bool>(_analyticsEnabledKey) ?? true;
@@ -311,7 +313,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
     required Future<void> Function() operation,
   }) async {
     try {
-      final bool isEnabled = await _isAnalyticsEnabled();
+      final bool isEnabled = await isAnalyticsEnabled();
       if (!isEnabled) {
         logManager?.lInfo('Analytics is disabled, skipping $operationName');
         return;

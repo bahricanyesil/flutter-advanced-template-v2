@@ -76,6 +76,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   Future<void> logAppOpen() async {
     try {
       await _analytics.logAppOpen();
+      logManager?.lInfo('App open event logged');
     } catch (e) {
       logManager?.lError('Failed to log app open event: $e');
     }
@@ -89,6 +90,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   }) async {
     try {
       await _analytics.logEvent(name: name, parameters: parameters);
+      logManager?.lInfo('Event logged: $name, parameters: $parameters');
     } catch (e) {
       logManager
           ?.lError('Failed to log event: $name, parameters: $parameters: $e');
@@ -103,6 +105,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   }) async {
     try {
       await _analytics.logScreenView(screenName: name);
+      logManager?.lInfo('Screen view logged: $name, parameters: $parameters');
     } catch (e) {
       logManager?.lError(
         'Failed to log screen view: $name, parameters: $parameters: $e',
@@ -121,6 +124,9 @@ class FirebaseAnalyticsManager extends AnalyticsManager
         loginMethod: loginMethod,
         parameters: parameters,
       );
+      logManager?.lInfo(
+        '''Login event logged: $loginMethod, parameters: $parameters''',
+      );
     } catch (e) {
       logManager?.lError(
         'Failed to log login event: $loginMethod, parameters: $parameters: $e',
@@ -138,6 +144,9 @@ class FirebaseAnalyticsManager extends AnalyticsManager
       await _analytics.logSignUp(
         signUpMethod: signUpMethod,
         parameters: parameters,
+      );
+      logManager?.lInfo(
+        '''Sign-up event logged: $signUpMethod, parameters: $parameters''',
       );
     } catch (e) {
       logManager?.lError(
@@ -160,6 +169,9 @@ class FirebaseAnalyticsManager extends AnalyticsManager
         itemId: itemId,
         method: method,
         parameters: parameters,
+      );
+      logManager?.lInfo(
+        '''Share event logged: contentType: $contentType, itemId: $itemId, method: $method, parameters: $parameters''',
       );
     } catch (e) {
       logManager?.lError(
@@ -196,6 +208,9 @@ class FirebaseAnalyticsManager extends AnalyticsManager
         affiliation: affiliation,
         parameters: parameters,
       );
+      logManager?.lInfo(
+        '''Purchase event logged: currency: $currency, value: $value, coupon: $coupon, tax: $tax, shipping: $shipping, transactionId: $transactionId, affiliation: $affiliation, parameters: $parameters''',
+      );
     } catch (e) {
       logManager?.lError(
         '''Failed to log purchase event: currency: $currency, value: $value, coupon: $coupon, tax: $tax, shipping: $shipping, transactionId: $transactionId, affiliation: $affiliation, parameters: $parameters: $e''',
@@ -217,6 +232,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   Future<void> setUserId(String userId) async {
     try {
       await _analytics.setUserId(id: userId);
+      logManager?.lInfo('User ID set: $userId');
     } catch (e) {
       logManager?.lError('Failed to set user ID: $userId: $e');
     }
@@ -230,6 +246,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   }) async {
     try {
       await _analytics.setUserProperty(name: name, value: value);
+      logManager?.lInfo('User property set: $name: $value');
     } catch (e) {
       logManager?.lError('Failed to set user property: $name: $value: $e');
     }
@@ -240,6 +257,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   Future<void> resetAnalyticsData() async {
     try {
       await _analytics.resetAnalyticsData();
+      logManager?.lInfo('Analytics data reset');
     } catch (e) {
       logManager?.lError('Failed to reset analytics data: $e');
     }
@@ -249,6 +267,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   Future<void> enableAnalytics() async {
     try {
       await _analytics.setAnalyticsCollectionEnabled(true);
+      logManager?.lInfo('Analytics enabled');
     } catch (e) {
       logManager?.lError('Failed to enable analytics: $e');
     }
@@ -258,6 +277,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   Future<void> disableAnalytics() async {
     try {
       await _analytics.setAnalyticsCollectionEnabled(false);
+      logManager?.lInfo('Analytics disabled');
     } catch (e) {
       logManager?.lError('Failed to disable analytics: $e');
     }

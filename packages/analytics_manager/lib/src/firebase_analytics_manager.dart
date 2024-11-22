@@ -16,11 +16,11 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   const FirebaseAnalyticsManager._(
     this._analytics,
     LogManager? logManager,
-    this._keyStorageManager,
+    this._keyValueStorageManager,
   ) : super(logManager: logManager);
 
   final FirebaseAnalytics _analytics;
-  final KeyValueStorageManager? _keyStorageManager;
+  final KeyValueStorageManager? _keyValueStorageManager;
 
   static const String _analyticsEnabledKey = 'analytics_enabled';
 
@@ -85,7 +85,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   Future<bool> _isAnalyticsEnabled() async {
     try {
       final bool isEnabled =
-          _keyStorageManager?.read<bool>(_analyticsEnabledKey) ?? true;
+          _keyValueStorageManager?.read<bool>(_analyticsEnabledKey) ?? true;
       if (!isEnabled) {
         logManager?.lInfo('Analytics is disabled via storage');
         return false;
@@ -107,7 +107,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   @override
   Future<void> enableAnalytics() async {
     try {
-      await _keyStorageManager?.write<bool>(
+      await _keyValueStorageManager?.write<bool>(
         key: _analyticsEnabledKey,
         value: true,
       );
@@ -121,7 +121,7 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   @override
   Future<void> disableAnalytics() async {
     try {
-      await _keyStorageManager?.write<bool>(
+      await _keyValueStorageManager?.write<bool>(
         key: _analyticsEnabledKey,
         value: false,
       );

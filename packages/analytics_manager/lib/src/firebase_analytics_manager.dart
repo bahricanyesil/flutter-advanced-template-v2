@@ -28,16 +28,16 @@ class FirebaseAnalyticsManager extends AnalyticsManager
   ///
   /// [analyticsParam] - The FirebaseAnalytics instance.
   /// [logManager] - The LogManager instance.
-  /// [keyStorageManager] - The KeyValueStorageManager instance.
+  /// [keyValueStorageManager] - The KeyValueStorageManager instance.
   static Future<FirebaseAnalyticsManager> create(
     FirebaseAnalytics analyticsParam, {
     LogManager? logManager,
-    KeyValueStorageManager? keyStorageManager,
+    KeyValueStorageManager? keyValueStorageManager,
   }) async {
     final FirebaseAnalyticsManager instance = FirebaseAnalyticsManager._(
       analyticsParam,
       logManager,
-      keyStorageManager,
+      keyValueStorageManager,
     );
     await instance.init();
     return instance;

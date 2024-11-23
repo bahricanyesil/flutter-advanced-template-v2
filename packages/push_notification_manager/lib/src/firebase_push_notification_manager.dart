@@ -303,4 +303,15 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     );
     return isEnabledNotifications;
   }
+
+  @override
+  bool get notificationsAllowed {
+    if (!_hasPermission) {
+      _logManager?.lDebug(
+        'Notifications not allowed due to missing permission',
+      );
+      return false;
+    }
+    return enabledNotifications;
+  }
 }

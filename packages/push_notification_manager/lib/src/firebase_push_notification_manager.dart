@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:key_value_storage_manager/key_value_storage_manager.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
 
@@ -17,9 +18,11 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     OnMessageCallback? onBackgroundMessageCallback,
     PermissionManager? permissionManager,
     LogManager? logManager,
+    KeyValueStorageManager? keyValueStorageManager,
   })  : _firebaseMessaging = firebaseMessaging,
         _permissionManager = permissionManager,
         _logManager = logManager,
+        _keyValueStorageManager = keyValueStorageManager,
         _onMessageCallback = onMessageCallback,
         _onMessageOpenedAppCallback = onMessageOpenedAppCallback {
     if (onBackgroundMessageCallback != null) {
@@ -30,6 +33,7 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   final FirebaseMessaging _firebaseMessaging;
   final LogManager? _logManager;
   final PermissionManager? _permissionManager;
+  final KeyValueStorageManager? _keyValueStorageManager;
 
   /// Callback for handling messages. You should set this to react to messages.
   final OnMessageCallback? _onMessageCallback;
@@ -58,11 +62,18 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   StreamSubscription<Map<String, dynamic>>?
       get onMessageOpenedAppSubscription => _onMessageOpenedAppSubscription;
 
+  static const String _notificationsEnabledKey = 'notifications_enabled';
+
   @override
   Future<void> initialize({
     bool waitForPermissions = false,
     bool notificationOnForeground = true,
+    bool isEnabledNotifications = true,
   }) async {
+    if (_keyValueStorageManager != null) {
+      await setEnabledNotifications(isEnabledNotifications);
+    }
+    if (!isEnabledNotifications) return;
     await _firebaseMessaging.setForegroundNotificationPresentationOptions(
       alert: notificationOnForeground,
       badge: notificationOnForeground,
@@ -216,5 +227,35 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
         _firebaseMessagingBackgroundHandler,
       );
     }
+  }
+
+  @override
+  Future<bool> setEnabledNotifications(bool enabled) async {
+    assert(
+      _keyValueStorageManager != null,
+      'Key value storage manager is not set',
+    );
+    try {
+      await _keyValueStorageManager?.write<bool>(
+        key: _notificationsEnabledKey,
+        value: enabled,
+      );
+      return true;
+    } catch (e) {
+      _logManager?.lError(
+        'FirebasePushNotificationManager set enabled notifications failed: $e',
+      );
+      return false;
+    }
+  }
+
+  @override
+  bool get enabledNotifications {
+    assert(
+      _keyValueStorageManager != null,
+      'Key value storage manager is not set',
+    );
+    return _keyValueStorageManager?.read<bool>(_notificationsEnabledKey) ??
+        false;
   }
 }

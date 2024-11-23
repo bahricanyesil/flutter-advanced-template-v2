@@ -42,4 +42,11 @@ abstract interface class PushNotificationManager {
   /// notification.
   Future<StreamSubscription<Map<String, dynamic>>>
       setOnMessageOpenedAppListener(OnMessageCallback callback);
+
+  /// Boolean to check whether the app has enabled notifications
+  bool get enabledNotifications;
+
+  /// Set the enabled notifications boolean
+  // ignore: avoid_positional_boolean_parameters
+  Future<bool> setEnabledNotifications(bool enabled);
 }

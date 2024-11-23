@@ -273,6 +273,10 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
       _keyValueStorageManager != null,
       'Key value storage manager is not set',
     );
+    if (!_hasPermission && enabled) {
+      _logManager?.lWarning('No permission to set enabled notifications');
+      return false;
+    }
     try {
       await _keyValueStorageManager?.write<bool>(
         key: _notificationsEnabledKey,

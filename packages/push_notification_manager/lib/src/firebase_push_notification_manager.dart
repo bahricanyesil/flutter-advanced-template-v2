@@ -240,6 +240,9 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
         key: _notificationsEnabledKey,
         value: enabled,
       );
+      _logManager?.lInfo(
+        'FirebasePushNotificationManager set enabled notifications: $enabled',
+      );
       return true;
     } catch (e) {
       _logManager?.lError(
@@ -255,7 +258,11 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
       _keyValueStorageManager != null,
       'Key value storage manager is not set',
     );
-    return _keyValueStorageManager?.read<bool>(_notificationsEnabledKey) ??
-        false;
+    final bool isEnabledNotifications =
+        _keyValueStorageManager?.read<bool>(_notificationsEnabledKey) ?? false;
+    _logManager?.lDebug(
+      '''FirebasePushNotificationManager enabled notifications: $isEnabledNotifications''',
+    );
+    return isEnabledNotifications;
   }
 }

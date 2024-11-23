@@ -17,11 +17,13 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     OnMessageCallback? onBackgroundMessageCallback,
     LogManager? logManager,
     KeyValueStorageManager? keyValueStorageManager,
+    bool checkPermissionsWhileEnabling = true,
   })  : _firebaseMessaging = firebaseMessaging,
         _logManager = logManager,
         _keyValueStorageManager = keyValueStorageManager,
         _onMessageCallback = onMessageCallback,
-        _onMessageOpenedAppCallback = onMessageOpenedAppCallback {
+        _onMessageOpenedAppCallback = onMessageOpenedAppCallback,
+        _checkPermissionsWhileEnabling = checkPermissionsWhileEnabling {
     if (onBackgroundMessageCallback != null) {
       setOnBackgroundMessageListener(onBackgroundMessageCallback);
     }
@@ -41,6 +43,10 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
 
   /// Static field to hold the background message handler
   static OnMessageCallback? _backgroundMessageHandler;
+
+  /// Boolean to check whether the permission should be checked while enabling
+  /// notifications.
+  final bool _checkPermissionsWhileEnabling;
 
   bool _hasPermission = false;
   @override
@@ -273,8 +279,10 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
       _keyValueStorageManager != null,
       'Key value storage manager is not set',
     );
-    if (!_hasPermission && enabled) {
-      _logManager?.lWarning('No permission to set enabled notifications');
+    if (!_hasPermission && enabled && _checkPermissionsWhileEnabling) {
+      _logManager?.lWarning(
+        'No permission is given. Notifications are disabled.',
+      );
       return false;
     }
     try {
@@ -300,22 +308,17 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
       _keyValueStorageManager != null,
       'Key value storage manager is not set',
     );
+    if (!_hasPermission && _checkPermissionsWhileEnabling) {
+      _logManager?.lWarning(
+        'No permission is given. Notifications are disabled.',
+      );
+      return false;
+    }
     final bool isEnabledNotifications =
         _keyValueStorageManager?.read<bool>(_notificationsEnabledKey) ?? false;
     _logManager?.lDebug(
       '''FirebasePushNotificationManager enabled notifications: $isEnabledNotifications''',
     );
     return isEnabledNotifications;
-  }
-
-  @override
-  bool get notificationsAllowed {
-    if (!_hasPermission) {
-      _logManager?.lDebug(
-        'Notifications not allowed due to missing permission',
-      );
-      return false;
-    }
-    return enabledNotifications;
   }
 }

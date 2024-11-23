@@ -46,14 +46,6 @@ abstract interface class PushNotificationManager {
   /// Boolean to check whether the app has enabled notifications
   bool get enabledNotifications;
 
-  /// Boolean to check whether the app has notifications allowed
-  /// The difference between enabled notifications and notifications allowed
-  /// is that enabled notifications means that the user enabled notifications
-  /// in the app settings, while notifications allowed means that the user has
-  /// allowed the app to send notifications and has not disabled them in the
-  /// system settings.
-  bool get notificationsAllowed;
-
   /// Set the enabled notifications boolean
   // ignore: avoid_positional_boolean_parameters
   Future<bool> setEnabledNotifications(bool enabled);

@@ -16,7 +16,7 @@ void main() {
   late MockLogManager mockLogManager;
   late PushNotificationManager pushNotificationManager;
 
-  setUp(() {
+  setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
 
     mockFirebaseMessaging = MockFirebaseMessaging();
@@ -59,7 +59,7 @@ void main() {
       },
     );
 
-    pushNotificationManager = FirebasePushNotificationManager(
+    pushNotificationManager = await FirebasePushNotificationManager.create(
       firebaseMessaging: mockFirebaseMessaging,
       logManager: mockLogManager,
       onMessageCallback: (Map<String, dynamic> msg) {},

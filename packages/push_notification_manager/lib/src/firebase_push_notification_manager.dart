@@ -10,13 +10,13 @@ import 'utils/remote_message_extensions.dart';
 /// Firebase push notification manager.
 final class FirebasePushNotificationManager implements PushNotificationManager {
   /// Constructs a firebase push notification manager.
-  FirebasePushNotificationManager({
+  FirebasePushNotificationManager._({
     required FirebaseMessaging firebaseMessaging,
+    KeyValueStorageManager? keyValueStorageManager,
     OnMessageCallback? onMessageCallback,
     OnMessageCallback? onMessageOpenedAppCallback,
     OnMessageCallback? onBackgroundMessageCallback,
     LogManager? logManager,
-    KeyValueStorageManager? keyValueStorageManager,
     bool checkPermissionsWhileEnabling = true,
   })  : _firebaseMessaging = firebaseMessaging,
         _logManager = logManager,
@@ -48,10 +48,6 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   /// notifications.
   final bool _checkPermissionsWhileEnabling;
 
-  bool _hasPermission = false;
-  @override
-  bool get hasPermission => _hasPermission;
-
   StreamSubscription<Map<String, dynamic>>? _onMessageSubscription;
 
   /// On message subscription getter.
@@ -66,6 +62,30 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
 
   static const String _notificationsEnabledKey = 'notifications_enabled';
 
+  /// Creates a [FirebasePushNotificationManager] instance.
+  static Future<FirebasePushNotificationManager> create({
+    required FirebaseMessaging firebaseMessaging,
+    KeyValueStorageManager? keyValueStorageManager,
+    OnMessageCallback? onMessageCallback,
+    OnMessageCallback? onMessageOpenedAppCallback,
+    OnMessageCallback? onBackgroundMessageCallback,
+    LogManager? logManager,
+    bool checkPermissionsWhileEnabling = true,
+  }) async {
+    final FirebasePushNotificationManager manager =
+        FirebasePushNotificationManager._(
+      firebaseMessaging: firebaseMessaging,
+      keyValueStorageManager: keyValueStorageManager,
+      onMessageCallback: onMessageCallback,
+      onMessageOpenedAppCallback: onMessageOpenedAppCallback,
+      logManager: logManager,
+      checkPermissionsWhileEnabling: checkPermissionsWhileEnabling,
+      onBackgroundMessageCallback: onBackgroundMessageCallback,
+    );
+    await manager.initialize();
+    return manager;
+  }
+
   @override
   Future<void> initialize({
     bool waitForPermissions = false,
@@ -73,9 +93,7 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     bool isEnabledNotifications = true,
   }) async {
     try {
-      if (_keyValueStorageManager != null) {
-        await setEnabledNotifications(isEnabledNotifications);
-      }
+      await setEnabledNotifications(isEnabledNotifications);
 
       if (waitForPermissions) {
         final bool hasPermission = await requestPermission();
@@ -85,8 +103,7 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
         }
       }
 
-      final bool isAllowed = await _isNotificationsAllowed();
-      if (!isAllowed) {
+      if (!await isNotificationsAllowed()) {
         _logManager
             ?.lDebug('Notifications not allowed, skipping initialization');
         return;
@@ -105,7 +122,7 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
           setOnMessageOpenedAppListener(_onMessageOpenedAppCallback),
       ]);
 
-      _logManager?.lDebug('FirebasePushNotificationManager initialized');
+      _logManager?.lDebug('Push notification manager initialized');
     } catch (e) {
       _logManager?.lError('Failed to initialize push notifications: $e');
     }
@@ -114,9 +131,69 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   /// Disposes the [FirebasePushNotificationManager] by releasing the resources.
   @override
   Future<void> dispose() async {
-    await _onMessageSubscription?.cancel();
-    await _onMessageOpenedAppSubscription?.cancel();
-    _logManager?.lDebug('FirebasePushNotificationManager closed');
+    await Future.wait(<Future<void>>[
+      _onMessageSubscription?.cancel() ?? Future<void>.value(),
+      _onMessageOpenedAppSubscription?.cancel() ?? Future<void>.value(),
+    ]);
+    _backgroundMessageHandler = null;
+    _logManager?.lDebug('Push notification manager disposed');
+  }
+
+  @override
+  Future<bool> get hasPermission async => _checkSystemPermission();
+
+  Future<bool> _checkSystemPermission() async {
+    try {
+      final NotificationSettings settings =
+          await _firebaseMessaging.getNotificationSettings();
+      return settings.authorizationStatus == AuthorizationStatus.authorized ||
+          settings.authorizationStatus == AuthorizationStatus.provisional;
+    } catch (e) {
+      _logManager?.lError('Failed to check notification settings: $e');
+      return false;
+    }
+  }
+
+  @override
+  bool get enabledNotifications {
+    final bool isEnabled =
+        _keyValueStorageManager?.read<bool>(_notificationsEnabledKey) ?? true;
+    _logManager?.lDebug('Notifications enabled state: $isEnabled');
+    return isEnabled;
+  }
+
+  /// Checks if notifications are allowed.
+  @override
+  Future<bool> isNotificationsAllowed() async {
+    if (!enabledNotifications) return false;
+
+    if (_checkPermissionsWhileEnabling) {
+      return hasPermission;
+    }
+    return true;
+  }
+
+  @override
+  Future<bool> setEnabledNotifications(bool enabled) async {
+    if (enabled && _checkPermissionsWhileEnabling) {
+      final bool hasSystemPermission = await hasPermission;
+      if (!hasSystemPermission) {
+        _logManager?.lWarning('Cannot enable notifications without permission');
+        return false;
+      }
+    }
+
+    try {
+      await _keyValueStorageManager?.write<bool>(
+        key: _notificationsEnabledKey,
+        value: enabled,
+      );
+      _logManager?.lInfo('Notifications ${enabled ? 'enabled' : 'disabled'}');
+      return true;
+    } catch (e) {
+      _logManager?.lError('Failed to set notifications state: $e');
+      return false;
+    }
   }
 
   static Future<void> _firebaseMessagingBackgroundHandler(
@@ -130,13 +207,13 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
       final NotificationSettings permissionRes =
           await _firebaseMessaging.requestPermission();
       final AuthorizationStatus initStatus = permissionRes.authorizationStatus;
-      _hasPermission = initStatus == AuthorizationStatus.authorized ||
+      final bool isGranted = initStatus == AuthorizationStatus.authorized ||
           initStatus == AuthorizationStatus.provisional;
 
       _logManager?.lDebug(
-        '''FirebasePushNotificationManager permission status updated: $_hasPermission''',
+        '''FirebasePushNotificationManager permission status updated: $isGranted''',
       );
-      return _hasPermission;
+      return isGranted;
     } catch (e) {
       _logManager?.lError(
         'FirebasePushNotificationManager permission request failed: $e',
@@ -155,7 +232,8 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
 
   @override
   Future<bool> subscribeToTopic(String topic) async {
-    if (_hasPermission) {
+    final bool isAllowed = await isNotificationsAllowed();
+    if (isAllowed) {
       await _firebaseMessaging.subscribeToTopic(topic);
       _logManager?.lDebug(
         'FirebasePushNotificationManager subscribed to topic: $topic',
@@ -169,35 +247,16 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
 
   @override
   Future<bool> unsubscribeFromTopic(String topic) async {
-    if (_hasPermission) {
+    try {
       await _firebaseMessaging.unsubscribeFromTopic(topic);
       _logManager?.lDebug(
         'FirebasePushNotificationManager unsubscribed from topic: $topic',
       );
       return true;
-    } else {
-      _logManager?.lDebug('No permission to unsubscribe from topic: $topic');
-      return false;
-    }
-  }
-
-  Future<bool> _isNotificationsAllowed() async {
-    if (!enabledNotifications) {
-      _logManager?.lDebug('Notifications disabled by user');
-      return false;
-    }
-
-    try {
-      final NotificationSettings settings =
-          await _firebaseMessaging.getNotificationSettings();
-      final bool hasPermission =
-          settings.authorizationStatus == AuthorizationStatus.authorized ||
-              settings.authorizationStatus == AuthorizationStatus.provisional;
-
-      _hasPermission = hasPermission;
-      return hasPermission;
     } catch (e) {
-      _logManager?.lError('Failed to check notification settings: $e');
+      _logManager?.lError(
+        'FirebasePushNotificationManager failed to unsubscribe from topic: $e',
+      );
       return false;
     }
   }
@@ -206,21 +265,17 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   Future<bool> checkAndUpdatePermissionStatus() async {
     final NotificationSettings settings =
         await _firebaseMessaging.getNotificationSettings();
-    _hasPermission =
+    bool isGranted =
         settings.authorizationStatus == AuthorizationStatus.authorized ||
             settings.authorizationStatus == AuthorizationStatus.provisional;
 
-    if (!_hasPermission && enabledNotifications) {
-      await setEnabledNotifications(false);
-      _logManager?.lInfo(
-        'Notifications disabled due to missing permission',
-      );
+    if (!isGranted) {
+      isGranted = await requestPermission();
     }
-
     _logManager?.lDebug(
-      '''FirebasePushNotificationManager permission status checked: $_hasPermission''',
+      '''FirebasePushNotificationManager permission status checked: $isGranted''',
     );
-    return _hasPermission;
+    return isGranted;
   }
 
   @override
@@ -229,7 +284,8 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
   ) async {
     await _onMessageSubscription?.cancel();
 
-    if (!await _isNotificationsAllowed()) {
+    final bool isAllowed = await isNotificationsAllowed();
+    if (!isAllowed) {
       _logManager
           ?.lDebug('Notifications not allowed, skipping message listener');
       return const Stream<Map<String, dynamic>>.empty().listen((_) {});
@@ -271,54 +327,5 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
         _firebaseMessagingBackgroundHandler,
       );
     }
-  }
-
-  @override
-  Future<bool> setEnabledNotifications(bool enabled) async {
-    assert(
-      _keyValueStorageManager != null,
-      'Key value storage manager is not set',
-    );
-    if (!_hasPermission && enabled && _checkPermissionsWhileEnabling) {
-      _logManager?.lWarning(
-        'No permission is given. Notifications are disabled.',
-      );
-      return false;
-    }
-    try {
-      await _keyValueStorageManager?.write<bool>(
-        key: _notificationsEnabledKey,
-        value: enabled,
-      );
-      _logManager?.lInfo(
-        'FirebasePushNotificationManager set enabled notifications: $enabled',
-      );
-      return true;
-    } catch (e) {
-      _logManager?.lError(
-        'FirebasePushNotificationManager set enabled notifications failed: $e',
-      );
-      return false;
-    }
-  }
-
-  @override
-  bool get enabledNotifications {
-    assert(
-      _keyValueStorageManager != null,
-      'Key value storage manager is not set',
-    );
-    if (!_hasPermission && _checkPermissionsWhileEnabling) {
-      _logManager?.lWarning(
-        'No permission is given. Notifications are disabled.',
-      );
-      return false;
-    }
-    final bool isEnabledNotifications =
-        _keyValueStorageManager?.read<bool>(_notificationsEnabledKey) ?? false;
-    _logManager?.lDebug(
-      '''FirebasePushNotificationManager enabled notifications: $isEnabledNotifications''',
-    );
-    return isEnabledNotifications;
   }
 }

@@ -27,7 +27,7 @@ abstract interface class PushNotificationManager {
   Future<bool> checkAndUpdatePermissionStatus();
 
   /// Boolean to check whether the app has notification permission
-  bool get hasPermission;
+  Future<bool> get hasPermission;
 
   /// Set the background message handler
   void setOnBackgroundMessageListener(OnMessageCallback callback);
@@ -49,4 +49,10 @@ abstract interface class PushNotificationManager {
   /// Set the enabled notifications boolean
   // ignore: avoid_positional_boolean_parameters
   Future<bool> setEnabledNotifications(bool enabled);
+
+  /// Checks if notifications are allowed.
+  ///
+  /// This method checks if the user has enabled notifications and if the app
+  /// has the necessary permissions to receive notifications.
+  Future<bool> isNotificationsAllowed();
 }

@@ -32,4 +32,7 @@ abstract interface class AuthManager {
 
   /// Listens to the authentication state changes.
   Stream<UserEntity?> get authStateChanges;
+
+  /// Returns whether the Apple sign-in is available.
+  Future<bool> get appleSignInAvailable;
 }

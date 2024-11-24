@@ -228,4 +228,7 @@ final class FirebaseAuthManager implements AuthManager {
   @override
   Stream<UserEntity?> get authStateChanges =>
       _firebaseAuth.authStateChanges().map((User? user) => user?.toEntity);
+
+  @override
+  Future<bool> get appleSignInAvailable async => SignInWithApple.isAvailable();
 }

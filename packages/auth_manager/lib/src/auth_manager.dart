@@ -21,6 +21,12 @@ abstract interface class AuthManager {
   /// Sends a password reset email to the given email address.
   Future<AuthResultEntity> sendPasswordResetEmail(String email);
 
+  /// Signs in a user with Google.
+  Future<AuthResultEntity> signInWithGoogle();
+
+  /// Signs in a user with Apple.
+  Future<AuthResultEntity> signInWithApple();
+
   /// Gets the currently signed-in user.
   AuthResultEntity get currentUser;
 

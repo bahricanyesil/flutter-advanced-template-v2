@@ -10,6 +10,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import 'entities/auth_result_entity.dart';
 import 'entities/user_entity.dart';
+import 'enum/auth_error_type.dart';
 import 'extensions/user_entity_extensions.dart';
 
 /// A concrete implementation of the BaseFirebaseAuthManager.
@@ -36,10 +37,16 @@ final class FirebaseAuthManager implements AuthManager {
       return AuthResultEntity(user: userCredential.user?.toEntity);
     } on FirebaseAuthException catch (e) {
       _logManager?.lDebug('Firebase Auth Error signing in: $e');
-      return AuthResultEntity(errorMessage: e.message ?? e.code);
+      return AuthResultEntity(
+        errorMessage: e.message ?? e.code,
+        errorType: _mapFirebaseAuthError(e.code),
+      );
     } on Exception catch (e) {
       _logManager?.lDebug('Error signing in: $e');
-      return AuthResultEntity(errorMessage: e.toString());
+      return AuthResultEntity(
+        errorMessage: e.toString(),
+        errorType: AuthErrorType.unknown,
+      );
     }
   }
 
@@ -73,10 +80,16 @@ final class FirebaseAuthManager implements AuthManager {
       return AuthResultEntity(user: userCredential.user?.toEntity);
     } on FirebaseAuthException catch (e) {
       _logManager?.lDebug('Firebase Auth Error creating user: $e');
-      return AuthResultEntity(errorMessage: e.message ?? e.code);
+      return AuthResultEntity(
+        errorMessage: e.message ?? e.code,
+        errorType: _mapFirebaseAuthError(e.code),
+      );
     } catch (e) {
       _logManager?.lDebug('Error creating user: $e');
-      return AuthResultEntity(errorMessage: e.toString());
+      return AuthResultEntity(
+        errorMessage: e.toString(),
+        errorType: AuthErrorType.unknown,
+      );
     }
   }
 
@@ -105,6 +118,7 @@ final class FirebaseAuthManager implements AuthManager {
         _logManager?.lInfo('Google sign-in was cancelled by the user.');
         return const AuthResultEntity(
           errorMessage: 'User cancelled the sign-in process',
+          errorType: AuthErrorType.userCancelled,
         );
       }
 
@@ -115,6 +129,7 @@ final class FirebaseAuthManager implements AuthManager {
         _logManager?.lWarning('Google authentication tokens are null.');
         return const AuthResultEntity(
           errorMessage: 'Failed to retrieve Google authentication tokens',
+          errorType: AuthErrorType.tokenError,
         );
       }
 
@@ -133,13 +148,19 @@ final class FirebaseAuthManager implements AuthManager {
         'Firebase Auth Error signing in with Google: $e',
         error: e,
       );
-      return AuthResultEntity(errorMessage: e.message ?? e.code);
+      return AuthResultEntity(
+        errorMessage: e.message ?? e.code,
+        errorType: _mapFirebaseAuthError(e.code),
+      );
     } catch (e) {
       _logManager?.lError(
         'Unexpected error signing in with Google: $e',
         error: e,
       );
-      return AuthResultEntity(errorMessage: e.toString());
+      return AuthResultEntity(
+        errorMessage: e.toString(),
+        errorType: AuthErrorType.unknown,
+      );
     }
   }
 
@@ -159,16 +180,15 @@ final class FirebaseAuthManager implements AuthManager {
       );
 
       if (appleCredential.identityToken == null) {
-        throw FirebaseAuthException(
-          code: 'invalid-credential',
-          message: 'Apple Sign In failed - no identity token received',
+        return const AuthResultEntity(
+          errorMessage: 'Apple Sign In failed - no identity token received',
+          errorType: AuthErrorType.tokenError,
         );
       }
 
       final OAuthCredential oauthCredential =
           OAuthProvider('apple.com').credential(
         idToken: appleCredential.identityToken,
-        accessToken: appleCredential.authorizationCode,
         rawNonce: nonce,
       );
 
@@ -183,24 +203,27 @@ final class FirebaseAuthManager implements AuthManager {
             ?.updateDisplayName('$givenName $familyName'.trim());
       }
 
-      _logManager?.lInfo(
-        'User signed in with Apple successfully: ${userCredential.user?.email}',
-      );
-
       return AuthResultEntity(user: userCredential.user?.toEntity);
     } on SignInWithAppleAuthorizationException catch (e) {
       _logManager?.lDebug('Apple Sign In Authorization Error: $e');
       return AuthResultEntity(
-        errorMessage: e.code == AuthorizationErrorCode.canceled
-            ? 'Sign in canceled by user'
-            : 'Apple Sign In failed: ${e.message}',
+        errorMessage: e.message,
+        errorType: e.code == AuthorizationErrorCode.canceled
+            ? AuthErrorType.userCancelled
+            : AuthErrorType.invalidCredentials,
       );
     } on FirebaseAuthException catch (e) {
       _logManager?.lDebug('Firebase Auth Error signing in with Apple: $e');
-      return AuthResultEntity(errorMessage: e.message ?? e.code);
+      return AuthResultEntity(
+        errorMessage: e.message ?? e.code,
+        errorType: _mapFirebaseAuthError(e.code),
+      );
     } catch (e) {
       _logManager?.lDebug('Error signing in with Apple: $e');
-      return AuthResultEntity(errorMessage: e.toString());
+      return AuthResultEntity(
+        errorMessage: e.toString(),
+        errorType: AuthErrorType.unknown,
+      );
     }
   }
 
@@ -231,4 +254,29 @@ final class FirebaseAuthManager implements AuthManager {
 
   @override
   Future<bool> get appleSignInAvailable async => SignInWithApple.isAvailable();
+
+  AuthErrorType _mapFirebaseAuthError(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return AuthErrorType.userNotFound;
+      case 'wrong-password':
+        return AuthErrorType.invalidCredentials;
+      case 'invalid-email':
+        return AuthErrorType.invalidEmail;
+      case 'email-already-in-use':
+        return AuthErrorType.emailAlreadyInUse;
+      case 'weak-password':
+        return AuthErrorType.weakPassword;
+      case 'network-request-failed':
+        return AuthErrorType.networkError;
+      case 'invalid-credential':
+        return AuthErrorType.invalidCredentials;
+      case 'operation-not-allowed':
+        return AuthErrorType.operationNotAllowed;
+      case 'too-many-requests':
+        return AuthErrorType.tooManyRequests;
+      default:
+        return AuthErrorType.unknown;
+    }
+  }
 }

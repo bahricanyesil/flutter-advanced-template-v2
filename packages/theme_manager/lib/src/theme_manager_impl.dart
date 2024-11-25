@@ -49,7 +49,6 @@ final class ThemeManagerImpl implements ThemeManager {
 
   @override
   Future<void> setThemeMode(ThemeMode mode) async {
-    if (_currentThemeMode == mode) return;
     _currentThemeMode = mode;
     await _storageManager?.write<String>(key: _themeModeKey, value: mode.name);
     SystemChrome.setSystemUIOverlayStyle(

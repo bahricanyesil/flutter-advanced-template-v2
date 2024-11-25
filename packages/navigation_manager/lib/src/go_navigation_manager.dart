@@ -388,9 +388,6 @@ class GoNavigationManager implements NavigationManager {
 
     if (routeExists) {
       _logManager?.lInfo('Route found in stack, popping until route: $name');
-      _rootNavigatorKey.currentState?.popUntil((Route<Object?> route) {
-        return route.settings.name?.toLowerCase() == name.toLowerCase();
-      });
       popUntil(name: name);
     } else {
       _logManager?.lInfo('Route not found in stack, pushing new route: $name');

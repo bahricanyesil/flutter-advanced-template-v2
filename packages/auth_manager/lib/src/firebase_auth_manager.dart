@@ -110,9 +110,12 @@ final class FirebaseAuthManager implements AuthManager {
   }
 
   @override
-  Future<AuthResultEntity> signInWithGoogle() async {
+  Future<AuthResultEntity> signInWithGoogle({
+    List<String> scopes = const <String>['email', 'profile'],
+  }) async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignIn googleSignIn = GoogleSignIn(scopes: scopes);
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser == null) {
         _logManager?.lInfo('Google sign-in was cancelled by the user.');
@@ -140,6 +143,14 @@ final class FirebaseAuthManager implements AuthManager {
 
       final UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(oauthCredential);
+      // Update user profile with Google information
+      if (googleUser.displayName != null) {
+        await userCredential.user?.updateDisplayName(googleUser.displayName);
+      }
+      if (googleUser.photoUrl != null) {
+        await userCredential.user?.updatePhotoURL(googleUser.photoUrl);
+      }
+
       _logManager
           ?.lInfo('User signed in with Google: ${userCredential.user?.email}');
       return AuthResultEntity(user: userCredential.user?.toEntity);
@@ -199,8 +210,11 @@ final class FirebaseAuthManager implements AuthManager {
           appleCredential.familyName != null) {
         final String givenName = appleCredential.givenName ?? '';
         final String familyName = appleCredential.familyName ?? '';
-        await userCredential.user
-            ?.updateDisplayName('$givenName $familyName'.trim());
+        final String displayName = '$givenName $familyName'.trim();
+
+        if (displayName.isNotEmpty) {
+          await userCredential.user?.updateDisplayName(displayName);
+        }
       }
 
       return AuthResultEntity(user: userCredential.user?.toEntity);

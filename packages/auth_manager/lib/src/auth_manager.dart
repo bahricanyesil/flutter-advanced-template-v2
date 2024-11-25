@@ -22,7 +22,9 @@ abstract interface class AuthManager {
   Future<AuthResultEntity> sendPasswordResetEmail(String email);
 
   /// Signs in a user with Google.
-  Future<AuthResultEntity> signInWithGoogle();
+  Future<AuthResultEntity> signInWithGoogle({
+    List<String> scopes = const <String>['email', 'profile'],
+  });
 
   /// Signs in a user with Apple.
   Future<AuthResultEntity> signInWithApple();

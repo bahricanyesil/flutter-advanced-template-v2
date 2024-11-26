@@ -21,10 +21,16 @@ abstract interface class AuthManager {
   /// Sends a password reset email to the given email address.
   Future<AuthResultEntity> sendPasswordResetEmail(String email);
 
+  /// Sends an email verification link.
+  Future<AuthResultEntity> sendEmailVerification(String email);
+
   /// Signs in a user with Google.
   Future<AuthResultEntity> signInWithGoogle({
     List<String> scopes = const <String>['email', 'profile'],
   });
+
+  /// Returns whether the Apple sign-in is available.
+  Future<bool> get appleSignInAvailable;
 
   /// Signs in a user with Apple.
   Future<AuthResultEntity> signInWithApple();
@@ -32,9 +38,9 @@ abstract interface class AuthManager {
   /// Gets the currently signed-in user.
   AuthResultEntity get currentUser;
 
+  /// Reloads the user data.
+  Future<AuthResultEntity> reloadUser();
+
   /// Listens to the authentication state changes.
   Stream<UserEntity?> get authStateChanges;
-
-  /// Returns whether the Apple sign-in is available.
-  Future<bool> get appleSignInAvailable;
 }

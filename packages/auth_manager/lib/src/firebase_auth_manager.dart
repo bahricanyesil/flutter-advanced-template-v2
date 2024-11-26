@@ -110,6 +110,21 @@ final class FirebaseAuthManager implements AuthManager {
   }
 
   @override
+  Future<AuthResultEntity> sendEmailVerification(String email) async {
+    try {
+      await _firebaseAuth.currentUser?.sendEmailVerification();
+      _logManager?.lInfo('Email verification sent to: $email');
+      return const AuthResultEntity();
+    } on FirebaseAuthException catch (e) {
+      _logManager?.lDebug('Firebase Auth Error sending email verification: $e');
+      return AuthResultEntity(errorMessage: e.message ?? e.code);
+    } catch (e) {
+      _logManager?.lDebug('Error sending email verification: $e');
+      return AuthResultEntity(errorMessage: e.toString());
+    }
+  }
+
+  @override
   Future<AuthResultEntity> signInWithGoogle({
     List<String> scopes = const <String>['email', 'profile'],
   }) async {
@@ -258,6 +273,17 @@ final class FirebaseAuthManager implements AuthManager {
       return AuthResultEntity(user: u);
     } catch (e) {
       _logManager?.lDebug('Error getting current user: $e');
+      return AuthResultEntity(errorMessage: e.toString());
+    }
+  }
+
+  @override
+  Future<AuthResultEntity> reloadUser() async {
+    try {
+      await _firebaseAuth.currentUser?.reload();
+      return AuthResultEntity(user: _firebaseAuth.currentUser?.toEntity);
+    } catch (e) {
+      _logManager?.lDebug('Error reloading user: $e');
       return AuthResultEntity(errorMessage: e.toString());
     }
   }

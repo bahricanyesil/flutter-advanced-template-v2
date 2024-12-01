@@ -317,6 +317,8 @@ class GoNavigationManager implements NavigationManager {
     String name, {
     String? untilScreenName,
     Object? extra,
+    Map<String, String> params = const <String, String>{},
+    Map<String, dynamic> queryParams = const <String, dynamic>{},
     NavigationPredicateCallback? predicate,
   }) async {
     _logManager?.lInfo('Pushing named and removing until name: $name');
@@ -325,7 +327,12 @@ class GoNavigationManager implements NavigationManager {
       predicate: predicate ?? (Route<Object?> route) => route.isFirst,
       pushIfNotExists: false,
     );
-    await replaceWithNamed(name, extra: extra);
+    await replaceWithNamed(
+      name,
+      extra: extra,
+      params: params,
+      queryParams: queryParams,
+    );
   }
 
   @override

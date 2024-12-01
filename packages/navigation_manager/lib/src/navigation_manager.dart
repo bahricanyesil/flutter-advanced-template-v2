@@ -73,6 +73,8 @@ abstract interface class NavigationManager {
   Future<void> pushNamedAndRemoveUntil(
     String name, {
     Object? extra,
+    Map<String, String> params = const <String, String>{},
+    Map<String, dynamic> queryParams = const <String, dynamic>{},
     NavigationPredicateCallback? predicate,
   });
 

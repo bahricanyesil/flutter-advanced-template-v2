@@ -15,8 +15,9 @@ abstract interface class AuthManager {
   /// Registers a user with email and password.
   Future<AuthResultEntity> signUpWithEmailAndPassword(
     String email,
-    String password,
-  );
+    String password, {
+    String? displayName,
+  });
 
   /// Sends a password reset email to the given email address.
   Future<AuthResultEntity> sendPasswordResetEmail(String email);

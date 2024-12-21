@@ -68,14 +68,18 @@ final class FirebaseAuthManager implements AuthManager {
   @override
   Future<AuthResultEntity> signUpWithEmailAndPassword(
     String email,
-    String password,
-  ) async {
+    String password, {
+    String? displayName,
+  }) async {
     try {
       final UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      if (displayName != null) {
+        await userCredential.user?.updateDisplayName(displayName);
+      }
       _logManager?.lInfo('User created: ${userCredential.user?.email}');
       return AuthResultEntity(user: userCredential.user?.toEntity);
     } on FirebaseAuthException catch (e) {

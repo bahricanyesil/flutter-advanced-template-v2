@@ -4,7 +4,8 @@ import 'dart:io';
 
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:dio/dio.dart' as dio;
-import 'package:key_value_storage_manager/key_value_storage_manager.dart';
+import 'package:key_value_storage_manager/key_value_storage_manager.dart'
+    as local_storage_manager;
 import 'package:network_manager/src/exceptions/mismatched_type_exception.dart';
 import 'package:network_manager/src/utils/helpers/status_code_helpers.dart';
 
@@ -70,7 +71,8 @@ mixin NetworkManagerHelpers<E extends BaseDataModel<E>> {
       );
     } else {
       final List<R> parsedList =
-          DataParserHelpers.parseIterable<R>(listData).toList();
+          local_storage_manager.DataParserHelpers.parseIterable<R>(listData)
+              .toList();
       if (isSuccessStatusCode(response.statusCode ?? HttpStatus.notFound)) {
         return BaseNetworkSuccessModel<ListResponseModel<R>, E>(
             data: ListResponseModel<R>(dataList: parsedList));

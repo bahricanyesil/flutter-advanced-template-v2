@@ -43,4 +43,7 @@ abstract interface class AuthManager {
 
   /// Listens to the authentication state changes.
   Stream<UserEntity?> get authStateChanges;
+
+  /// Deletes the current user.
+  Future<bool> deleteUser();
 }

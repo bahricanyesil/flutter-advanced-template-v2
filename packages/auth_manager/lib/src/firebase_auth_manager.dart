@@ -295,6 +295,18 @@ final class FirebaseAuthManager implements AuthManager {
   @override
   Future<bool> get appleSignInAvailable async => SignInWithApple.isAvailable();
 
+  @override
+  Future<bool> deleteUser() async {
+    try {
+      await _firebaseAuth.currentUser?.delete();
+      _logManager?.lInfo('User deleted successfully');
+      return true;
+    } catch (e) {
+      _logManager?.lDebug('Error deleting user: $e');
+      return false;
+    }
+  }
+
   AuthErrorType _mapFirebaseAuthError(String code) {
     switch (code) {
       case 'user-not-found':

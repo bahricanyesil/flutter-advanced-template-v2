@@ -71,6 +71,9 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
     OnMessageCallback? onBackgroundMessageCallback,
     LogManager? logManager,
     bool checkPermissionsWhileEnabling = true,
+    bool waitForPermissions = false,
+    bool notificationOnForeground = true,
+    bool isEnabledNotifications = true,
   }) async {
     final FirebasePushNotificationManager manager =
         FirebasePushNotificationManager._(
@@ -82,7 +85,11 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
       checkPermissionsWhileEnabling: checkPermissionsWhileEnabling,
       onBackgroundMessageCallback: onBackgroundMessageCallback,
     );
-    await manager.initialize();
+    await manager.initialize(
+      waitForPermissions: waitForPermissions,
+      notificationOnForeground: notificationOnForeground,
+      isEnabledNotifications: isEnabledNotifications,
+    );
     return manager;
   }
 

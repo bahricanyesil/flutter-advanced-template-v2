@@ -68,7 +68,9 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
   static ReceivedNotificationResponseCallback? _backgroundMessageHandler;
 
   @override
-  Future<bool> initialize() async {
+  Future<bool> initialize({
+    bool waitForPermissions = false,
+  }) async {
     _logManager?.lDebug('Initializing local notification manager');
     try {
       await _initTimezone();
@@ -101,16 +103,18 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
       );
       _logManager?.lDebug('Local notification plugin initialized');
 
-      final PermissionStatusTypes? statusType = await _permissionManager
-          ?.checkPermission(PermissionTypes.notification);
-      if (statusType?.isGranted == false) {
-        _logManager?.lDebug(
-          'Local notification permission not granted, requesting permission',
-        );
-        await _permissionManager
-            ?.requestPermission(PermissionTypes.notification);
-      } else {
-        _logManager?.lDebug('Local notification permission already granted');
+      if (waitForPermissions) {
+        final PermissionStatusTypes? statusType = await _permissionManager
+            ?.checkPermission(PermissionTypes.notification);
+        if (statusType?.isGranted == false) {
+          _logManager?.lDebug(
+            'Local notification permission not granted, requesting permission',
+          );
+          await _permissionManager
+              ?.requestPermission(PermissionTypes.notification);
+        } else {
+          _logManager?.lDebug('Local notification permission already granted');
+        }
       }
 
       _logManager

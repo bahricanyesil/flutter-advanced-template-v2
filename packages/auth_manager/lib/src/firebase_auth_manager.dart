@@ -220,6 +220,7 @@ final class FirebaseAuthManager implements AuthManager {
           OAuthProvider('apple.com').credential(
         idToken: appleCredential.identityToken,
         rawNonce: nonce,
+        accessToken: appleCredential.authorizationCode,
       );
 
       final UserCredential userCredential =

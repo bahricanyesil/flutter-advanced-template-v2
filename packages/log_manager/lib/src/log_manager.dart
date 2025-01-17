@@ -26,23 +26,22 @@ abstract class LogManager {
   final int maxDescendentsTruncatableNode;
 
   /// Logs a trace message.
-  void lTrace(Object message);
+  void lTrace(Object message, {Object? error, StackTrace? stackTrace});
 
   /// Logs a debug message.
-  void lDebug(Object message);
+  void lDebug(Object message, {Object? error, StackTrace? stackTrace});
 
   /// Logs an informational message.
-  void lInfo(Object message, {String? type});
+  void lInfo(Object message, {Object? error, StackTrace? stackTrace});
 
   /// Logs a warning message.
-  void lWarning(Object message);
+  void lWarning(Object message, {Object? error, StackTrace? stackTrace});
 
   /// Logs an error message.
   void lError(
     Object message, {
     Object? error,
     StackTrace? stackTrace,
-    bool fatal = false,
   });
 
   /// Logs a fatal error message.
@@ -97,11 +96,10 @@ abstract class LogManager {
     if (details.silent) return;
     final String description = _renderFlutterError(details);
     final String message = 'Flutter Error: $description';
-    lError(
+    lFatal(
       message,
       error: details.exception,
       stackTrace: details.stack,
-      fatal: true,
     );
   }
 

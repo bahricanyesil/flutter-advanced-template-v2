@@ -80,10 +80,9 @@ void main() {
           .trimRight();
 
       verify(
-        () => logManager.lError(
+        () => logManager.lFatal(
           'Flutter Error: $message',
           stackTrace: flutterError.stack,
-          fatal: true,
           error: flutterError.exception,
         ),
       ).called(1);
@@ -97,7 +96,7 @@ void main() {
       );
 
       verify(
-        () => logManager.lError(
+        () => logManager.lFatal(
           'Platform Dispatcher Error: $dispatcherException',
           error: dispatcherException,
           stackTrace: dispatcherStackTrace,

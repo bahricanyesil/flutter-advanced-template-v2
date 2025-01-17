@@ -5,6 +5,7 @@ import 'package:firebase_messaging_platform_interface/firebase_messaging_platfor
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+// ignore: depend_on_referenced_packages
 import 'package:permission_manager/permission_manager.dart';
 import 'package:push_notification_manager/push_notification_manager.dart';
 

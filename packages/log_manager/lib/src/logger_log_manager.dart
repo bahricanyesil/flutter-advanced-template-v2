@@ -81,7 +81,6 @@ final class LoggerLogManager extends LogManager {
     Object message, {
     Object? error,
     StackTrace? stackTrace,
-    String? type,
   }) {
     _logWrapper(_logger.i, message, error: error, stackTrace: stackTrace);
   }
@@ -95,7 +94,6 @@ final class LoggerLogManager extends LogManager {
     Object message, {
     Object? error,
     StackTrace? stackTrace,
-    bool fatal = false,
   }) {
     _logWrapper(_logger.e, message, error: error, stackTrace: stackTrace);
   }

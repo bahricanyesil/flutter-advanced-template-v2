@@ -105,15 +105,8 @@ final class FirebasePushNotificationManager implements PushNotificationManager {
       if (waitForPermissions) {
         final bool hasPermission = await requestPermission();
         if (!hasPermission) {
-          _logManager?.lDebug('Permission denied, skipping initialization');
-          return;
+          _logManager?.lDebug('Permission denied, continuing initialization');
         }
-      }
-
-      if (!await isNotificationsAllowed()) {
-        _logManager
-            ?.lDebug('Notifications not allowed, skipping initialization');
-        return;
       }
 
       await _firebaseMessaging.setForegroundNotificationPresentationOptions(

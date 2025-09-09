@@ -12,10 +12,10 @@ dependencies:
     sdk: flutter
 
   # Firebase Crashlytics for exception reporting
-  firebase_crashlytics: ^4.0.4
+  firebase_crashlytics: ^5.0.1
 
   # Sentry for exception reporting
-  sentry_flutter: ^8.8.0
+  sentry_flutter: ^9.6.0
 
   # Logging
   log_manager:

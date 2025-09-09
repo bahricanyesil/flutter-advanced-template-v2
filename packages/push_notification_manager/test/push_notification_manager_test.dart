@@ -35,6 +35,7 @@ void main() {
       lockScreen: AppleNotificationSetting.enabled,
       notificationCenter: AppleNotificationSetting.enabled,
       showPreviews: AppleShowPreviewSetting.always,
+      providesAppNotificationSettings: AppleNotificationSetting.enabled,
     );
 
     registerFallbackValue(PermissionStatusTypes.granted);

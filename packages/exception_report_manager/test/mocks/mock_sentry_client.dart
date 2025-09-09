@@ -10,7 +10,6 @@ final class MockSentryClient with Mock implements SentryClient {
   List<CaptureEnvelopeCall> captureEnvelopeCalls = <CaptureEnvelopeCall>[];
   List<CaptureTransactionCall> captureTransactionCalls =
       <CaptureTransactionCall>[];
-  List<SentryUserFeedback> userFeedbackCalls = <SentryUserFeedback>[];
   int closeCalls = 0;
 
   @override
@@ -60,11 +59,6 @@ final class MockSentryClient with Mock implements SentryClient {
   }
 
   @override
-  Future<void> captureUserFeedback(SentryUserFeedback userFeedback) async {
-    userFeedbackCalls.add(userFeedback);
-  }
-
-  @override
   void close() {
     closeCalls = closeCalls + 1;
   }
@@ -74,9 +68,10 @@ final class MockSentryClient with Mock implements SentryClient {
     SentryTransaction transaction, {
     Scope? scope,
     SentryTraceContextHeader? traceContext,
+    Hint? hint,
   }) async {
     captureTransactionCalls
-        .add(CaptureTransactionCall(transaction, traceContext));
+        .add(CaptureTransactionCall(transaction, traceContext, hint));
     return transaction.eventId;
   }
 }
@@ -130,9 +125,10 @@ class CaptureEnvelopeCall {
 }
 
 class CaptureTransactionCall {
-  CaptureTransactionCall(this.transaction, this.traceContext);
+  CaptureTransactionCall(this.transaction, this.traceContext, this.hint);
   final SentryTransaction transaction;
   final SentryTraceContextHeader? traceContext;
+  final Hint? hint;
 }
 
 mixin NoSuchMethodProvider {

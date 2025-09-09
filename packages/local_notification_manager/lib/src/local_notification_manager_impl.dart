@@ -78,10 +78,8 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
 
       final AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings(_settings.icon);
-      final DarwinInitializationSettings initializationSettingsDarwin =
-          DarwinInitializationSettings(
-        onDidReceiveLocalNotification: onDidReceiveLocalNotification,
-      );
+      const DarwinInitializationSettings initializationSettingsDarwin =
+          DarwinInitializationSettings();
       const LinuxInitializationSettings initializationSettingsLinux =
           LinuxInitializationSettings(defaultActionName: 'Open notification');
       final InitializationSettings initializationSettings =
@@ -238,8 +236,6 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
         (settings ?? _settings).toLocalNotificationDetails,
         payload: payload,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
       );
 

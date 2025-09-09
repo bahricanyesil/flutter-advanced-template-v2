@@ -36,7 +36,6 @@ void main() {
     registerFallbackValue(const AndroidNotificationChannel('id', 'name'));
     registerFallbackValue(AndroidFlutterLocalNotificationsPlugin());
     registerFallbackValue(TZDateTime(getLocation('Europe/Istanbul'), 2000));
-    registerFallbackValue(UILocalNotificationDateInterpretation.wallClockTime);
     registerFallbackValue(NotificationResponseType.selectedNotificationAction);
     registerFallbackValue(
       const CustomNotificationResponseModel(
@@ -324,8 +323,6 @@ Future<void> _zonedScheduleCallback(
     any(),
     payload: any(named: 'payload'),
     androidScheduleMode: any(named: 'androidScheduleMode'),
-    uiLocalNotificationDateInterpretation:
-        any(named: 'uiLocalNotificationDateInterpretation'),
     matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
   );
 }

@@ -15,7 +15,7 @@ dependencies:
   firebase_crashlytics: ^5.0.1
 
   # Sentry for exception reporting
-  sentry_flutter: ^9.6.0
+  sentry_flutter: ^8.10.0
 
   # Logging
   log_manager:

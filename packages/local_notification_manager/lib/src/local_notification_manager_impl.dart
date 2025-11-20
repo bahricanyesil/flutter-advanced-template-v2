@@ -77,10 +77,8 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
 
       final AndroidInitializationSettings initializationSettingsAndroid =
           AndroidInitializationSettings(_settings.icon);
-      final DarwinInitializationSettings initializationSettingsDarwin =
-          DarwinInitializationSettings(
-        onDidReceiveLocalNotification: onDidReceiveLocalNotification,
-      );
+      const DarwinInitializationSettings initializationSettingsDarwin =
+          DarwinInitializationSettings();
       const LinuxInitializationSettings initializationSettingsLinux =
           LinuxInitializationSettings(defaultActionName: 'Open notification');
       final InitializationSettings initializationSettings =
@@ -237,8 +235,6 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
         (settings ?? _settings).toLocalNotificationDetails,
         payload: payload,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
       );
 
@@ -276,26 +272,6 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
       return true;
     } catch (e) {
       _logManager?.lError('Failed to cancel all notifications: $e');
-      if (rethrowExceptions) rethrow;
-      return false;
-    }
-  }
-
-  @override
-  Future<bool> onDidReceiveLocalNotification(
-    int id,
-    String? title,
-    String? body,
-    String? payload,
-  ) async {
-    _logManager?.lDebug(
-      '''Local notification received: {id: $id, title: $title, body: $body, payload: $payload}''',
-    );
-    try {
-      await receiveLocalNotificationCallback?.call(id, title, body, payload);
-      return true;
-    } catch (e) {
-      _logManager?.lError('Failed to receive local notification: $e');
       if (rethrowExceptions) rethrow;
       return false;
     }

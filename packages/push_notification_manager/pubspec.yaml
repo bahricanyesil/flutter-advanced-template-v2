@@ -15,8 +15,8 @@ dependencies:
   firebase_messaging: ^16.0.4
 
   # # Permission Manager
-  # permission_manager:
-  #   path: ../permission_manager
+  permission_manager:
+    path: ../permission_manager
 
   # Log Manager
   log_manager:

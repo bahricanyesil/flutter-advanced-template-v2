@@ -7,11 +7,10 @@ import 'package:dio/dio.dart' as dio;
 import 'package:key_value_storage_manager/key_value_storage_manager.dart'
     as local_storage_manager;
 import 'package:network_manager/src/exceptions/mismatched_type_exception.dart';
+import 'package:network_manager/src/models/index.dart';
+import 'package:network_manager/src/utils/helpers/data_mapper_helpers.dart';
+import 'package:network_manager/src/utils/helpers/json_helpers.dart';
 import 'package:network_manager/src/utils/helpers/status_code_helpers.dart';
-
-import '../../models/index.dart';
-import 'data_mapper_helpers.dart';
-import 'json_helpers.dart';
 
 /// A mixin that provides helper methods for network managers.
 mixin NetworkManagerHelpers<E extends BaseDataModel<E>> {

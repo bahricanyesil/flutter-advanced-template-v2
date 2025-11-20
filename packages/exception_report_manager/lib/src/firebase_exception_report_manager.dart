@@ -1,8 +1,7 @@
+import 'package:exception_report_manager/src/exception_report_manager.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
-
-import 'exception_report_manager.dart';
 
 /// A [ExceptionReportManager] that uses Firebase Crashlytics for exception
 /// reporting.

@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:file_picker_manager/src/enums/custom_file_types.dart';
+import 'package:file_picker_manager/src/file_picker_manager.dart';
+import 'package:file_picker_manager/src/utils/custom_file_picker_statuses_extensions.dart';
+import 'package:file_picker_manager/src/utils/custom_file_types_extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
-
-import 'enums/custom_file_types.dart';
-import 'file_picker_manager.dart';
-import 'utils/custom_file_picker_statuses_extensions.dart';
-import 'utils/custom_file_types_extensions.dart';
 
 /// A service that provides image picker operations.
 @immutable

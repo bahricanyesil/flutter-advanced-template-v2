@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import '../../local_notification_manager.dart';
+import 'package:local_notification_manager/local_notification_manager.dart';
 
 /// The base class for notification channels.
 /// This class is used to create a notification channel.

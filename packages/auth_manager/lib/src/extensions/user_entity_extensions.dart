@@ -1,6 +1,5 @@
+import 'package:auth_manager/src/entities/user_entity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import '../entities/user_entity.dart';
 
 /// Extension methods for [User].
 extension UserEntityExtensions on User {

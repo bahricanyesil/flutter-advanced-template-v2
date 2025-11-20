@@ -2,13 +2,12 @@
 
 import 'dart:io';
 
+import 'package:cache_manager/src/cache_manager.dart';
+import 'package:cache_manager/src/enums/file_sources.dart';
+import 'package:cache_manager/src/extensions/file_info_model_extensions.dart';
+import 'package:cache_manager/src/models/file_info_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart' as ext_cache;
-
-import 'cache_manager.dart';
-import 'enums/file_sources.dart';
-import 'extensions/file_info_model_extensions.dart';
-import 'models/file_info_model.dart';
 
 /// Represents the manager for the cache storage.
 /// The [ext_cache.CacheManager] interface provides methods

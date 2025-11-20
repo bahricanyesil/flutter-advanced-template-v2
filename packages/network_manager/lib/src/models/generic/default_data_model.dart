@@ -1,7 +1,7 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/foundation.dart';
 
-import '../base_data_model.dart';
+import 'package:network_manager/src/models/base_data_model.dart';
 
 part 'default_data_model.mapper.dart';
 

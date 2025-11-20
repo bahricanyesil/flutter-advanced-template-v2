@@ -1,9 +1,8 @@
+import 'package:exception_report_manager/src/exception_report_manager.dart';
 import 'package:exception_report_manager/src/utils/log_level_extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-
-import 'exception_report_manager.dart';
 
 /// A [ExceptionReportManager] that uses Sentry for exception reporting.
 ///

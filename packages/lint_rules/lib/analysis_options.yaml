@@ -20,12 +20,10 @@ analyzer:
     strict-raw-types: true
 
   cannot-ignore:
-    - prefer_relative_imports
     - avoid_empty_else
 
   errors:
     invalid_annotation_target: ignore
-    prefer_relative_imports: error
     avoid_empty_else: error
     always_specify_types: error
     prefer_const_constructors: error
@@ -132,7 +130,6 @@ linter:
     - one_member_abstracts
     - only_throw_errors
     - overridden_fields
-    - package_api_docs
     - package_names
     - package_prefixed_library_names
     - parameter_assignments

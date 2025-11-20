@@ -1,11 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:key_value_storage_manager/src/exceptions/index.dart';
+import 'package:key_value_storage_manager/src/key_value_storage_manager.dart';
+import 'package:key_value_storage_manager/src/models/base_data_model.dart';
+import 'package:key_value_storage_manager/src/utils/data_parser_helpers.dart';
+import 'package:key_value_storage_manager/src/utils/extensions/iterable_extensions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'exceptions/index.dart';
-import 'key_value_storage_manager.dart';
-import 'models/base_data_model.dart';
-import 'utils/data_parser_helpers.dart';
-import 'utils/extensions/iterable_extensions.dart';
 
 /// This is a concrete class for shared preferences storage.
 /// It implements the [KeyValueStorageManager] interface.

@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:cache_manager/src/enums/file_sources.dart';
 import 'package:flutter/foundation.dart';
-
-import '../enums/file_sources.dart';
 
 /// Represents information about a cached file.
 @immutable

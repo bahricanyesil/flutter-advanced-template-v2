@@ -9,5 +9,5 @@
 /// This implementation is available in the DevicePackageManagerImpl class.
 library device_package_manager;
 
-export 'src/device_package_manager.dart';
-export 'src/device_package_manager_impl.dart';
+export 'package:device_package_manager/src/device_package_manager.dart';
+export 'package:device_package_manager/src/device_package_manager_impl.dart';

@@ -1,4 +1,4 @@
-import 'entities/where_condition.dart';
+import 'package:cloud_database_manager/src/entities/where_condition.dart';
 
 /// Represents an interface for managing cloud database operations.
 abstract interface class CloudDatabaseManager {

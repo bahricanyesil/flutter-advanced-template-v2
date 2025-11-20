@@ -1,10 +1,9 @@
 import 'dart:convert';
 
+import 'package:log_manager/src/enums/log_levels.dart';
 import 'package:log_manager/src/utils/custom_log_extensions.dart';
 import 'package:log_manager/src/utils/date_time_log_extensions.dart';
 import 'package:logger/logger.dart';
-
-import '../enums/log_levels.dart';
 
 /// A custom pretty printer for the logger package.
 class CustomPrettyPrinter extends LogPrinter {

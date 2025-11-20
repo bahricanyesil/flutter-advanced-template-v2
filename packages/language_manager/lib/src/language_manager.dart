@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:key_value_storage_manager/key_value_storage_manager.dart';
+import 'package:language_manager/src/utils/locale_parse_utils.dart';
 import 'package:log_manager/log_manager.dart';
-
-import 'utils/locale_parse_utils.dart';
 
 /// The base interface for language managers.
 abstract class LanguageManager {

@@ -1,11 +1,10 @@
+import 'package:cloud_database_manager/src/cloud_database_manager.dart';
+import 'package:cloud_database_manager/src/entities/where_condition.dart';
+import 'package:cloud_database_manager/src/utils/firestore_helpers.dart';
+import 'package:cloud_database_manager/src/utils/query_document_snapshot_extensions.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
-
-import 'cloud_database_manager.dart';
-import 'entities/where_condition.dart';
-import 'utils/firestore_helpers.dart';
-import 'utils/query_document_snapshot_extensions.dart';
 
 /// A base class for managing Firestore operations.
 @immutable

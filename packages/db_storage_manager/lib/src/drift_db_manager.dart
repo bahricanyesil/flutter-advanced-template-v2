@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:db_storage_manager/db_storage_manager.dart';
+import 'package:db_storage_manager/src/interceptors/sql_log_interceptor.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:log_manager/log_manager.dart';
@@ -10,8 +11,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
-
-import 'interceptors/sql_log_interceptor.dart';
 
 /// An interface for interacting with a database using the Drift library.
 typedef ExecutorDbInterface = DbStorageManager<QueryExecutor>;

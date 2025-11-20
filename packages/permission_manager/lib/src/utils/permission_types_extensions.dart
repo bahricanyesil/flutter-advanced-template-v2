@@ -1,6 +1,6 @@
 import 'package:permission_handler/permission_handler.dart';
 
-import '../enums/permission_types.dart';
+import 'package:permission_manager/src/enums/permission_types.dart';
 
 /// Extension to convert `PermissionTypes` to `Permission`.
 extension PermissionTypesExtensions on PermissionTypes {

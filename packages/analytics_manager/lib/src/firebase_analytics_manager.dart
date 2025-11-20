@@ -1,9 +1,8 @@
+import 'package:analytics_manager/src/analytics_manager.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:key_value_storage_manager/key_value_storage_manager.dart';
 import 'package:log_manager/log_manager.dart';
-
-import 'analytics_manager.dart';
 
 /// A manager class that handles analytics using Firebase Analytics.
 /// This class implements the [AnalyticsManager] interface and

@@ -1,4 +1,4 @@
-import 'custom_pretty_printer.dart';
+import 'package:log_manager/src/utils/custom_pretty_printer.dart';
 
 /// A pretty printer for the logger package.
 final class DefaultPrettyPrinter extends CustomPrettyPrinter {

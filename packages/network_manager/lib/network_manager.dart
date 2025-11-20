@@ -7,15 +7,15 @@ library network_manager;
 
 import 'package:dart_mappable/dart_mappable.dart';
 
-export 'src/constants/network_constants.dart';
-export 'src/default_network_manager.dart';
-export 'src/entities/token_entity.dart';
-export 'src/enums/index.dart';
-export 'src/enums/method_types.dart';
-export 'src/enums/token_types.dart';
-export 'src/models/index.dart';
-export 'src/network_manager.dart';
-export 'src/network_manager_impl.dart';
-export 'src/repositories/token_repository.dart';
-export 'src/token_network_manager.dart';
-export 'src/utils/index.dart';
+export 'package:network_manager/src/constants/network_constants.dart';
+export 'package:network_manager/src/default_network_manager.dart';
+export 'package:network_manager/src/entities/token_entity.dart';
+export 'package:network_manager/src/enums/index.dart';
+export 'package:network_manager/src/enums/method_types.dart';
+export 'package:network_manager/src/enums/token_types.dart';
+export 'package:network_manager/src/models/index.dart';
+export 'package:network_manager/src/network_manager.dart';
+export 'package:network_manager/src/network_manager_impl.dart';
+export 'package:network_manager/src/repositories/token_repository.dart';
+export 'package:network_manager/src/token_network_manager.dart';
+export 'package:network_manager/src/utils/index.dart';

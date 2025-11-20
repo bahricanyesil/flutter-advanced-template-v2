@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'generic/default_error_model.dart';
+import 'package:network_manager/src/models/generic/default_error_model.dart';
 
 part 'base_network_success_model.dart';
 part 'error/internal_errors_model.dart';

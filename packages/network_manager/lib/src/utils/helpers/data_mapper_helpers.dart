@@ -1,8 +1,8 @@
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:log_manager/log_manager.dart';
 
-import '../../exceptions/unsuccessful_parse_exception.dart';
-import 'json_helpers.dart';
+import 'package:network_manager/src/exceptions/unsuccessful_parse_exception.dart';
+import 'package:network_manager/src/utils/helpers/json_helpers.dart';
 
 /// This class provides helper methods for data mapping.
 abstract final class DataMapperHelpers {

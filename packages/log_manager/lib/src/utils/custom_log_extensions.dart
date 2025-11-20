@@ -1,7 +1,6 @@
 import 'package:log_manager/src/enums/log_levels.dart';
+import 'package:log_manager/src/models/base_log_message_model.dart';
 import 'package:logger/logger.dart';
-
-import '../models/base_log_message_model.dart';
 
 /// Extension method to convert a [LogEvent] into a [BaseLogMessageModel].
 extension CustomLogExtensions on LogEvent {

@@ -33,3 +33,5 @@ dev_dependencies:
     path: ../lint_rules
   mocktail: ^1.0.4
 
+  flutter_local_notifications_platform_interface: any
+  plugin_platform_interface: any

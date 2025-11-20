@@ -2,5 +2,5 @@
 /// provides a unified interface for managing cache operations.
 library cache_manager;
 
-export 'src/cache_manager.dart';
-export 'src/cache_manager_impl.dart';
+export 'package:cache_manager/src/cache_manager.dart';
+export 'package:cache_manager/src/cache_manager_impl.dart';

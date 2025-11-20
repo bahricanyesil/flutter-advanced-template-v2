@@ -1,11 +1,10 @@
 import 'dart:io';
 
+import 'package:cloud_storage_manager/src/cloud_storage_manager.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:path_provider/path_provider.dart';
-
-import 'cloud_storage_manager.dart';
 
 /// A class that manages Firebase Storage operations.
 /// This class is used to manage file uploads, downloads, and deletions.

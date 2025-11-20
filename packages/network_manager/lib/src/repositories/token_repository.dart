@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import '../entities/token_entity.dart';
-import '../enums/token_types.dart';
+import 'package:network_manager/src/entities/token_entity.dart';
+import 'package:network_manager/src/enums/token_types.dart';
 
 /// A repository interface for managing tokens (e.g. access, refresh, etc.).
 @immutable

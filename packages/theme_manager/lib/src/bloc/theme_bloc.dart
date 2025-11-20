@@ -1,8 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../theme_manager.dart';
-import 'theme_event.dart';
-import 'theme_state.dart';
+import 'package:theme_manager/src/bloc/theme_event.dart';
+import 'package:theme_manager/src/bloc/theme_state.dart';
+import 'package:theme_manager/src/theme_manager.dart';
 
 /// ThemeBloc is a class that manages the theme state.
 final class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {

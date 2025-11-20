@@ -1,7 +1,6 @@
+import 'package:cloud_database_manager/src/entities/where_condition.dart';
+import 'package:cloud_database_manager/src/enums/where_operator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../entities/where_condition.dart';
-import '../enums/where_operator.dart';
 
 /// A helper class for Firestore operations.
 abstract final class FirestoreHelpers {

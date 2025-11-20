@@ -2,7 +2,7 @@ name: flutter_advanced_template_v2
 description: "An advanced Flutter project template with many features and tools."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ^3.5.0

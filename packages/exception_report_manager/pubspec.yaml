@@ -4,7 +4,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.2
   flutter: ">=1.17.0"
 
 dependencies:
@@ -15,7 +15,7 @@ dependencies:
   firebase_crashlytics: ^4.0.4
 
   # Sentry for exception reporting
-  sentry_flutter: ^8.8.0
+  sentry_flutter: ^8.10.1
 
   # Logging
   log_manager:

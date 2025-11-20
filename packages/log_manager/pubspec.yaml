@@ -3,7 +3,7 @@ description: The log manager handles logging for the application.
 version: 0.0.1
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.2
   flutter: ">=1.17.0"
 
 dependencies:

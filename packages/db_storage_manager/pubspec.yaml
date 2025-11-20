@@ -4,7 +4,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.2
   flutter: ">=1.17.0"
 
 dependencies:
@@ -31,4 +31,4 @@ dev_dependencies:
 
   # Code generation
   drift_dev: ^2.20.3
-  build_runner: ^2.4.12
+  build_runner: ^2.4.13

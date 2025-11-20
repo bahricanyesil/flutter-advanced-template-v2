@@ -4,7 +4,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.2
   flutter: ">=1.17.0"
 
 dependencies:
@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
 
   # Firebase Firestore
-  cloud_firestore: ^5.4.0
+  cloud_firestore: ^6.1.0
 
   # Logging
   log_manager:
@@ -26,6 +26,6 @@ dev_dependencies:
   mocktail: ^1.0.4
 
   # Fake Firestore for testing
-  fake_cloud_firestore: ^3.0.2
+  fake_cloud_firestore: ^4.0.0
   mock_exceptions: ^0.8.2
 

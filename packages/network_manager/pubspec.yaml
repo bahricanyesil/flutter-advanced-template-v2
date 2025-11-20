@@ -4,7 +4,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.2
   flutter: ">=1.17.0"
 
 dependencies:
@@ -15,7 +15,7 @@ dependencies:
   collection: ^1.18.0
 
   # Models and Mappers
-  dart_mappable: ^4.2.2
+  dart_mappable: ^4.3.0
 
   # API Service Requests
   dio: ^5.7.0
@@ -38,5 +38,5 @@ dev_dependencies:
   lint_rules:
     path: ../lint_rules
   mocktail: ^1.0.4
-  build_runner: ^2.4.12
-  dart_mappable_builder: ^4.2.3
+  build_runner: ^2.4.13
+  dart_mappable_builder: ^4.3.0

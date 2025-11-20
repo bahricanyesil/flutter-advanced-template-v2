@@ -3,5 +3,5 @@ description: Common lint rules for the advanced template.
 version: 0.0.1
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.2
   flutter: ">=1.17.0"

@@ -179,32 +179,6 @@ void main() {
       verify(() => mockLogManager.lError(any())).called(1);
     });
 
-    test('notification callbacks', () async {
-      expect(
-        await manager.onDidReceiveLocalNotification(
-          1,
-          'Test',
-          'Test body',
-          'payload',
-        ),
-        true,
-      );
-      expect(
-        await manager.onDidReceiveNotificationResponse(
-          const CustomNotificationResponseModel(
-            id: 1,
-            actionId: 'action',
-            input: 'input',
-            payload: 'payload',
-            responseType:
-                CustomNotificationResponseModelType.selectedNotificationAction,
-          ),
-        ),
-        true,
-      );
-      verify(() => mockLogManager.lDebug(any())).called(3);
-    });
-
     test('isEnabled', () {
       expect(manager.isEnabled, true);
     });
@@ -223,18 +197,6 @@ void main() {
               throw Exception('Test exception on foreground'),
           receiveNotificationResponseCallback: (_) =>
               throw Exception('Test exception on foreground response'),
-        );
-      });
-
-      test('onDidReceiveLocalNotification throws', () async {
-        expect(
-          () => errorManager.onDidReceiveLocalNotification(
-            1,
-            'Test',
-            'Test body',
-            'payload',
-          ),
-          throwsException,
         );
       });
 

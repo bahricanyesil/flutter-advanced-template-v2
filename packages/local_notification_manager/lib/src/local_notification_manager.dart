@@ -46,14 +46,6 @@ abstract interface class LocalNotificationManager {
   /// Cancels all notifications.
   Future<bool> cancelAllNotifications();
 
-  /// On did receive local notification callback.
-  void onDidReceiveLocalNotification(
-    int id,
-    String? title,
-    String? body,
-    String? payload,
-  );
-
   /// On did receive notification response callback.
   Future<bool> onDidReceiveNotificationResponse(
     CustomNotificationResponseModel response,

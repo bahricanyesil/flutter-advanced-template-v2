@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -15,14 +16,32 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 /// A concrete implementation of the BaseFirebaseAuthManager.
 final class FirebaseAuthManager implements AuthManager {
   /// Creates a new instance of the [FirebaseAuthManager].
-  FirebaseAuthManager(this._firebaseAuth, {LogManager? logManager})
-      : _logManager = logManager;
+  FirebaseAuthManager(
+    this._firebaseAuth, {
+    LogManager? logManager,
+    String? googleClientId,
+    String? googleServerClientId,
+    String? googleHostedDomain,
+    String? googleNonce,
+  })  : _logManager = logManager,
+        _googleClientId = googleClientId,
+        _googleServerClientId = googleServerClientId,
+        _googleHostedDomain = googleHostedDomain,
+        _googleNonce = googleNonce;
 
   /// The [FirebaseAuth] instance.
   final FirebaseAuth _firebaseAuth;
 
   /// The [LogManager] instance.
   final LogManager? _logManager;
+  final String? _googleClientId;
+  final String? _googleServerClientId;
+  final String? _googleHostedDomain;
+  final String? _googleNonce;
+
+  static const List<String> _defaultGoogleScopes = <String>['email', 'profile'];
+  static bool _isGoogleSignInInitialized = false;
+  static Completer<void>? _googleInitCompleter;
 
   @override
   Future<AuthResultEntity> signInWithEmailAndPassword(
@@ -52,6 +71,14 @@ final class FirebaseAuthManager implements AuthManager {
   @override
   Future<AuthResultEntity> signOut() async {
     try {
+      if (_isGoogleSignInInitialized) {
+        try {
+          await GoogleSignIn.instance.signOut();
+        } catch (e) {
+          _logManager?.lDebug('Google Sign In signOut failed: $e');
+        }
+      }
+
       await _firebaseAuth.signOut();
       _logManager?.lInfo('User signed out');
       return const AuthResultEntity();
@@ -129,49 +156,68 @@ final class FirebaseAuthManager implements AuthManager {
 
   @override
   Future<AuthResultEntity> signInWithGoogle({
-    List<String> scopes = const <String>['email', 'profile'],
+    List<String> scopes = _defaultGoogleScopes,
   }) async {
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(scopes: scopes);
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      await _ensureGoogleSignInInitialized();
 
-      if (googleUser == null) {
-        _logManager?.lInfo('Google sign-in was cancelled by the user.');
+      final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+
+      if (!googleSignIn.supportsAuthenticate()) {
+        const String message =
+            'GoogleSignIn.authenticate() is not supported on this platform. '
+            'Follow the platform-specific Google Sign-In integration steps.';
+        _logManager?.lWarning(message);
         return const AuthResultEntity(
-          errorMessage: 'User cancelled the sign-in process',
-          errorType: AuthErrorType.userCancelled,
+          errorMessage: message,
+          errorType: AuthErrorType.operationNotAllowed,
         );
       }
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate(
+        scopeHint: scopes.toSet().toList(),
+      );
 
-      if (googleAuth.idToken == null || googleAuth.accessToken == null) {
-        _logManager?.lWarning('Google authentication tokens are null.');
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
+
+      if (idToken == null || idToken.isEmpty) {
+        const String message = 'Failed to retrieve Google authentication token';
+        _logManager?.lWarning(message);
         return const AuthResultEntity(
-          errorMessage: 'Failed to retrieve Google authentication tokens',
+          errorMessage: message,
           errorType: AuthErrorType.tokenError,
         );
       }
 
       final OAuthCredential oauthCredential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
+        idToken: idToken,
       );
 
       final UserCredential userCredential =
           await _firebaseAuth.signInWithCredential(oauthCredential);
-      // Update user profile with Google information
-      if (googleUser.displayName != null) {
-        await userCredential.user?.updateDisplayName(googleUser.displayName);
-      }
-      if (googleUser.photoUrl != null) {
-        await userCredential.user?.updatePhotoURL(googleUser.photoUrl);
-      }
+
+      await _updateFirebaseUserProfile(
+        userCredential.user,
+        displayName: googleUser.displayName,
+        photoUrl: googleUser.photoUrl,
+      );
 
       _logManager
           ?.lInfo('User signed in with Google: ${userCredential.user?.email}');
       return AuthResultEntity(user: userCredential.user?.toEntity);
+    } on GoogleSignInException catch (e) {
+      final AuthErrorType errorType = _mapGoogleSignInError(e.code);
+      final String message =
+          e.description ?? 'Google sign-in failed with code ${e.code}';
+      _logManager?.lWarning(
+        'Google Sign-In error: $message',
+        error: e,
+      );
+      return AuthResultEntity(
+        errorMessage: message,
+        errorType: errorType,
+      );
     } on FirebaseAuthException catch (e) {
       _logManager?.lError(
         'Firebase Auth Error signing in with Google: $e',
@@ -331,6 +377,71 @@ final class FirebaseAuthManager implements AuthManager {
         return AuthErrorType.operationNotAllowed;
       case 'too-many-requests':
         return AuthErrorType.tooManyRequests;
+      default:
+        return AuthErrorType.unknown;
+    }
+  }
+
+  Future<void> _ensureGoogleSignInInitialized() async {
+    if (_isGoogleSignInInitialized) {
+      return;
+    }
+
+    if (_googleInitCompleter != null) {
+      await _googleInitCompleter!.future;
+      return;
+    }
+
+    final Completer<void> completer = Completer<void>();
+    _googleInitCompleter = completer;
+
+    try {
+      await GoogleSignIn.instance.initialize(
+        clientId: _googleClientId,
+        serverClientId: _googleServerClientId,
+        hostedDomain: _googleHostedDomain,
+        nonce: _googleNonce,
+      );
+      _isGoogleSignInInitialized = true;
+      completer.complete();
+    } catch (e, stackTrace) {
+      completer.completeError(e, stackTrace);
+      rethrow;
+    } finally {
+      _googleInitCompleter = null;
+    }
+  }
+
+  Future<void> _updateFirebaseUserProfile(
+    User? user, {
+    String? displayName,
+    String? photoUrl,
+  }) async {
+    if (user == null) {
+      return;
+    }
+
+    if (displayName != null && displayName.isNotEmpty) {
+      await user.updateDisplayName(displayName);
+    }
+
+    if (photoUrl != null && photoUrl.isNotEmpty) {
+      await user.updatePhotoURL(photoUrl);
+    }
+  }
+
+  AuthErrorType _mapGoogleSignInError(GoogleSignInExceptionCode code) {
+    switch (code) {
+      case GoogleSignInExceptionCode.canceled:
+        return AuthErrorType.userCancelled;
+      case GoogleSignInExceptionCode.clientConfigurationError:
+      case GoogleSignInExceptionCode.providerConfigurationError:
+        return AuthErrorType.operationNotAllowed;
+      case GoogleSignInExceptionCode.uiUnavailable:
+      case GoogleSignInExceptionCode.interrupted:
+        return AuthErrorType.networkError;
+      case GoogleSignInExceptionCode.userMismatch:
+        return AuthErrorType.invalidCredentials;
       default:
         return AuthErrorType.unknown;
     }

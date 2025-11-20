@@ -278,26 +278,6 @@ base class LocalNotificationManagerImpl implements LocalNotificationManager {
   }
 
   @override
-  Future<bool> onDidReceiveLocalNotification(
-    int id,
-    String? title,
-    String? body,
-    String? payload,
-  ) async {
-    _logManager?.lDebug(
-      '''Local notification received: {id: $id, title: $title, body: $body, payload: $payload}''',
-    );
-    try {
-      await receiveLocalNotificationCallback?.call(id, title, body, payload);
-      return true;
-    } catch (e) {
-      _logManager?.lError('Failed to receive local notification: $e');
-      if (rethrowExceptions) rethrow;
-      return false;
-    }
-  }
-
-  @override
   Future<bool> onDidReceiveNotificationResponse(
     CustomNotificationResponseModel response,
   ) async {

@@ -4,7 +4,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.2
   flutter: ">=1.17.0"
 
 dependencies:
@@ -12,11 +12,11 @@ dependencies:
     sdk: flutter
 
   # Push Notification Packages
-  firebase_messaging: ^16.0.1
+  firebase_messaging: ^16.0.4
 
   # # Permission Manager
-  # permission_manager:
-  #   path: ../permission_manager
+  permission_manager:
+    path: ../permission_manager
 
   # Log Manager
   log_manager:

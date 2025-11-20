@@ -4,7 +4,7 @@ version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.5.2
   flutter: ">=1.17.0"
 
 dependencies:
@@ -12,10 +12,10 @@ dependencies:
     sdk: flutter
 
   # Local Notification
-  flutter_local_notifications: ^19.4.1
+  flutter_local_notifications: ^19.5.0
 
   # Timezone related packages
-  flutter_timezone: ^4.1.1
+  flutter_timezone: ^3.0.1
   timezone: ^0.10.1
 
   # Log Manager

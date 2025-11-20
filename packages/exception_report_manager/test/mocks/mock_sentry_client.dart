@@ -77,6 +77,7 @@ final class MockSentryClient with Mock implements SentryClient {
   @override
   Future<SentryId> captureTransaction(
     SentryTransaction transaction, {
+    Hint? hint,
     Scope? scope,
     SentryTraceContextHeader? traceContext,
   }) async {

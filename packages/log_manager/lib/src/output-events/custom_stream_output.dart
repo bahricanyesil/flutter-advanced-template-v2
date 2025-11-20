@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import '../models/base_log_message_model.dart';
-import 'base_log_output.dart';
+import 'package:log_manager/src/models/base_log_message_model.dart';
+import 'package:log_manager/src/output-events/base_log_output.dart';
 
 /// A custom stream output for logging events.
 ///

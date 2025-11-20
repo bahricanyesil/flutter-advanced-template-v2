@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-import '../models/theme_model.dart';
+import 'package:theme_manager/src/models/theme_model.dart';
 
 /// ThemeState is a class that represents the state of the theme manager.
 @immutable

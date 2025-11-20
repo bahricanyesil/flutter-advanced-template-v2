@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'enums/custom_file_picker_statuses.dart';
-import 'enums/custom_file_types.dart';
+import 'package:file_picker_manager/src/enums/custom_file_picker_statuses.dart';
+import 'package:file_picker_manager/src/enums/custom_file_types.dart';
 
 /// A callback that is called when the file picker status changes.
 typedef FilePickerStatusCallback = void Function(

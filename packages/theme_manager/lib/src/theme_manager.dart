@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'models/theme_model.dart';
+import 'package:theme_manager/src/models/theme_model.dart';
 
 /// ThemeManager is an abstract class that provides a way to manage themes
 /// for Flutter apps.

@@ -2,16 +2,15 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:auth_manager/src/auth_manager.dart';
+import 'package:auth_manager/src/entities/auth_result_entity.dart';
+import 'package:auth_manager/src/entities/user_entity.dart';
+import 'package:auth_manager/src/enum/auth_error_type.dart';
+import 'package:auth_manager/src/extensions/user_entity_extensions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-
-import 'entities/auth_result_entity.dart';
-import 'entities/user_entity.dart';
-import 'enum/auth_error_type.dart';
-import 'extensions/user_entity_extensions.dart';
 
 /// A concrete implementation of the BaseFirebaseAuthManager.
 final class FirebaseAuthManager implements AuthManager {

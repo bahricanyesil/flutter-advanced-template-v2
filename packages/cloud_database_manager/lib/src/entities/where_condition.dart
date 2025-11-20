@@ -1,6 +1,5 @@
+import 'package:cloud_database_manager/src/enums/where_operator.dart';
 import 'package:flutter/foundation.dart';
-
-import '../enums/where_operator.dart';
 
 /// A class to represent a where condition.
 @immutable

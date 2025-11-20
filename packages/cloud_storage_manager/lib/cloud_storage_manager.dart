@@ -2,5 +2,5 @@
 /// for managing cloud-based file storage operations.
 library cloud_storage_manager;
 
-export 'src/cloud_storage_manager.dart';
-export 'src/firebase_cloud_storage_manager.dart';
+export 'package:cloud_storage_manager/src/cloud_storage_manager.dart';
+export 'package:cloud_storage_manager/src/firebase_cloud_storage_manager.dart';

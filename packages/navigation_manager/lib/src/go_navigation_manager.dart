@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:log_manager/log_manager.dart';
 
-import 'navigation_manager.dart';
+import 'package:navigation_manager/src/navigation_manager.dart';
 
 // /// A custom exception handler that takes a [BuildContext], [NavigationState],
 // /// and [RouterConfig] as arguments.

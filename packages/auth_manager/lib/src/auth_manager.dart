@@ -1,5 +1,5 @@
-import 'entities/auth_result_entity.dart';
-import 'entities/user_entity.dart';
+import 'package:auth_manager/src/entities/auth_result_entity.dart';
+import 'package:auth_manager/src/entities/user_entity.dart';
 
 /// Represents an interface for managing authentication related things.
 abstract interface class AuthManager {

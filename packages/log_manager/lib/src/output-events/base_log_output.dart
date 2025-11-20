@@ -1,4 +1,4 @@
-import '../models/base_log_message_model.dart';
+import 'package:log_manager/src/models/base_log_message_model.dart';
 
 /// Represents an interface for a log output.
 abstract interface class BaseLogOutput {

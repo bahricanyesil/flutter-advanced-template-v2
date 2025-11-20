@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-import 'models/base_data_model.dart';
+import 'package:key_value_storage_manager/src/models/base_data_model.dart';
 
 /// The function to convert the JSON to the required type.
 typedef FromJsonFunction<T> = T? Function(String json);

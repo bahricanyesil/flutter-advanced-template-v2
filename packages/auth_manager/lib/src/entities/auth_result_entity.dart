@@ -1,7 +1,6 @@
+import 'package:auth_manager/src/entities/user_entity.dart';
+import 'package:auth_manager/src/enum/auth_error_type.dart';
 import 'package:flutter/foundation.dart';
-
-import '../enum/auth_error_type.dart';
-import 'user_entity.dart';
 
 /// Represents the result of an authentication operation.
 @immutable

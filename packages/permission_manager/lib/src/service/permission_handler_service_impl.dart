@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 // ignore: depend_on_referenced_packages
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 
-import 'permission_handler_service.dart';
+import 'package:permission_manager/src/service/permission_handler_service.dart';
 
 /// A service for handling permissions.
 @immutable

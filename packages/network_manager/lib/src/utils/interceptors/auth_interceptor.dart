@@ -7,11 +7,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:log_manager/log_manager.dart';
 
-import '../../constants/network_constants.dart';
-import '../../default_network_manager.dart';
-import '../../entities/token_entity.dart';
-import '../../enums/token_types.dart';
-import '../../repositories/token_repository.dart';
+import 'package:network_manager/src/constants/network_constants.dart';
+import 'package:network_manager/src/default_network_manager.dart';
+import 'package:network_manager/src/entities/token_entity.dart';
+import 'package:network_manager/src/enums/token_types.dart';
+import 'package:network_manager/src/repositories/token_repository.dart';
 
 /// This class represents an interceptor that handles authentication
 /// for network requests. It extends the [QueuedInterceptor] class.

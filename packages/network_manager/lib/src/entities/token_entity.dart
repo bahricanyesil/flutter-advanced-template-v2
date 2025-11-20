@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import '../enums/token_types.dart';
-import '../utils/helpers/jwt_helpers.dart';
+import 'package:network_manager/src/enums/token_types.dart';
+import 'package:network_manager/src/utils/helpers/jwt_helpers.dart';
 
 /// Represents a token entity contains the token with their expiration date.
 @immutable

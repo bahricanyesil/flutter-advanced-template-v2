@@ -3,13 +3,13 @@ import 'package:log_manager/log_manager.dart';
 // ignore: depend_on_referenced_packages
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 
-import 'enums/permission_status_types.dart';
-import 'enums/permission_types.dart';
-import 'permission_manager.dart';
-import 'service/permission_handler_service.dart';
-import 'service/permission_handler_service_impl.dart';
-import 'utils/permission_status_types_extensions.dart';
-import 'utils/permission_types_extensions.dart';
+import 'package:permission_manager/src/enums/permission_status_types.dart';
+import 'package:permission_manager/src/enums/permission_types.dart';
+import 'package:permission_manager/src/permission_manager.dart';
+import 'package:permission_manager/src/service/permission_handler_service.dart';
+import 'package:permission_manager/src/service/permission_handler_service_impl.dart';
+import 'package:permission_manager/src/utils/permission_status_types_extensions.dart';
+import 'package:permission_manager/src/utils/permission_types_extensions.dart';
 
 /// Implementation of the [PermissionManager] interface.
 ///

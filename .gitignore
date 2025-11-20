@@ -55,6 +55,8 @@ analysis_benchmark.json
 .flutter-plugins-dependencies
 **/generated_plugin_registrant.dart
 .packages
+# Ensure package-level lockfiles stay untracked
+packages/**/pubspec.lock
 .pub-preload-cache/
 .pub-cache/
 .pub/

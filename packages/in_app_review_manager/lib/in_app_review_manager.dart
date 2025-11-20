@@ -2,5 +2,5 @@
 /// provides a unified interface for requesting in-app reviews.
 library in_app_review_manager;
 
-export 'src/in_app_review_manager.dart';
-export 'src/in_app_review_manager_impl.dart';
+export 'package:in_app_review_manager/src/in_app_review_manager.dart';
+export 'package:in_app_review_manager/src/in_app_review_manager_impl.dart';

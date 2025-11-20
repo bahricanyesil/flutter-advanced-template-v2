@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import '../exceptions/index.dart';
-import 'extensions/iterable_extensions.dart';
+import 'package:key_value_storage_manager/src/exceptions/index.dart';
+import 'package:key_value_storage_manager/src/utils/extensions/iterable_extensions.dart';
 
 /// This class provides helper methods for parsing dynamic data.
 /// It is an abstract class and cannot be instantiated.

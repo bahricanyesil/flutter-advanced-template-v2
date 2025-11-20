@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import 'secure_storage_manager.dart';
+import 'package:secure_storage_manager/src/secure_storage_manager.dart';
 
 /// This is a concrete class for secure storage. It implements
 /// the [SecureStorageManager] interface.

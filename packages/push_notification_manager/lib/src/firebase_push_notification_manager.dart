@@ -4,8 +4,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:key_value_storage_manager/key_value_storage_manager.dart';
 import 'package:log_manager/log_manager.dart';
 
-import 'push_notification_manager.dart';
-import 'utils/remote_message_extensions.dart';
+import 'package:push_notification_manager/src/push_notification_manager.dart';
+import 'package:push_notification_manager/src/utils/remote_message_extensions.dart';
 
 /// Firebase push notification manager.
 final class FirebasePushNotificationManager implements PushNotificationManager {

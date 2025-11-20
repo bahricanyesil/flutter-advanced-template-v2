@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:in_app_review_manager/src/in_app_review_manager.dart';
 import 'package:log_manager/log_manager.dart';
-
-import 'in_app_review_manager.dart';
 
 /// A manager class for handling in-app reviews.
 ///

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-import '../models/theme_model.dart';
+import 'package:theme_manager/src/models/theme_model.dart';
 
 /// ThemeEvent is a class that represents an event in the theme manager.
 sealed class ThemeEvent extends Equatable {

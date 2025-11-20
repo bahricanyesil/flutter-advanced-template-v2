@@ -1,4 +1,4 @@
-import 'enums/connectivity_result_type.dart';
+import 'package:connectivity_manager/src/enums/connectivity_result_type.dart';
 
 /// An abstract class that defines the methods used to monitor
 /// the connectivity state of the device.

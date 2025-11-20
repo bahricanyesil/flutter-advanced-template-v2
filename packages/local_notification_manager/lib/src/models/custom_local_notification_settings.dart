@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     as local;
 
-import '../enums/custom_notification_visibility.dart';
-import '../enums/notification_category.dart';
-import '../enums/notification_importance.dart';
-import '../enums/notification_interruption_level.dart';
-import '../enums/notification_priority.dart';
+import 'package:local_notification_manager/src/enums/custom_notification_visibility.dart';
+import 'package:local_notification_manager/src/enums/notification_category.dart';
+import 'package:local_notification_manager/src/enums/notification_importance.dart';
+import 'package:local_notification_manager/src/enums/notification_interruption_level.dart';
+import 'package:local_notification_manager/src/enums/notification_priority.dart';
 
 /// Custom local notification settings.
 class CustomLocalNotificationSettings {

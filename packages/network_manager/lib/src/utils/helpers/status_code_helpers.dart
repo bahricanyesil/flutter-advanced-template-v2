@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import '../../models/base_data_model.dart';
-import 'network_manager_helpers.dart';
+import 'package:network_manager/src/models/base_data_model.dart';
+import 'package:network_manager/src/utils/helpers/network_manager_helpers.dart';
 
 /// Extension on `int` to provide utility methods for
 /// working with HTTP status codes.

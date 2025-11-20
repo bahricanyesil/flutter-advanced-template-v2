@@ -3,6 +3,6 @@
 /// and manage the navigation stack.
 library navigation_manager;
 
-export 'src/go_navigation_manager.dart';
-export 'src/models/navigation_manager_models.dart';
-export 'src/navigation_manager.dart';
+export 'package:navigation_manager/src/go_navigation_manager.dart';
+export 'package:navigation_manager/src/models/navigation_manager_models.dart';
+export 'package:navigation_manager/src/navigation_manager.dart';

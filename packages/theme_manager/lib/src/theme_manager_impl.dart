@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:key_value_storage_manager/key_value_storage_manager.dart';
 import 'package:log_manager/log_manager.dart';
 
-import '../theme_manager.dart';
+import 'package:theme_manager/theme_manager.dart';
 
 /// ThemeManagerImpl is a class that implements the ThemeManager interface.
 /// It is used to manage the themes for the app.

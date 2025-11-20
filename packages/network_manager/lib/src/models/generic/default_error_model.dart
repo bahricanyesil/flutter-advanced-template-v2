@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/foundation.dart';
 
-import '../base_data_model.dart';
-import 'default_data_model.dart';
+import 'package:network_manager/src/models/base_data_model.dart';
+import 'package:network_manager/src/models/generic/default_data_model.dart';
 
 part 'default_error_model.mapper.dart';
 

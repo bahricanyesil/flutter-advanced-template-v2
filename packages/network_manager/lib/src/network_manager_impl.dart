@@ -1,15 +1,15 @@
 import 'package:dio/dio.dart' as dio;
 import 'package:network_manager/network_manager.init.dart';
 
-import 'constants/network_constants.dart';
-import 'enums/method_types.dart';
-import 'models/index.dart';
-import 'network_manager.dart';
-import 'utils/adapter/io_adapter.dart'
+import 'package:network_manager/src/constants/network_constants.dart';
+import 'package:network_manager/src/enums/method_types.dart';
+import 'package:network_manager/src/models/index.dart';
+import 'package:network_manager/src/network_manager.dart';
+import 'package:network_manager/src/utils/adapter/io_adapter.dart'
     if (dart.library.html) 'utils/adapter/web_adapter.dart';
-import 'utils/extensions/interceptor_extensions.dart';
-import 'utils/helpers/network_manager_helpers.dart';
-import 'utils/transformers/custom_background_transformers.dart';
+import 'package:network_manager/src/utils/extensions/interceptor_extensions.dart';
+import 'package:network_manager/src/utils/helpers/network_manager_helpers.dart';
+import 'package:network_manager/src/utils/transformers/custom_background_transformers.dart';
 
 /// A class that manages network requests using the Dio library.
 ///

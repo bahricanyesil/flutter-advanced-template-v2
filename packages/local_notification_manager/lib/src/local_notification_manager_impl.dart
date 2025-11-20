@@ -4,15 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:local_notification_manager/src/enums/notification_importance.dart';
+import 'package:local_notification_manager/src/local_notification_manager.dart';
+import 'package:local_notification_manager/src/models/base_notification_channel.dart';
+import 'package:local_notification_manager/src/models/custom_local_notification_settings.dart';
+import 'package:local_notification_manager/src/models/custom_notification_response_model.dart';
 import 'package:log_manager/log_manager.dart';
 import 'package:permission_manager/permission_manager.dart';
 import 'package:timezone/data/latest_all.dart' as tzl;
 import 'package:timezone/timezone.dart' as tz;
-
-import 'local_notification_manager.dart';
-import 'models/base_notification_channel.dart';
-import 'models/custom_local_notification_settings.dart';
-import 'models/custom_notification_response_model.dart';
 
 /// Implementation of the local notification manager.
 ///

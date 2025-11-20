@@ -2,7 +2,7 @@ import 'package:connectivity_manager/connectivity_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../models/index.dart';
+import 'package:network_manager/src/models/index.dart';
 
 /// A custom interceptor that extends the [Interceptor] class.
 @immutable

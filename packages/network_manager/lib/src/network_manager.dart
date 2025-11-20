@@ -1,5 +1,5 @@
-import 'enums/method_types.dart';
-import 'models/index.dart';
+import 'package:network_manager/src/enums/method_types.dart';
+import 'package:network_manager/src/models/index.dart';
 
 /// A typedef representing a progress callback function.
 ///

@@ -1,6 +1,6 @@
 import 'package:permission_handler/permission_handler.dart';
 
-import '../enums/permission_status_types.dart';
+import 'package:permission_manager/src/enums/permission_status_types.dart';
 
 /// Extension methods for [PermissionStatusTypes].
 extension PermissionStatusTypesExtensions on PermissionStatusTypes {

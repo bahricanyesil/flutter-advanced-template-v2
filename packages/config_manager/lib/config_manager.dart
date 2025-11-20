@@ -5,6 +5,6 @@
 /// based on different build flavors.
 library config_manager;
 
-export 'src/config_manager.dart';
-export 'src/enums/flavor_types.dart';
-export 'src/env/base_env.dart';
+export 'package:config_manager/src/config_manager.dart';
+export 'package:config_manager/src/enums/flavor_types.dart';
+export 'package:config_manager/src/env/base_env.dart';

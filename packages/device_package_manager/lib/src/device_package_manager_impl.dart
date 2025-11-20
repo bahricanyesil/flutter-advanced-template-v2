@@ -1,8 +1,7 @@
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:device_package_manager/src/device_package_manager.dart';
+import 'package:device_package_manager/src/utils/safe_platform_checker.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
-import 'device_package_manager.dart';
-import 'utils/safe_platform_checker.dart';
 
 /// Implementation of the [DevicePackageManager] interface.
 ///

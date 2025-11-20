@@ -10,6 +10,7 @@ final class MockSentryClient with Mock implements SentryClient {
   List<CaptureEnvelopeCall> captureEnvelopeCalls = <CaptureEnvelopeCall>[];
   List<CaptureTransactionCall> captureTransactionCalls =
       <CaptureTransactionCall>[];
+  List<SentryFeedback> userFeedbackCalls = <SentryFeedback>[];
   int closeCalls = 0;
 
   @override
@@ -56,6 +57,16 @@ final class MockSentryClient with Mock implements SentryClient {
   Future<SentryId> captureEnvelope(SentryEnvelope envelope) async {
     captureEnvelopeCalls.add(CaptureEnvelopeCall(envelope));
     return envelope.header.eventId ?? SentryId.newId();
+  }
+
+  @override
+  Future<SentryId> captureFeedback(
+    SentryFeedback userFeedback, {
+    Hint? hint,
+    Scope? scope,
+  }) async {
+    userFeedbackCalls.add(userFeedback);
+    return userFeedback.associatedEventId ?? SentryId.newId();
   }
 
   @override

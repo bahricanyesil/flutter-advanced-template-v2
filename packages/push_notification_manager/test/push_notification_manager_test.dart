@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 // ignore: depend_on_referenced_packages
-import 'package:permission_manager/permission_manager.dart';
 import 'package:push_notification_manager/push_notification_manager.dart';
 
 import 'mocks/mock_firebase_messaging.dart';
@@ -37,9 +36,6 @@ void main() {
       showPreviews: AppleShowPreviewSetting.always,
       providesAppNotificationSettings: AppleNotificationSetting.enabled,
     );
-
-    registerFallbackValue(PermissionStatusTypes.granted);
-    registerFallbackValue(PermissionTypes.mediaLibrary);
 
     when(() => mockFirebaseMessaging.getNotificationSettings())
         .thenAnswer((_) async => enabledNotificationSettings);
